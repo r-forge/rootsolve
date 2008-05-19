@@ -1,8 +1,8 @@
-### steady.1D, steady.band -- solves the steady-state condition of 
-### banded ordinary differential equation systems 
+### steady, steady.1D, steady.band -- solves the steady-state condition of 
+### ordinary differential equation systems 
+### steady is designed for arbitrary sparse systems with a full Jacobian
 ### steady.1D is designed for solving multi-component 1-D reaction-transport models 
 ### steady.band is designed for solving single-component 1-D reaction-transport models
-### steady is designed for (smaller) systems with a full Jacobian
 ### these functions have similar calling sequence as integration routines from
 ### package deSolve
 
@@ -19,17 +19,20 @@ steady  <- function (y,
 steady.1D    <- function (y,
                        time=0,
                        func,
-                       nspec,
+                       nspec = NULL,
+                       dimens = NULL,
                        method="stode",
                        ...)
 {
   if (hasArg(jacfunc)) stop ("cannot run steady.1D with jacfunc specified - remove jacfunc from call list")
-  if (is.null(nspec)  ) stop ("cannot run steady.1D: nspec is not specified")
+  if (is.null(dimens) && is.null(nspec)) 
+     stop ("cannot run steady.1D: either nspec or dimens should be specified")
   N     <- length(y)
-
-if (method=="stodes")
+  if (is.null(nspec)  ) nspec = N/dimens
+  if (method=="stodes")
   {
-    out <- stodes(y=y,time=time,func=func,nnz=N*(2*nspec+1),...)                    
+    dimens <- N/nspec
+    out <- stodes(y=y,time=time,func=func,nnz=c(nspec,dimens),jactype="1D",...)                    
    } else if (is.character(func))
   {
   ii    <- as.vector(t(matrix(ncol=nspec,1:N)))   # from ordering per slice -> per spec
@@ -52,6 +55,24 @@ if (method=="stodes")
   out <- stode(y[ii],time,func=bmod,bandup=nspec,banddown=nspec,jactype="bandint",...) 
   out[[1]][ii] <- out[[1]]
   }
+  return(out)
+}
+
+steady.2D    <- function (y,
+                       time=0,
+                       func,
+                       dimens = NULL,
+                       ...)
+{
+  if (hasArg(jacfunc)) stop ("cannot run steady.2D with jacfunc specified - remove jacfunc from call list")
+  if (is.null(dimens)) 
+     stop ("cannot run steady.2D: dimens should be specified")
+  if (length(dimens)!=2) 
+     stop ("cannot run steady.2D: dimens should contain 2 values")
+
+  N     <- length(y)
+  nspec = N/prod(dimens)
+  out <- stodes(y=y,time=time,func=func,nnz=c(nspec,dimens),jactype="2D",...)                    
   return(out)
 }
 

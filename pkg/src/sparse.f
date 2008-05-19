@@ -19,7 +19,7 @@ c**********************************************************************
      &                   a,ewt,rsp,ian,jan,igp,jgp,maxg,r,c,ic,isp,            &
      &                   maxiter,TolChange,atol,rtol,itol,                     &
      &                   Positivity,SteadyStateReached,Precis,niter,           &
-     &                   dims, out,nout ,Full)
+     &                   dims, out,nout ,Type)
 
 c------------------------------------------------------------------------------*
 c Solves a system of nonlinear equations using the Newton-Raphson method       *
@@ -47,10 +47,10 @@ c transpose of jacobian
       DOUBLE PRECISION  a(*)
 
 c false if failed - true if variables must be positive 
-      LOGICAL SteadyStateReached, positivity, Full
+      LOGICAL SteadyStateReached, positivity
 
 c tolerances, precision
-      INTEGER          itol
+      INTEGER          itol, Type
       DOUBLE PRECISION rtol(*), atol(*),tolChange
       DOUBLE PRECISION ewt(*), precis(maxIter),maxewt,RelativeChange
          
@@ -59,25 +59,24 @@ c working arrays for sparse solver
       DOUBLE PRECISION rsp(*) 
 
 c model and jacobian function
-      EXTERNAL xmodel, jac
+      EXTERNAL xmodel
       DOUBLE PRECISION out(*)      
       INTEGER          nout(*) 
       DOUBLE PRECISION time
-
 c
       INTEGER i, j, k, esp
+      character (len=80) msg
 c-------------------------------------------------------------------------------
       SteadyStateReached = .FALSE.
-c      Full = TRUE
+
       CALL errSET (N, ITOL, RTOL, ATOL, SVAR, EWT)
 
-c determine sparse structure
+c determine sparse structure: if Type == 2 or 3: 
+c a 1-D or 2-D reaction-transport model; 
+c in this case the number of components and dimensions are in dims
       CALL xSparseStruct(N, nnz, ian, jan, igp, jgp, maxg, ngp,                &
      &    Svar, ewt, dSvar, beta, xmodel, time, out, nout, nonzero,            &
-     &    Full)
-
-      dims(1) = nonzero
-      dims(2) = ngp
+     &    Type, dims)
 
 c finds a minimum degree ordering of the rows and columns of 
       CALL odrv(N,ian,jan,a,r,ic,nsp,isp,1,flag)
@@ -244,7 +243,7 @@ c********************************************************************
 
       SUBROUTINE xSparseStruct(N, nnz, ian, jan, igp, jgp, maxg, ngp,          &
      &       Svar, ewt, dSvar, beta, xmodel, time, out, nout, nonzero,         &
-     &       Full)
+     &       Type, dims)
 c-------------------------------------------------------------------*
 c two arrays describe the sparsity structure of the jacobian:       *
 c                                                                   *
@@ -268,13 +267,13 @@ c-------------------------------------------------------------------*
 
        INTEGER           N, nnz,nonzero   
        INTEGER           IAN (N+1), JAN(nnz)
-       INTEGER           nout(*)
+       INTEGER           nout(*), Type, dims(3)
 
        DOUBLE PRECISION  Svar (N), ewt(N)
        DOUBLE PRECISION  time, out(*), tiny
        EXTERNAL          xmodel
      
-       INTEGER           I, J, ij 
+       INTEGER           I, J, ij, Nspec, dimens(2) 
        DOUBLE PRECISION  CopyVar,beta(N),dSvar(N)
        DOUBLE PRECISION  DivDelt
        LOGICAL           enough, Full
@@ -287,9 +286,19 @@ c--------------------------------------------------------------------
        
        enough = .TRUE.
        tiny   = 1D-30
+
+c Type of sparsity:
+c Type = 0: sparsity imposed; ian and jan are known
+c Type = 1: arbitrary sparsity, to be estimated
+c Type = 2: sparsity related to 1-D reaction transport model
+c Type = 3: sparsity related to 2-D reaction transport model
+c 
+c in the latter 2 cases the number of components (*nspec*) and 
+c the dimensions of the problem are in dims
+c 
  
-       if (Full) THEN     
-c sparsity not known
+       IF (type == 1) THEN     
+c sparsity not known; numerically estimated by perturbation
 c call model-specific subroutines; input is Svar; output is Beta
        CALL XMODEL(N,time,Svar,Beta,out,nout)
 
@@ -299,10 +308,10 @@ c      Jacobian: Perturb each state variable, one by one
            
        DO I= 1, N
          copyvar  = Svar(I)
-c         Divdelt = Perturb(Svar(I))
+         Divdelt = Perturb(Svar(I))
 c alternative below is not so efficient!
-        DivDelt  = sign(ewt(I),copyvar)
-        Svar(I)  = Svar(I) + divdelt 
+c        DivDelt  = sign(ewt(I),copyvar)
+c        Svar(I)  = Svar(I) + divdelt 
         CALL XMODEL(N,time,Svar,dSvar,out,nout)  
 
 c rate of changes that were altered (~tiny): nonzero element in jacobian       
@@ -328,12 +337,26 @@ c check memory allocation: enough?
          call rexit(msg)
        ENDIF
        nonzero = ij
+c 1-D problem       
+       ELSE IF (Type == 2) THEN
+          Nspec = dims(1) 
+          CALL sparse1d(N, Nspec, nnz, ian, jan)
+       
+       ELSE IF (Type == 3) THEN
+          Nspec = dims(1) 
+          dimens(1) = dims(2)
+          dimens(2) = dims(3)
+          CALL sparse2d(N, Nspec, dimens, nnz, ian, jan)
        ENDIF
        
 c this only if jacobian estimated by calls to F
        CALL JGROUP (N, ian, jan, MAXG, NGP, IGP,                               &
      1   JGP, incl,jdone, IER)
        IF (IER .NE. 0) call rexit("not enough memory for JGROUP")
+
+      dims(1) = nonzero
+      dims(2) = ngp
+
 
        RETURN
 
@@ -383,10 +406,10 @@ c      Jacobian: Perturb state variables in groups
         jmax = igp(1+NG) - 1
         DO  J = jmin,jmax
           JJ = jgp(J)
-c          DivDelt = Perturb(Svar(JJ))
+          DivDelt = Perturb(Svar(JJ))
 c alternative is not so efficient!
-         DivDelt  = sign(ewt(JJ),svar(JJ))
-         Svar(JJ) = Svar(JJ) + DivDelt
+c         DivDelt  = sign(ewt(JJ),svar(JJ))
+c         Svar(JJ) = Svar(JJ) + DivDelt
         enddo
 
         CALL XMODEL(N,time,SVar,dSvar,out,nout)  
@@ -483,7 +506,8 @@ C Error return if not all columns were chosen (MAXG too small).---------
  70   NGRP = NG - 1
       if (Toomuch) THEN
         call rwarn("error during grouping: NGP too small")
-        write (msg,'(A30,I10)')"Should be at least",NGRP
+        write (msg,'(A30,I10,A10,I10)')"Should be at least",NGRP,              &
+     &   "is",maxG
         call rexit(msg)
       endif
       RETURN

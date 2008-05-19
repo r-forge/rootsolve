@@ -1,26 +1,4 @@
-
-      PROGRAM main
-       integer, parameter :: Nspec=3, i1=4, i2=5
-       integer, parameter :: Ntot=i1*nspec
-	 integer, parameter :: nnz=Ntot*(2*nspec+1)
-       integer            :: ian(Ntot+1), jan(nnz)
-
-       integer, parameter :: Ntot2=i1*i2*nspec
-	 integer, parameter :: nnz2=Ntot2*(3*nspec)
-       integer            :: ian2(Ntot2+1), jan2(nnz2)
-
-	 integer :: dimens(2)
-       integer Iest,iest2
-       CALL sparse1d(Ntot, Nspec, nnz, ian, jan)
-	 dimens(1) = i1
-	 dimens(2) = i2
-
-       CALL sparse2d(Ntot2, Nspec, dimens, nnz2, ian2, jan2)
-       Iest2 = Ntot2*(4+Nspec)-2*Nspec*(i1+i2)
-       Iest =  Ntot *(2+Nspec) -2*Nspec 
-	END PROGRAM main
-
-c--------------------------------------------------------------------*
+c------------------------------------------ --------------------------*
 c SPARSITY of 1-D reaction-transport problems
 c--------------------------------------------------------------------*
 
@@ -50,7 +28,6 @@ c total number of state variables,number of different species
        INTEGER Ntot, Nspec
 c maximal number of indices, sparsity arrays
        INTEGER nnz, ian(*), jan(*)
-       INTEGER mat(nnz,2)
 c
        INTEGER N, I, J, ij, K, L
        
@@ -59,7 +36,7 @@ c check input
          write(*,*) 
      &("cannot generate sparse jacobian - N and nspec not compatible")
         stop
-	 ENDIF
+         ENDIF
 
 c number of boxes
        N = Ntot/Nspec
@@ -74,19 +51,19 @@ c number of boxes
 c interactions with current, upstream and downstream boxes
           
              jan(ij) = K
-	       ij      = ij +1
+               ij      = ij +1
            IF (J<N) THEN
-		   jan(ij) = K+1
-	       ij      = ij +1
+                 jan(ij) = K+1
+               ij      = ij +1
            ENDIF
-		 IF (J >1) THEN
-		   jan(ij) = K-1
-	       ij      = ij +1
+               IF (J >1) THEN
+                 jan(ij) = K-1
+               ij      = ij +1
            ENDIF
 c interactions with other species in the same box
             DO L = 1, Nspec
               IF (L == i) cycle
-			jan(ij) = (L-1)*N+j
+                    jan(ij) = (L-1)*N+j
               ij = ij +1            
             ENDDO
        
@@ -94,7 +71,7 @@ c interactions with other species in the same box
 
          ENDDO
        ENDDO
-
+       nnz = ij -1
 c
       END SUBROUTINE sparse1d
 
@@ -128,7 +105,6 @@ c total number of state variables,number of different species
        INTEGER Ntot, Nspec, dimens(2)
 c maximal number of indices, sparsity arrays
        INTEGER nnz, ian(*), jan(*)
-       INTEGER mat(nnz,2)
 c
        INTEGER N, I, J, ij, K, L, M
        
@@ -137,7 +113,7 @@ c check input
          write(*,*) 
      &("cannot generate sparse jacobian - N and nspec not compatible")
         stop
-	 ENDIF
+         ENDIF
 
 c number of boxes
        N = dimens(1)*dimens(2)
@@ -153,28 +129,28 @@ c number of boxes
 c interactions with current, upstream and downstream boxes
           
              jan(ij) = M
-	       ij      = ij +1
+               ij      = ij +1
            IF (k<dimens(2)) THEN
-		   jan(ij) = M+1
-	       ij      = ij +1
+                 jan(ij) = M+1
+               ij      = ij +1
            ENDIF
            IF (j<dimens(1)) THEN
-		   jan(ij) = M+dimens(2)
-	       ij      = ij +1
+                 jan(ij) = M+dimens(2)
+               ij      = ij +1
            ENDIF
-		 IF (j >1) THEN
-		   jan(ij) = M-dimens(2)
-	       ij      = ij +1
+             IF (j >1) THEN
+                jan(ij) = M-dimens(2)
+               ij      = ij +1
            ENDIF
-		 IF (k >1) THEN
-		   jan(ij) = M-1
-	       ij      = ij +1
+             IF (k >1) THEN
+                jan(ij) = M-1
+              ij      = ij +1
            ENDIF
 
 c interactions with other species in the same box
             DO L = 1, Nspec
               IF (L == i) cycle
-			jan(ij) = (L-1)*N+(j-1)*dimens(2)+k
+                    jan(ij) = (L-1)*N+(j-1)*dimens(2)+k
               ij = ij +1            
             ENDDO
        
@@ -182,7 +158,6 @@ c interactions with other species in the same box
            ENDDO
          ENDDO
        ENDDO
-
+       nnz = ij -1
 c
       END SUBROUTINE sparse2d
-

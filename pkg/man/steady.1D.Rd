@@ -4,14 +4,16 @@
 \description{Estimates the steady-state condition for a system of ordinary differential equations. 
   \cr Assumes a banded or sparse jacobian matrix. To create the banded matrix, state variables are rearranged. 
   \cr Suitable for 1-D models that include transport only between adjacent layers and that model many species (e.g. multi-component reactive-transport models).}
-\usage{steady.1D(y, time=0, func, nspec, method = "stode",...)}
+\usage{steady.1D(y, time=0, func, nspec=NULL, dimens=NULL, 
+                method = "stode",...)}
 \arguments{
   \item{y }{the initial guess of (state) values for the ODE system, a vector. If \code{y} has a name attribute, the names will be used to label the output matrix.}
   \item{time }{time for which steady-state is wanted; the default is time=0}
   \item{func }{either a user-supplied function that computes the values of the derivatives in the ode system (the model defininition) at time \code{time}, 
     or a character string giving the name of a compiled function in a dynamically loaded shared library. 
      		See details}
-  \item{nspec }{the number of *species* (components) in the model. }
+  \item{nspec }{the number of *species* (components) in the model. If NULL, then \code{dimens} should be specified}
+  \item{dimens}{the number of *boxes* in the model. If NULL, then \code{nspec} should be specified}
   \item{method }{the solution method, one of "stode" or "stodes"}
   \item{... }{additional arguments passed to function as defined by \code{method}}
 }

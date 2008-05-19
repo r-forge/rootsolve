@@ -11,6 +11,7 @@ stodes        <- function(y,              # state variables
                           rtol=1e-6,        # relative tolerance
                           atol=1e-8,        # absolute tolerance
                           ctol=1e-8,        # minimal change in dy
+                          jactype="sparseint", # jacobian type
                           verbose=FALSE,    #
                           dllname=NULL,     #
                           initfunc=dllname, #
@@ -58,11 +59,15 @@ stodes        <- function(y,              # state variables
     if (length(atol)==n && length(rtol)!=n) itol <- 2 else
     if (length(atol)!=n && length(rtol)==n) itol <- 3
 
-    Full <- 1
+    Type <- 1            # sparsity to be determined numerically
     ian <- 0
     jan <- 0
-    if (! is.null(inz)) 
-    {Full <- 0
+    if (is.null(ngp))   ngp = n+1
+        
+    if(jactype=="sparseint")
+    {
+    if (! is.null(inz))  # sparsity is imposed; create ian, jan 
+    {Type <- 0
      nnz <- nrow(inz)
      jan <- numeric(nnz)
      ian <- numeric(n+1)
@@ -82,13 +87,21 @@ stodes        <- function(y,              # state variables
       }
         
      } else if (is.null(nnz))   nnz = n*n
+    } else if (jactype == "1D")   {
+      Type   <- 2
+      nspec  <- nnz[1] 
+      nnz    <- c(n*(2+nspec)-2*nspec,nnz)
+      ngp    <- 3*nspec+1
+    } else if (jactype =="2D")    {
+      Type   <- 3
+      nspec  <- nnz[1] 
+      dimens <- nnz[2:3]
+      nnz   <- c(n*(4+nspec)-2*nspec*(sum(dimens)),nnz)
+      ngp    < 4*nspec+1 
 
-    if (is.null(lrw))   lrw = 3*n+4*nnz
-    if (is.null(ngp))   ngp = n+1
+    } else stop("cannot run stodes: jactype not known ")
 
-    
-    
-    
+    if (is.null(lrw))   lrw = 3*n+4*nnz[1]
 
 
 
@@ -97,6 +110,11 @@ stodes        <- function(y,              # state variables
   {
    print("Steady-state settings")
    if (is.character(func)) print(paste("model function a DLL: ",func))
+   if (jactype=="sparseint")txt<-"sparse jacobian, calculated internally" else 
+   if (jactype=="1D")    txt<-"sparse 1-D jacobian, calculated internally" else 
+   if (jactype=="2D")    txt<-"sparse 2-D jacobian, calculated internally" 
+   print(data.frame(jacType = jactype, message=txt))
+
   }
 
 ### model and jacobian function
@@ -185,7 +203,7 @@ stodes        <- function(y,              # state variables
         ctol, atol, rtol, as.integer(itol), rho,  ModelInit, as.integer(verbose),
         as.integer(imp),as.integer(nnz),as.integer(lrw),as.integer(ngp),as.integer(maxiter),
         as.integer(positive),as.integer(Nglobal),
-        as.double (rpar), as.integer(ipar), as.integer(Full),
+        as.double (rpar), as.integer(ipar), as.integer(Type),
         as.integer(ian),as.integer(jan), PACKAGE = "rootSolve")
 
 ### saving results

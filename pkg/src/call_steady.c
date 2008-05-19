@@ -38,18 +38,22 @@ static void steady_derivs (int *neq, double *t, double *y, double *ydot, double 
 
 static void steady_derivs2(int *neq, double *t, double *y, double *ydot, double *yout, int *iout)
 {
-  int i, j;
-
+  int i, j, ii;
+     ii = 0;
      for (i = 0; i < ndim; i++)         /* rearrange states */
       { for (j = 0; j < nspec; j++)
-        y2[j* ndim+i] = y[i* nspec+j];   }
+        /*y2[j* ndim+i] = y[i* nspec+j];   */
+        y2[j* ndim+i] = y[ii++];   
+        }
         
      derivb (neq, t, y2, dy2, yout, iout) ;
-
+     ii = 0;
      for (i = 0; i < ndim; i++)         /* rearrange rates of change */
       { for (j = 0; j < nspec; j++)
-         ydot[i* nspec+j]=dy2[j* ndim+i];   }
-         
+       /*  ydot[i* nspec+j]=dy2[j* ndim+i];   */
+         ydot[ii++]=dy2[j* ndim+i];            
+         }
+        
      }
 
 
@@ -108,7 +112,6 @@ SEXP call_dsteady(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP chtol,
   mflag = INTEGER(verbose)[0];
   nout  = INTEGER(nOut)[0];
   rearrange = 0;
-
   if (jt ==0)   /* state variables and rate of changes need rearranging*/
   {
    jt =25;
@@ -120,6 +123,7 @@ SEXP call_dsteady(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP chtol,
    isDll = 1;
    if (nout > 0) isOut = 1; 
    ntot  = neq + nout;          /* length of yout */
+
    lrpar = nout + LENGTH(Rpar); /* length of rpar; LENGTH(Rpar) is always >0 */
    lipar = 3 + LENGTH(Ipar);    /* length of ipar */
   } else                        /* function is not a dll */
@@ -140,7 +144,7 @@ SEXP call_dsteady(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP chtol,
     ipar[1] = lrpar;
     ipar[2] = lipar;
     for (j = 0; j < LENGTH(Ipar);j++) ipar[j+3] = INTEGER(Ipar)[j];
-  
+   
     for (j = 0; j < nout; j++) out[j] = 0.;  
     for (j = 0; j < LENGTH(Rpar);j++) out[nout+j] = REAL(Rpar)[j];
    }

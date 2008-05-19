@@ -12,7 +12,7 @@
   The system of ODE's is written as an \R function or be defined in
   compiled code that has been dynamically loaded.}
 \usage{stodes(y, time=0, func, parms=NULL,
-rtol=1e-6, atol=1e-8, ctol=1e-8, verbose=FALSE,
+rtol=1e-6, atol=1e-8, ctol=1e-8, jactype="sparseint",verbose=FALSE,
 dllname=NULL, initfunc=dllname, initpar=parms, rpar=NULL, ipar=NULL, 
 ynames=TRUE, nout=0, outnames = NULL, nnz=NULL, inz=NULL, 
 lrw=NULL, ngp=NULL, positive=FALSE, maxiter=100, ...)}
@@ -43,6 +43,7 @@ lrw=NULL, ngp=NULL, positive=FALSE, maxiter=100, ...)}
   \item{rtol }{relative error tolerance, either a scalar or a vector, one value for each y }
   \item{atol }{absolute error tolerance, either a scalar or a vector, one value for each y}
   \item{ctol }{if between two iterations, the maximal change in y is less than this amount, steady-state is reached}
+  \item{jactype }{the structure of the Jacobian, to date only "sparseint", sparse jacobian, estimated internally by stodes}
   \item{verbose }{if TRUE: full output to the screen, e.g. will output the steady-state settings}
   \item{dllname }{a string giving the name of the shared library (without extension) that contains all the compiled function or subroutine definitions referred to in \code{func}.}
   \item{initfunc }{if not NULL, the name of the initialisation function (which initialises values of parameters), as provided in \file{dllname}. See details.}

@@ -37,32 +37,32 @@ typedef void init_func(void (*)(int *, double *));
 SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP chtol, 
 		SEXP atol, SEXP rtol, SEXP itol, SEXP rho, SEXP initfunc, 
 		SEXP verbose, SEXP mf, SEXP NNZ, SEXP NSP, SEXP NGP, SEXP nIter, SEXP Pos, 
-    SEXP nOut, SEXP Rpar, SEXP Ipar, SEXP Full, SEXP Ian, SEXP Jan)
+    SEXP nOut, SEXP Rpar, SEXP Ipar, SEXP Type, SEXP Ian, SEXP Jan)
 {
   SEXP   yout, RWORK, IWORK;
   int    j, k, ny, isOut, maxit, isSteady;
   double *svar, *dsvar, *beta, *alpha, tin, *Atol, *Rtol, Chtol, *out;
   double *x, *precis, *ewt, *rsp ;
-  int    neq, nnz, nsp, ngp, jt, niter, mflag, nout, ntot, pos, Itol, full;
+  int    neq, nnz, nsp, ngp, jt, niter, mflag, nout, ntot, pos, Itol, type;
   int    *R, *C, *IC, *ian, *jan, *igp, *jgp, *isp, *dims;
-  int    *ipar, lrpar, lipar, len, isDll;
+  int    *ipar, lrpar, lipar, len, isDll ;
     
   deriv_func *derivs;
   init_func  *initializer;
 
   init_N_Protect();
 
-  jt = INTEGER(mf)[0];        
-  nnz = INTEGER(NNZ)[0];        
-  nsp = INTEGER(NSP)[0];  
-  ngp = INTEGER(NGP)[0];  
-  ny = LENGTH(y);
-  Itol = INTEGER(itol)[0];
+  jt    = INTEGER(mf)[0];        
+  nnz   = INTEGER(NNZ)[0];        
+  nsp   = INTEGER(NSP)[0];  
+  ngp   = INTEGER(NGP)[0];  
+  ny    = LENGTH(y);
+  Itol  = INTEGER(itol)[0];
   maxit = INTEGER(nIter)[0];  
-  pos = INTEGER(Pos)[0];  
-  full = INTEGER(Full)[0];
+  pos   = INTEGER(Pos)[0];  
+  type  = INTEGER(Type)[0];
   
-  neq = ny; 
+  neq   = ny; 
   mflag = INTEGER(verbose)[0];
   nout  = INTEGER(nOut)[0];
 
@@ -138,13 +138,24 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP chtol,
     for (j = 0; j < nsp; j++) rsp[j] = 0.;
 
   ian = (int *) R_alloc(neq+1, sizeof(int));
-   if (full == 0) {for (j = 0; j < neq; j++) ian[j] = INTEGER(Ian)[j];} 
-   else for (j = 0; j < neq; j++) ian[j] = 0;
+   if (type == 0) {for (j = 0; j < neq; j++) ian[j] = INTEGER(Ian)[j];} 
+   else {for (j = 0; j < neq; j++) ian[j] = 0;}
 
   jan = (int *) R_alloc(nnz, sizeof(int));
-   if (full == 0) 
+   if (type == 0) 
    {for (j = 0; j < nnz; j++) jan[j] = INTEGER(Jan)[j];} 
-   else for (j = 0; j < nnz; j++) jan[j] = 0;
+   else {for (j = 0; j < nnz; j++) jan[j] = 0;}
+   
+  /* 1-D or 2-D problem */
+  if (type == 2)          {
+    dims[0] = INTEGER(NNZ)[1]; /* number components*/ 
+    dims[1] = INTEGER(NNZ)[2]; /* dimension x*/ 
+  } else if (type == 3)   {
+    dims[0] = INTEGER(NNZ)[1]; /* number components*/ 
+    dims[1] = INTEGER(NNZ)[2]; /* dimension x*/ 
+    dims[2] = INTEGER(NNZ)[3]; /* dimension y*/     
+  }
+
 
   igp = (int *) R_alloc(ngp+1, sizeof(int));
     for (j = 0; j < ngp+1; j++) igp[j] = 0;
@@ -192,12 +203,11 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP chtol,
 
     
     tin = REAL(time)[0];
-
       
 	  F77_CALL(dsparse) (derivs, &neq, &nnz, &nsp, &tin, svar, dsvar, beta, x,
          alpha, ewt, rsp, ian, jan, igp, jgp, &ngp, R, C, IC, isp,
 			   &maxit,  &Chtol, Atol, Rtol, &Itol, &pos, &isSteady, 
-         precis, &niter, dims, out, ipar, &full);
+         precis, &niter, dims, out, ipar, &type);
 
 	  for (j = 0; j < ny; j++)
 	    REAL(yout)[j] = svar[j];

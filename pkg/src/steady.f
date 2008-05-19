@@ -78,7 +78,7 @@ c-------------------------------------------------------------------------------
        SteadyStateReached = .FALSE.     ! Steady state not yet reached
 
        DO K=1,MaxIter
-
+          niter = K
 c the error weight vector EWT 
 	        CALL errSet(N,itol,rtol,atol,Svar,ewt)
 	        
@@ -158,7 +158,7 @@ c Test convergence + new value of state variables
             SteadyStateReached = .TRUE.
             EXIT 
           ENDIF
-          niter = K
+
 
        ENDDO 
 
