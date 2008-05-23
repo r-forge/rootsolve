@@ -24,7 +24,8 @@ steady.1D    <- function (y,
                        method="stode",
                        ...)
 {
-  if (hasArg(jacfunc)) stop ("cannot run steady.1D with jacfunc specified - remove jacfunc from call list")
+  if (any(!is.na(pmatch(names(list(...)), "jacfunc")))) 
+     stop ("cannot run steady.1D with jacfunc specified - remove jacfunc from call list")
   if (is.null(dimens) && is.null(nspec)) 
      stop ("cannot run steady.1D: either nspec or dimens should be specified")
   N     <- length(y)
@@ -64,7 +65,8 @@ steady.2D    <- function (y,
                        dimens = NULL,
                        ...)
 {
-  if (hasArg(jacfunc)) stop ("cannot run steady.2D with jacfunc specified - remove jacfunc from call list")
+  if (any(!is.na(pmatch(names(list(...)), "jacfunc")))) 
+     stop ("cannot run steady.2D with jacfunc specified - remove jacfunc from call list")
   if (is.null(dimens)) 
      stop ("cannot run steady.2D: dimens should be specified")
   if (length(dimens)!=2) 
