@@ -4,20 +4,31 @@
 \description{Estimates the steady-state condition for a system of ordinary differential equations. 
   \cr Assumes a banded jacobian matrix, but does not rearrange the state variables. This is in contrast to \code{steady.1D}. 
 Suitable for 1-D models that include transport only between adjacent layers and that model only one species}
-\usage{steady.band(y, time=0, func, nspec=NULL, 
-   bandup=nspec, banddown=nspec, ...)}
+\usage{steady.band(y, time=0, func, parms=NULL, 
+   nspec=NULL, bandup=nspec, banddown=nspec, ...)}
 \arguments{
   \item{y }{the initial guess of (state) values for the ODE system, a vector. If \code{y} has a name attribute, the names will be used to label the output matrix.}
   \item{time }{time for which steady-state is wanted; the default is \code{time}=0}
-  \item{func }{either a user-supplied function that computes the values of the derivatives in the ode system (the model defininition) at time \code{time}, or a character string giving the name of a compiled function in a dynamically loaded shared library. 
-     		See details}
+  \item{func }{either an \R-function that computes the values of the derivatives in the ode system (the model defininition) at time \code{time}, 
+    or a character string giving the name of a compiled function in a dynamically loaded shared library.
+          If \code{func}  is an \R-function, it must be defined as:
+      \code{yprime = func(t, y, parms,...)}.  \code{t} is the current time point
+      in the integration, \code{y} is the current estimate of the variables
+      in the ODE system.  If the initial values \code{y} has a names
+      attribute, the names will be available inside \code{func}.  \code{parms} is
+      a vector or list of parameters; ... (optional) are any other arguments passed to the function. 
+  
+      The return value of \code{func} should be a list, whose first element is a
+      vector containing the derivatives of \code{y} with respect to
+      \code{time}, and whose next elements are global values whose steady-state value is also required.}
+  \item{parms }{parameters passed to \code{func}}
   \item{nspec }{the number of *species* (components) in the model. }
-  \item{bandup }{the number of nonzero bands above the jacobian diagonal}
-  \item{banddown }{the number of nonzero bands below the jacobian diagonal}
+  \item{bandup }{the number of nonzero bands above the Jacobian diagonal}
+  \item{banddown }{the number of nonzero bands below the Jacobian diagonal}
   \item{... }{additional arguments passed to function \code{stode}}
 }
 \value{
-  		A vector with the state variable values from the last iteration during estimation of steady-state condition of the system of equations, 
+  	A vector with the state variable values from the last iteration during the estimation of the steady-state condition of the system of equations, 
     plus the number of "global" values returned 
     
     If \code{y} has a names attribute, it will be used to label the output values. 
@@ -61,6 +72,7 @@ Usually a 1-D *model* function will have the species arranged as A[1],A[2],A[3],
 in this case, use \code{steady.1D}}
 \seealso{\code{\link{stode}} for the additional options 
    \item \code{\link{steady}}, for solving steady-state when the jacobian matrix is full 
-  \item \code{\link{steady.1D}}, for solving steady-state, when the jacobian matrix is banded, and where the state variables need to be rearranged}
+  \item \code{\link{steady.1D}}, for solving steady-state of 1-D models
+  \item \code{\link{steady.2D}}, for solving steady-state of 2-D models  }
 \keyword{math}
 

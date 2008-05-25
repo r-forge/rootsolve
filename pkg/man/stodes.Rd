@@ -11,11 +11,11 @@
 
   The system of ODE's is written as an \R function or be defined in
   compiled code that has been dynamically loaded.}
-\usage{stodes(y, time=0, func, parms=NULL,
+\usage{stodes(y, time=0, func, parms=NULL, 
 rtol=1e-6, atol=1e-8, ctol=1e-8, jactype="sparseint",verbose=FALSE,
-dllname=NULL, initfunc=dllname, initpar=parms, rpar=NULL, ipar=NULL, 
-ynames=TRUE, nout=0, outnames = NULL, nnz=NULL, inz=NULL, 
-lrw=NULL, ngp=NULL, positive=FALSE, maxiter=100, ...)}
+nnz=NULL, inz=NULL, lrw=NULL, ngp=NULL, positive=FALSE, maxiter=100, 
+ynames=TRUE, dllname=NULL, initfunc=dllname, initpar=parms, 
+rpar=NULL, ipar=NULL, nout=0, outnames = NULL, ...)}
 \arguments{
   \item{y }{the initial guess of (state) values for the ode system, a vector. If \code{y} has a name attribute, the names will be used to label the output matrix.}
   \item{time }{time for which steady-state is wanted; the default is \code{time}=0}
@@ -45,14 +45,6 @@ lrw=NULL, ngp=NULL, positive=FALSE, maxiter=100, ...)}
   \item{ctol }{if between two iterations, the maximal change in y is less than this amount, steady-state is reached}
   \item{jactype }{the structure of the Jacobian, to date only "sparseint", sparse jacobian, estimated internally by stodes}
   \item{verbose }{if TRUE: full output to the screen, e.g. will output the steady-state settings}
-  \item{dllname }{a string giving the name of the shared library (without extension) that contains all the compiled function or subroutine definitions referred to in \code{func}.}
-  \item{initfunc }{if not NULL, the name of the initialisation function (which initialises values of parameters), as provided in \file{dllname}. See details.}
-  \item{initpar }{only when \code{dllname} is specified and an initialisation function \code{initfunc} is in the dll: the parameters passed to the initialiser, to initialise the common blocks (FORTRAN) or global variables (C, C++)}
-  \item{rpar }{only when \code{dllname} is specified: a vector with double precision values passed to the dll-functions whose names are specified by \code{func}}
-  \item{ipar }{only when \code{dllname} is specified: a vector with integer values passed to the dll-functions whose names are specified by \code{func}}
-  \item{ynames }{if FALSE: names of state variables are not passed to function \code{func} ; this may speed up the simulation especially for multi-D models}
-  \item{nout }{only used if \file{dllname} is specified: the number of output variables calculated in the compiled function \code{func}, present in the shared library}
-  \item{outnames }{only used if \code{dllname} is specified and \code{nout} > 0: the names of output variables calculated in the compiled function \code{func}, present in the shared library}
   \item{nnz }{the number of nonzero elements in the sparse Jacobian (if this is unknown, use an estimate); If NULL, a guess will be made, and
     		if not sufficient, \code{stodes} will return with a message indicating the size actually required.
     \cr If a solution is found, the minimal value of \code{nnz} actually required is returned by the solver (1st element of attribute \code{dims})}
@@ -68,6 +60,14 @@ lrw=NULL, ngp=NULL, positive=FALSE, maxiter=100, ...)}
     \cr If a solution is found, the minimal value of \code{ngp} actually required is returned by the solver (2nd element of attribute \code{dims}    }
   \item{positive }{if TRUE, the state variables are forced to be non-negative numbers}
   \item{maxiter }{maximal number of iterations during one call to the solver}
+  \item{ynames }{if FALSE: names of state variables are not passed to function \code{func} ; this may speed up the simulation especially for multi-D models}
+  \item{dllname }{a string giving the name of the shared library (without extension) that contains all the compiled function or subroutine definitions referred to in \code{func}.}
+  \item{initfunc }{if not NULL, the name of the initialisation function (which initialises values of parameters), as provided in \file{dllname}. See details.}
+  \item{initpar }{only when \file{dllname} is specified and an initialisation function \code{initfunc} is in the dll: the parameters passed to the initialiser, to initialise the common blocks (FORTRAN) or global variables (C, C++)}
+  \item{rpar }{only when \file{dllname} is specified: a vector with double precision values passed to the dll-functions whose names are specified by \code{func}}
+  \item{ipar }{only when \file{dllname} is specified: a vector with integer values passed to the dll-functions whose names are specified by \code{func}}
+  \item{nout }{only used if \file{dllname} is specified: the number of output variables calculated in the compiled function \code{func}, present in the shared library}
+  \item{outnames }{only used if \file{dllname} is specified and \code{nout} > 0: the names of output variables calculated in the compiled function \code{func}, present in the shared library}
   \item{... }{additional arguments passed to \code{func} allowing this to be a generic function}
 }
 \value{

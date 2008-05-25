@@ -12,11 +12,11 @@
   The system of ODE's is written as an \R function or defined in
   compiled code that has been dynamically loaded.}
 \usage{stode(y, time=0, func, parms=NULL, 
-  rtol=1e-6, atol=1e-8, ctol=1e-8, 
-  jacfunc=NULL, jactype="fullint", verbose=FALSE,   
+  rtol=1e-6, atol=1e-8, ctol=1e-8, jacfunc=NULL, 
+  jactype="fullint", verbose=FALSE, bandup=1, banddown=1,   
+  positive=FALSE, maxiter=100, ynames=TRUE, 
   dllname=NULL, initfunc=dllname, initpar=parms, 
-  rpar=NULL, ipar=NULL, ynames=TRUE, nout=0, outnames = NULL,
-  bandup=1, banddown=1, positive=FALSE, maxiter=100, ...)}
+  rpar=NULL, ipar=NULL, nout=0, outnames = NULL,...)}
 \arguments{
   \item{y }{the initial guess of (state) values for the ode system, a vector. If \code{y} has a name attribute, the names will be used to label the output matrix.}
   \item{time }{time for which steady-state is wanted; the default is \code{time}=0}
@@ -58,19 +58,19 @@
     nonzero bands of the jacobian, (dydot/dy), rotated row-wise.}
   \item{jactype }{the structure of the Jacobian, one of "fullint", "fullusr", "bandusr", or "bandint" - either full or banded and estimated internally or by user}
   \item{verbose }{if TRUE: full output to the screen, e.g. will output the steady-state settings}
-  \item{dllname }{a string giving the name of the shared library (without extension) that contains all the compiled function or subroutine definitions referred to in \code{func} and \code{jacfunc}.}
-  \item{initfunc }{if not NULL, the name of the initialisation function (which initialises values of parameters), as provided in \file{dllname}. See details.}
-  \item{initpar }{only when \code{dllname} is specified and an initialisation function \code{initfunc} is in the dll: the parameters passed to the initialiser, to initialise the common blocks (FORTRAN) or global variables (C, C++)}
-  \item{rpar }{only when \code{dllname} is specified: a vector with double precision values passed to the dll-functions whose names are specified by \code{func} and \code{jacfunc}}
-  \item{ipar }{only when \code{dllname} is specified: a vector with integer values passed to the dll-functions whose names are specified by \code{func} and \code{jacfunc}}
-  \item{ynames }{if FALSE: names of state variables are not passed to function \code{func} ; this may speed up the simulation especially for multi-D models}
-  \item{nout }{only used if \code{dllname} is specified and the model is defined in compiled code: the number of output variables calculated in the compiled function \code{func}, present in the shared library. Note:
-    it is not automatically checked whether this is indeed the number of output variables calculed in the dll - you have to perform this check in the code - see help of daspk or lsoda}
-  \item{outnames }{only used if \code{dllname} is specified and \code{nout} > 0: the names of output variables calculated in the compiled function \code{func}, present in the shared library}
   \item{bandup }{number of non-zero bands above the diagonal, in case the Jacobian is banded}
   \item{banddown }{number of non-zero bands below the diagonal, in case the jacobian is banded}
   \item{positive }{if TRUE, the state variables \code{y} are forced to be non-negative numbers}
   \item{maxiter }{maximal number of iterations during one call to the solver}
+  \item{ynames }{if FALSE: names of state variables are not passed to function \code{func} ; this may speed up the simulation especially for multi-D models}
+  \item{dllname }{a string giving the name of the shared library (without extension) that contains all the compiled function or subroutine definitions referred to in \code{func} and \code{jacfunc}.}
+  \item{initfunc }{if not NULL, the name of the initialisation function (which initialises values of parameters), as provided in \file{dllname}. See details.}
+  \item{initpar }{only when \file{dllname} is specified and an initialisation function \code{initfunc} is in the dll: the parameters passed to the initialiser, to initialise the common blocks (FORTRAN) or global variables (C, C++)}
+  \item{rpar }{only when \file{dllname} is specified: a vector with double precision values passed to the dll-functions whose names are specified by \code{func} and \code{jacfunc}}
+  \item{ipar }{only when \file{dllname} is specified: a vector with integer values passed to the dll-functions whose names are specified by \code{func} and \code{jacfunc}}
+  \item{nout }{only used if \file{dllname} is specified and the model is defined in compiled code: the number of output variables calculated in the compiled function \code{func}, present in the shared library. Note:
+    it is not automatically checked whether this is indeed the number of output variables calculed in the dll - you have to perform this check in the code - see help of daspk or lsoda}
+  \item{outnames }{only used if \file{dllname} is specified and \code{nout} > 0: the names of output variables calculated in the compiled function \code{func}, present in the shared library}
   \item{... }{additional arguments passed to \code{func} and \code{jacfunc} allowing this to be a generic function}
 }
 \value{
