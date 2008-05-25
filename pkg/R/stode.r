@@ -9,16 +9,18 @@
 steady  <- function (y,
                      time=0,
                      func,
+                     parms=NULL,
                      method="stode",
                      ...)
 {
- if (method=="stode") stode(y,time,func,...) 
- if (method=="stodes") stodes(y,time,func,...) 
+ if (method=="stode") stode(y,time,func,parms=parms,...) 
+ if (method=="stodes") stodes(y,time,func,parms=parms,...) 
 }
 
 steady.1D    <- function (y,
                        time=0,
                        func,
+                       parms=NULL,
                        nspec = NULL,
                        dimens = NULL,
                        method="stode",
@@ -30,15 +32,20 @@ steady.1D    <- function (y,
      stop ("cannot run steady.1D: either nspec or dimens should be specified")
   N     <- length(y)
   if (is.null(nspec)  ) nspec = N/dimens
+  else if (N%%nspec != 0) 
+     stop("cannot run steady.1D: nspec is not an integer fraction of number of state variables")
+   
   if (method=="stodes")
   {
     dimens <- N/nspec
-    out <- stodes(y=y,time=time,func=func,nnz=c(nspec,dimens),jactype="1D",...)                    
+    out <- stodes(y=y,time=time,func=func,parms=parms,
+                  nnz=c(nspec,dimens),jactype="1D",...)                    
    } else if (is.character(func))
   {
   ii    <- as.vector(t(matrix(ncol=nspec,1:N)))   # from ordering per slice -> per spec
     
-  out <- stode(y=y[ii],time=time,func=func,jactype="1Dint",bandup=nspec,banddown=N/nspec,...)                    
+  out <- stode(y=y[ii],time=time,func=func,parms=parms,
+              jactype="1Dint",bandup=nspec,banddown=N/nspec,...)                    
   out[[1]][ii] <- out[[1]] 
   } else {
 
@@ -53,7 +60,8 @@ steady.1D    <- function (y,
   ij    <- as.vector(t(matrix(nrow=nspec,1:N)))   # from ordering per spec -> per slice
     
   bmod  <- function(time,state,pars,...) {bmodel(time,state,pars,func,...)}
-  out <- stode(y[ii],time,func=bmod,bandup=nspec,banddown=nspec,jactype="bandint",...) 
+  out <- stode(y[ii],time,func=bmod,parms=parms,
+               bandup=nspec,banddown=nspec,jactype="bandint",...) 
   out[[1]][ii] <- out[[1]]
   }
   return(out)
@@ -62,7 +70,9 @@ steady.1D    <- function (y,
 steady.2D    <- function (y,
                        time=0,
                        func,
-                       dimens = NULL,
+                       parms=NULL,
+                       nspec=NULL,
+                       dimens,
                        ...)
 {
   if (any(!is.na(pmatch(names(list(...)), "jacfunc")))) 
@@ -71,16 +81,24 @@ steady.2D    <- function (y,
      stop ("cannot run steady.2D: dimens should be specified")
   if (length(dimens)!=2) 
      stop ("cannot run steady.2D: dimens should contain 2 values")
-
   N     <- length(y)
-  nspec = N/prod(dimens)
-  out <- stodes(y=y,time=time,func=func,nnz=c(nspec,dimens),jactype="2D",...)                    
+  if (N%%prod(dimens) != 0) 
+     stop("cannot run steady.2D: dimensions are not an integer fraction of number of state variables")
+  if (is.null(nspec)) 
+     nspec = N/prod(dimens)
+  else if (nspec * prod(dimens) != N) 
+     stop("cannot run steady.2D: dimens[1]*dimens[2]*nspec is not equal to number of state variables")
+  
+
+  out <- stodes(y=y,time=time,func=func,parms=parms,
+                nnz=c(nspec,dimens),jactype="2D",...)                    
   return(out)
 }
 
 steady.band  <- function (y,
                           time=0,
                           func,
+                          parms=NULL,
                           nspec=NULL,
                           bandup=nspec,
                           banddown=nspec,
@@ -89,7 +107,8 @@ steady.band  <- function (y,
 if (is.null(bandup)  ) stop ("cannot run steady.band: bandup is not specified")
 if (is.null(banddown)) stop ("cannot run steady.band: banddown is not specified")
 
-  stode(y,time,func,bandup=bandup,banddown=banddown,jactype="bandint",...) 
+  stode(y,time,func,parms=parms,
+        bandup=bandup,banddown=banddown,jactype="bandint",...) 
 }
 
 ### stode -- solves for the root (steady-state) of
@@ -124,18 +143,18 @@ stode         <- function(y,              # state variables
                           jacfunc=NULL,     # jacobian 
                           jactype = "fullint",  # jacobian
                           verbose=FALSE,    # 
+                          bandup=1,         # upper band
+                          banddown=1,       # lower band
+                          positive = FALSE,
+                          maxiter=100,    # maximal number of steps during one call to the solver
+                          ynames=TRUE,      # if false: names of state variables are not passed to function func
                           dllname=NULL,     # 
                           initfunc=dllname, # 
                           initpar=parms,    # to initialise common block/global variables                          
                           rpar=NULL,           #  
                           ipar=NULL,          #
-                          ynames=TRUE,      # if false: names of state variables are not passed to function func
                           nout=0,           # only if dllname is present: the number of output variables
                           outnames = NULL,  #
-                          bandup=1,         # upper band
-                          banddown=1,       # lower band
-                          positive = FALSE,
-                          maxiter=100,    # maximal number of steps during one call to the solver
                           ...)              # accessory parameters passed to ??
 {
 ### check input

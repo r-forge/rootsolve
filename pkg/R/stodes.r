@@ -13,19 +13,19 @@ stodes        <- function(y,              # state variables
                           ctol=1e-8,        # minimal change in dy
                           jactype="sparseint", # jacobian type
                           verbose=FALSE,    #
-                          dllname=NULL,     #
-                          initfunc=dllname, #
-                          initpar=parms,    # to initialise common block/global variables
-                          rpar=NULL,           #
-                          ipar=NULL,          #
-                          ynames=TRUE,      # if false: names of state variables are not passed to function func
-                          nout=0,           # only if dllname is present: the number of output variables
-                          outnames=NULL,
                           nnz=NULL,
                           inz=NULL,
                           lrw=NULL,ngp=NULL,
                           positive = FALSE,
                           maxiter=100,    # maximal number of steps during one call to the solver
+                          ynames=TRUE,      # if false: names of state variables are not passed to function func
+                          dllname=NULL,     #
+                          initfunc=dllname, #
+                          initpar=parms,    # to initialise common block/global variables
+                          rpar=NULL,           #
+                          ipar=NULL,          #
+                          nout=0,           # only if dllname is present: the number of output variables
+                          outnames=NULL,
                           ...)              # accessory parameters passed to ??
 {
 ### check input
