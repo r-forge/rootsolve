@@ -8,7 +8,7 @@ Description: Routines to find the root of nonlinear functions, and to perform st
   Includes routines that: (1) generate gradient and Jacobian matrices (full and banded)
   (2) find roots of non-linear equations by the Newton-Raphson method, 
   (3) estimate steady-state conditions of a system of (differential) equations in full, banded or sparse form, using the Newton-Raphson method.
-  The package also contains routines designed for solving the steady-state conditions for uni-and multicomponent 1-D reactive transport models (boundary value problems of ODE).
+  (4) solve the steady-state conditions for uni-and multicomponent 1-D and 2-D reactive transport models (boundary value problems of ODE).
   Includes fortran code.
 License: GPL
 LazyData: yes
