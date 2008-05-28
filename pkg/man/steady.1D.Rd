@@ -25,7 +25,7 @@ from 1-Dimensional reaction-transport models that include transport only between
   \item{parms }{parameters passed to \code{func}}
   \item{nspec }{the number of *species* (components) in the model. If NULL, then \code{dimens} should be specified}
   \item{dimens}{the number of *boxes* in the model. If NULL, then \code{nspec} should be specified}
-  \item{method }{the solution method, one of "stode" or "stodes"}
+  \item{method }{the solution method, one of "stode", "stodes" or "runsteady"}
   \item{... }{additional arguments passed to the solver function as defined by \code{method}}
 }
 \value{
@@ -75,7 +75,7 @@ O2BOD <- function(t,state,pars)
 # Model application#
 #==================#
 # parameters
-dx      <- 50        # grid size of 25 meters
+dx      <- 50        # grid size, meters
 v       <- 1e3       # velocity, m/day
 x       <- seq(dx/2,50000,by=dx)  # m, distance from river
 N       <- length(x)
