@@ -16,6 +16,11 @@ extern SEXP stsparse_deriv_func;
 extern SEXP stsparse_jac_func;
 extern SEXP stsparse_envir;
 
+/* runsteady */
+extern SEXP lsode_deriv_func;
+extern SEXP lsode_jac_func;
+extern SEXP lsode_envir;
+
 /* steady_utils.c utilities */
 void init_N_Protect(void);
 void incr_N_Protect(void);

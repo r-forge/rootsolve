@@ -29,6 +29,10 @@ SEXP stsparse_deriv_func;
 SEXP stsparse_jac_func;
 SEXP stsparse_envir;
 
+/* runsteady */
+SEXP lsode_deriv_func;
+SEXP lsode_jac_func;
+SEXP lsode_envir;
 
 void Initstparms(int *N, double *parms)
 {
