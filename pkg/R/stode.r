@@ -13,8 +13,10 @@ steady  <- function (y,
                      method="stode",
                      ...)
 {
- if (method=="stode") stode(y,time,func,parms=parms,...) 
- if (method=="stodes") stodes(y,time,func,parms=parms,...) 
+ if (method=="stode") stode(y,time,func,parms=parms,...) else
+ if (method=="stodes") stodes(y,time,func,parms=parms,...) else
+ if (method=="runsteady") runsteady(y,time,func,parms=parms,...) 
+  
 }
 
 steady.1D    <- function (y,
@@ -43,9 +45,11 @@ steady.1D    <- function (y,
    } else if (is.character(func))
   {
   ii    <- as.vector(t(matrix(ncol=nspec,1:N)))   # from ordering per slice -> per spec
-    
-  out <- stode(y=y[ii],time=time,func=func,parms=parms,
-              jactype="1Dint",bandup=nspec,banddown=N/nspec,...)                    
+
+  if (method!="stode") stop ("cannot run steady.1D: method should be one of stode or stodes if func is a DLL")
+    out <- stode(y=y[ii],time=time,func=func,parms=parms,
+                jactype="1Dint",bandup=nspec,banddown=N/nspec,...)                    
+                
   out[[1]][ii] <- out[[1]] 
   } else {
 
@@ -60,8 +64,13 @@ steady.1D    <- function (y,
   ij    <- as.vector(t(matrix(nrow=nspec,1:N)))   # from ordering per spec -> per slice
     
   bmod  <- function(time,state,pars,...) {bmodel(time,state,pars,func,...)}
-  out <- stode(y[ii],time,func=bmod,parms=parms,
-               bandup=nspec,banddown=nspec,jactype="bandint",...) 
+  if (method=="stode")
+    out <- stode(y[ii],time,func=bmod,parms=parms,
+                 bandup=nspec,banddown=nspec,jactype="bandint",...) else
+    out <- runsteady(y[ii],time,func=bmod,parms=parms,
+                 bandup=nspec,banddown=nspec,jactype="bandint",...) 
+                 
+                 
   out[[1]][ii] <- out[[1]]
   }
   return(out)
