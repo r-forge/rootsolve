@@ -9,10 +9,10 @@
 
   Uses a newton-raphson method, implemented in Fortran.
 
-  The system of ODE's is written as an \R function or be defined in
+  The system of ODE's is written as an \R function or defined in
   compiled code that has been dynamically loaded.}
 \usage{stodes(y, time=0, func, parms=NULL, 
-rtol=1e-6, atol=1e-8, ctol=1e-8, jactype="sparseint",verbose=FALSE,
+rtol=1e-6, atol=1e-8, ctol=1e-8, sparsetype="sparseint",verbose=FALSE,
 nnz=NULL, inz=NULL, lrw=NULL, ngp=NULL, positive=FALSE, maxiter=100, 
 ynames=TRUE, dllname=NULL, initfunc=dllname, initpar=parms, 
 rpar=NULL, ipar=NULL, nout=0, outnames = NULL, ...)}
@@ -43,7 +43,7 @@ rpar=NULL, ipar=NULL, nout=0, outnames = NULL, ...)}
   \item{rtol }{relative error tolerance, either a scalar or a vector, one value for each y }
   \item{atol }{absolute error tolerance, either a scalar or a vector, one value for each y}
   \item{ctol }{if between two iterations, the maximal change in y is less than this amount, steady-state is reached}
-  \item{jactype }{the structure of the Jacobian, to date only "sparseint", sparse jacobian, estimated internally by stodes}
+  \item{sparsetype }{the sparsity pattern, to date only "sparseint", sparse jacobian, estimated internally by stodes}
   \item{verbose }{if TRUE: full output to the screen, e.g. will output the steady-state settings}
   \item{nnz }{the number of nonzero elements in the sparse Jacobian (if this is unknown, use an estimate); If NULL, a guess will be made, and
     		if not sufficient, \code{stodes} will return with a message indicating the size actually required.
@@ -71,12 +71,12 @@ rpar=NULL, ipar=NULL, nout=0, outnames = NULL, ...)}
   \item{... }{additional arguments passed to \code{func} allowing this to be a generic function}
 }
 \value{
-  		A vector with the state variable values from the last iteration during estimation of steady-state condition of the system of equations, plus the number of "global" values returned
-
-    If \code{y} has a names attribute, it will be used to label the output values.
-    The output will have the attribute \code{steady}, which returns TRUE, if steady-state has been reached, the attribute
-    \code{precis} with the precision attained during each iteration and the attribute \code{dims} with the length of \code{nnz}, \code{lrw}, and \code{ngp} actually required.
-
+  A list containing 
+  \item{y }{ A vector with the state variable values from the last iteration during estimation of steady-state condition of the system of equations.     
+    If \code{y} has a names attribute, it will be used to label the output values. }
+  \item{... }{ the number of "global" values returned}
+  The output will have the attribute \code{steady}, which returns TRUE, if steady-state has been reached and the attribute
+    \code{precis} with the precision attained during each iteration.
 }
 \author{Karline Soetaert <k.soetaert@nioo.knaw.nl>}
 \examples{# 1000 simultaneous equations
@@ -92,6 +92,7 @@ model <- function (time,OC,parms,decay,ing)
  dOC   <- -diff(Flux)/dx - decay*OC
 
  # Fraction of OC in first 5 layers is translocated to mean depth
+ # (layer N/2)
  dOC[1:5]  <- dOC[1:5] - ing*OC[1:5]
  dOC[N/2]  <- dOC[N/2] + ing*sum(OC[1:5])
  list(dOC)
@@ -114,7 +115,7 @@ plot(ss$y[1:N],dist,ylim=rev(range(dist)),type="l",lwd=2,
 The algorithm uses linear algebra routines from the Yale sparse matrix package: 
 \cr Eisenstat, S.C., Gursky, M.C., Schultz, M.H., Sherman, A.H., 1982. Yale Sparse Matrix Package. 
 i. The symmetric codes. Int. J. Num. meth. Eng. 18, 1145-1151.}
-\details{The work is done by a Fortran 77 routine that is based on the Newton-Raphson method.
+\details{The work is done by a Fortran 77 routine that implements the Newton-Raphson method.
 
 \code{stodes} is to be used for problems, where the Jacobian has a sparse structure. 
 

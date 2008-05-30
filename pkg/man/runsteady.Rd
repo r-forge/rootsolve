@@ -5,7 +5,7 @@
     ordinary differential equations (ODE) in the form:
     \deqn{dy/dt = f(t,y)}  
   
-    by dynamically running till the derivatives become smaller than some predefined tolerance.
+    by dynamically running till the summed absolute values of the derivatives become smaller than some predefined tolerance.
     
     The \R function \code{runsteady} makes use of the FORTRAN ODE solver DLSODE, written by Alan C. Hindmarsh and Andrew H. Sherman
     
@@ -71,11 +71,11 @@
       the cost of precision. Don't use \code{hmin} if you don't know why!}
   \item{hmax }{an optional maximum value of the integration stepsize. If not specified, \code{hmax} is set to the largest difference in \code{times}, to avoid that the simulation possibly ignores short-term events. If 0, no maximal size is specified}
   \item{hini }{initial step size to be attempted; if 0, the initial step size is determined by the solver}
-  \item{ynames }{if FALSE: names of state variables are not passed to function \code{func} ; this may speed up the simulation especially for multi-D models}
+  \item{ynames }{if FALSE: names of state variables are not passed to function \code{func} ; this may speed up the simulation }
   \item{maxord }{the maximum order to be allowed. NULL uses the default, i.e. order 12 if implicit Adams method (meth=1), order 5 if BDF method (meth=2). Reduce maxord to save storage space}
   \item{bandup }{number of non-zero bands above the diagonal, in case the jacobian is banded}
   \item{banddown }{number of non-zero bands below the diagonal, in case the jacobian is banded}
-  \item{maxsteps }{maximal number of steps during one call to the solver}
+  \item{maxsteps }{maximal number of steps. The simulation will stop either when \code{maxsteps} have been performed or when \code{times[2]} has been reached.}
   \item{dllname }{a string giving the name of the shared library (without
       extension) that contains all the compiled function or subroutine
       definitions refered to in \code{func} and \code{jacfunc}. See help of \code{stode}.}
@@ -89,11 +89,12 @@
   \item{... }{additional arguments passed to \code{func} and \code{jacfunc} allowing this to be a generic function}
 }
 \value{
-  	A vector with the state variable values from the last iteration during the estimation of the steady-state condition of the system of equations, 
-    plus the number of "global" values returned 
-    
-    If \code{y} has a names attribute, it will be used to label the output values. 
-    The output will have the attribute \code{steady}, which returns TRUE, if steady-state has been reached and the attribute
+  A list containing 
+  \item{y }{ A vector with the state variable values from the last iteration during estimation of steady-state condition of the system of equations.     
+    If \code{y} has a names attribute, it will be used to label the output values. }
+  \item{... }{ the number of "global" values returned}
+
+  The output will have the attribute \code{steady}, which returns TRUE, if steady-state has been reached and the attribute
     \code{precis} with the precision attained during each iteration.
       
     The output will also have the attributes \code{istate}, and \code{rstate}, two vectors with several useful elements of the dynamic simulation. 
@@ -142,7 +143,7 @@ rbind("Newton Raphson"=ST$y,"Runsteady"=ST2$y)
 \references{\item Alan C. Hindmarsh, "ODEPACK, A Systematized Collection of ODE
    Solvers," in Scientific Computing, R. S. Stepleman, et al., Eds.
    (North-Holland, Amsterdam, 1983), pp. 55-64.}
-\details{The work is done by the Fortran subroutine \code{lsode},
+\details{The work is done by the Fortran subroutine \code{dlsode},
     whose documentation should be consulted for details (it is included as
     comments in the source file \file{src/lsode.f}).  The implementation is based on the
     November, 2003 version of lsode, from Netlib. 

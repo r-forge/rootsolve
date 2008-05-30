@@ -24,13 +24,37 @@
   \item{... }{additional arguments passed to function \code{stode} or \code{stodes}}
 }
 \value{
-  	A vector with the state variable values from the last iteration during the estimation of the steady-state condition of the system of equations, 
-    plus the number of "global" values returned 
-    
-    If \code{y} has a names attribute, it will be used to label the output values. 
-    The output will have the attribute \code{steady}, which returns TRUE, if steady-state has been reached and the attribute
+  A list containing 
+  \item{y }{ A vector with the state variable values from the last iteration during estimation of steady-state condition of the system of equations.     
+    If \code{y} has a names attribute, it will be used to label the output values. }
+  \item{... }{ the number of "global" values returned}
+  The output will have the attribute \code{steady}, which returns TRUE, if steady-state has been reached and the attribute
     \code{precis} with the precision attained during each iteration.
+}
+\examples{
+#########################################
+### Bacteria growing on a substrate
+#########################################
+  
+  # Bacteria (Bac) are growing on a substrate (Sub)
+  model <- function(t,state,pars)
+  {
+  with (as.list(c(state,pars)), {
+  #       substrate uptake             death  respiration
+  dBact = gmax*eff*Sub/(Sub+ks)*Bact - dB*Bact - rB*Bact
+  dSub  =-gmax    *Sub/(Sub+ks)*Bact + dB*Bact          +input
+  
+  return(list(c(dBact,dSub)))
+                                })
+  }
+  
+  pars <- list(gmax =0.5,eff = 0.5,
+               ks =0.5, rB =0.01, dB =0.01, input=0.1)
+  
+  tout    <- c(0,1e10)
 
+  steady(y=c(Bact=0.1,Sub=0),time=c(0,10000),
+         func=model,parms=pars,pos=TRUE)  
 }
 \author{Karline Soetaert <k.soetaert@nioo.knaw.nl>}
 \details{This is simply a wrapper around the various steady-state solvers.

@@ -2,7 +2,7 @@
 \alias{steady.2D}
 \title{Steady-state solver for 2-Dimensional ordinary differential equations}
 \description{Estimates the steady-state condition for a system of ordinary differential equations that
-result from 2-Dimensional reaction-tranpsort models that include transport only between adjacent layers }
+result from 2-Dimensional reaction-transport models that include transport only between adjacent layers }
 \usage{steady.2D(y, time=0, func, parms=NULL, nspec=NULL, dimens,...)}
 \arguments{
   \item{y }{the initial guess of (state) values for the ODE system, a vector. If \code{y} has a name attribute, the names will be used to label the output matrix.}
@@ -25,13 +25,12 @@ result from 2-Dimensional reaction-tranpsort models that include transport only 
   \item{... }{additional arguments passed to function \code{stodes}}
 }
 \value{
-  	A vector with the state variable values from the last iteration during the estimation of the steady-state condition of the system of equations, 
-    plus the number of "global" values returned 
-    
-    If \code{y} has a names attribute, it will be used to label the output values. 
-    The output will have the attribute \code{steady}, which returns TRUE, if steady-state has been reached and the attribute
+   A list containing 
+  \item{y }{ A vector with the state variable values from the last iteration during estimation of steady-state condition of the system of equations.     
+    If \code{y} has a names attribute, it will be used to label the output values. }
+  \item{... }{ the number of "global" values returned}
+  The output will have the attribute \code{steady}, which returns TRUE, if steady-state has been reached and the attribute
     \code{precis} with the precision attained during each iteration.
-
 }
 \note{It is advisable though not mandatory to specify BOTH \code{nspec} and \code{dimens}. In this case, the solver can check whether the input makes sense 
 (as nspec*dimens[1]*dimens[2] = length(y))
@@ -39,11 +38,12 @@ result from 2-Dimensional reaction-tranpsort models that include transport only 
 do NOT use this method for problems that are not 2D}
 \author{Karline Soetaert <k.soetaert@nioo.knaw.nl>}
 \examples{
-###########################################
+#############################################################
 # Diffusion in 2-D; imposed boundary conditions
+#############################################################
 diffusion2D <- function(t,Y,par)
   {
-   y    <- matrix(nr=n,nc=n,data=Y)
+   y    <- matrix(nr=n,nc=n,data=Y)  # vector to 2-D matrix
    dY   <- -r*y        # consumption
    BND   <- rep(1,n)   # boundary concentration 
 

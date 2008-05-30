@@ -29,13 +29,13 @@ from 1-Dimensional reaction-transport models that include transport only between
   \item{... }{additional arguments passed to the solver function as defined by \code{method}}
 }
 \value{
-  	A vector with the state variable values from the last iteration during the estimation of the steady-state condition of the system of equations, 
-    plus the number of "global" values returned 
-    
-    If \code{y} has a names attribute, it will be used to label the output values. 
-    The output will have the attribute \code{steady}, which returns TRUE, if steady-state has been reached and the attribute
-    \code{precis} with the precision attained during each iteration.
+  A list containing 
+  \item{y }{ A vector with the state variable values from the last iteration during estimation of steady-state condition of the system of equations.     
+    If \code{y} has a names attribute, it will be used to label the output values. }
+  \item{... }{ the number of "global" values returned}
 
+  The output will have the attribute \code{steady}, which returns TRUE, if steady-state has been reached and the attribute
+    \code{precis} with the precision attained during each iteration.
 }
 \note{It is advisable though not mandatory to specify BOTH \code{nspec} and \code{dimens}. 
 In this case, the solver can check whether the input makes sense 
@@ -103,9 +103,9 @@ plot(x,out$y[(N+1):(2*N)],xlab= "Distance from river",
 ######  EXAMPLE 2: Silicate diagenesis                      ######
 ##################################################################
 # Example from the book:
-# Soetaert and Herman (2009).
-# a practical guide to ecological modelling
-# using R as a simulation platform
+# Soetaert and Herman (2008).
+# a practical guide to ecological modelling -
+# using R as a simulation platform.
 # Springer
 
 #====================#
@@ -217,10 +217,10 @@ mtext(outer=TRUE,side=3,line=-2,cex=1.5,"SiDIAmodel")}
 
 
 Two methods are implemented.
-\item The default method rearranges the state variables as A[1],B[1],...A[2],B[2],...A[3],B[3],.... This reformulation leads to a banded Jacobian with (upper and lower) half bandwith = number of species. 
-Then \code{stode} solves the banded problem.
-\item The second method uses \code{stodes}. Based on the dimension of the problem, the method first calculates the sparsity pattern of the Jacobian, under the assumption 
-  that transport is onely occurring between adjacent layers. Then \code{stodes} is called to solve the problem.
+\item The default method rearranges the state variables as A[1],B[1],...A[2],B[2],...A[3],B[3],.... This reformulation leads to a banded Jacobian with (upper and lower) half bandwidth = number of species. 
+Then function \code{stode} solves the banded problem.
+\item The second method uses function \code{stodes}. Based on the dimension of the problem, the method first calculates the sparsity pattern of the Jacobian, under the assumption 
+  that transport is only occurring between adjacent layers. Then \code{stodes} is called to solve the problem.
   \cr As \code{stodes} is used to estimate steady-state, it may be necessary to specify the length of the real work array, \code{lrw}.
   \cr Although a reasonable guess of \code{lrw} is made, it is possible that this will be too low. 
   In this case, \code{steady.1D} will return with an error message telling
@@ -228,8 +228,7 @@ Then \code{stode} solves the banded problem.
 
   For single-species 1-D models, use \code{\link{steady.band}}. 
 
- Also, if state variables are arranged as (e.g. A[1],B[1],A[2],B[2],A[3],B[3],.... . 
- it is generally more efficient to use \code{\link{steady.band}}}
+ If state variables are arranged as (e.g. A[1],B[1],A[2],B[2],A[3],B[3],... then the model should be solved with  \code{\link{steady.band}}}
 \seealso{\code{\link{stode}} and \code{\link{stodes}} for the additional options 
   \item \code{\link{steady}}, for solving steady-state when the jacobian matrix is full 
   \item \code{\link{steady.2D}}, for steady-state estimation of 2-D models 
