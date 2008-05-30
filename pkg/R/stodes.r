@@ -11,7 +11,7 @@ stodes        <- function(y,              # state variables
                           rtol=1e-6,        # relative tolerance
                           atol=1e-8,        # absolute tolerance
                           ctol=1e-8,        # minimal change in dy
-                          jactype="sparseint", # jacobian type
+                          sparsetype="sparseint", # sparsity type
                           verbose=FALSE,    #
                           nnz=NULL,
                           inz=NULL,
@@ -64,7 +64,7 @@ stodes        <- function(y,              # state variables
     jan <- 0
     if (is.null(ngp))   ngp = n+1
         
-    if(jactype=="sparseint")
+    if(sparsetype=="sparseint")
     {
     if (! is.null(inz))  # sparsity is imposed; create ian, jan 
     {Type <- 0
@@ -87,19 +87,19 @@ stodes        <- function(y,              # state variables
       }
         
      } else if (is.null(nnz))   nnz = n*n
-    } else if (jactype == "1D")   {
+    } else if (sparsetype == "1D")   {
       Type   <- 2
       nspec  <- nnz[1] 
       nnz    <- c(n*(2+nspec)-2*nspec,nnz)
       ngp    <- 3*nspec+1
-    } else if (jactype =="2D")    {
+    } else if (sparsetype =="2D")    {
       Type   <- 3
       nspec  <- nnz[1] 
       dimens <- nnz[2:3]
       nnz   <- c(n*(4+nspec)-2*nspec*(sum(dimens)),nnz)
       ngp    < 4*nspec+1 
 
-    } else stop("cannot run stodes: jactype not known ")
+    } else stop("cannot run stodes: sparsetype not known ")
 
     if (is.null(lrw))   lrw = 3*n+4*nnz[1]
 
@@ -110,10 +110,10 @@ stodes        <- function(y,              # state variables
   {
    print("Steady-state settings")
    if (is.character(func)) print(paste("model function a DLL: ",func))
-   if (jactype=="sparseint")txt<-"sparse jacobian, calculated internally" else 
-   if (jactype=="1D")    txt<-"sparse 1-D jacobian, calculated internally" else 
-   if (jactype=="2D")    txt<-"sparse 2-D jacobian, calculated internally" 
-   print(data.frame(jacType = jactype, message=txt))
+   if (sparsetype=="sparseint")txt<-"sparse jacobian, calculated internally" else 
+   if (sparsetype=="1D")    txt<-"sparse 1-D jacobian, calculated internally" else 
+   if (sparsetype=="2D")    txt<-"sparse 2-D jacobian, calculated internally" 
+   print(data.frame(sparseType = sparsetype, message=txt))
 
   }
 

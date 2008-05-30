@@ -41,7 +41,7 @@ steady.1D    <- function (y,
   {
     dimens <- N/nspec
     out <- stodes(y=y,time=time,func=func,parms=parms,
-                  nnz=c(nspec,dimens),jactype="1D",...)                    
+                  nnz=c(nspec,dimens),sparsetype="1D",...)                    
    } else if (is.character(func))
   {
   ii    <- as.vector(t(matrix(ncol=nspec,1:N)))   # from ordering per slice -> per spec
@@ -100,7 +100,7 @@ steady.2D    <- function (y,
   
 
   out <- stodes(y=y,time=time,func=func,parms=parms,
-                nnz=c(nspec,dimens),jactype="2D",...)                    
+                nnz=c(nspec,dimens),sparsetype="2D",...)                    
   return(out)
 }
 
