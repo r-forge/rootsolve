@@ -112,8 +112,7 @@ multiroot <- function(f,              # function for which the root is sought
 
 if (useFortran)
 { 
-  Fun <- function (time=0,x,parms=NULL,...)
-     list(f(x,...))
+  Fun <- function (time=0,x,parms=NULL) list(f(x,...))
  
   x <- steady(y=start,time=0,func=Fun,parms=NULL,atol=atol,
               rtol=rtol,ctol=ctol,jacfunc="fullint",maxiter=maxiter)
