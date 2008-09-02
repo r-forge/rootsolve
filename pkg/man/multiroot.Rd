@@ -26,7 +26,8 @@
     It is defined as the maximal of the absolute function values (max(abs(\code{f.root}))) }
 }
 \author{Karline Soetaert <k.soetaert@nioo.knaw.nl>}
-\examples{# example 1  
+\examples{
+# example 1  
 # 2 simultaneous equations
 model <- function(x) c(F1=x[1]^2+ x[2]^2 -1,F2=x[1]^2- x[2]^2 +0.5)
 
@@ -44,7 +45,19 @@ model <- function(x) c(F1= x[1] + x[2] + x[3]^2 - 12,
 
 # second solution; use different start values
 (ss<-multiroot(model,c(0,0,0)))
-model(ss$root)}
+model(ss$root)
+
+# example 3: find a matrix
+f2<-function(x)
+ {
+ X<-matrix(nr=5,x)
+ X \%*\% X \%*\% X -matrix(nr=5,data=1:25,byrow=TRUE)
+ }
+x<-multiroot(f2, start= 1:25 )$root
+X<-matrix(nr=5,x)
+
+X\%*\%X\%*\%X
+}
 \details{\code{start} gives the initial guess for each variable; different initial guesses may return different roots.
 
 The input parameters \code{rtol}, and \code{atol} determine the \bold {error

@@ -13,7 +13,6 @@
 ##                                                                            ##
 ################################################################################
 
-# requires: Inverse (banded)
 ##############################################################################
 ##                                                                          ##
 ## NONLINEAR INVERSE MODELLING                                              ## 
@@ -21,8 +20,6 @@
 ##                                                                          ##
 ##############################################################################
                                                                                                        
-
-
 ################################################################################
 ## Perturb     : adds the numerical differencing value to a value             ##
 ################################################################################
@@ -202,16 +199,42 @@ gradient<- function(f,    # function returning a set of function values, as a ve
 
            # recalculate model function value
            newf  <- f(x,...)
-
+           del   <- (newf-reff)/delt[j]
            # impact of the current variable on function values
-           jacob [,j] <- (newf-reff)/delt[j]             
+           jacob [,j] <- del
 
            x[j] <- refx[j]   # restore
            }
         colnames(jacob) <- names(x)   
+        rownames(jacob) <- attr(del,"names")
         return(jacob)
 
 } ## END gradient
+
+################################################################################
+## hessian    : generates the hessian matrix by forward numerical differencing##
+################################################################################
+hessian <- function (f, x, ...)
+ {
+    if (!is.numeric(x))
+        stop("x-values should be numeric")
+    refx <- x
+    reff <- gradient(f,x, ...)
+    Nx <- length(x)
+    Nf <- length(reff)
+    delt <- perturb(x)
+    hess <- matrix(nrow = Nf, ncol = Nx, data = 0)
+    for (j in 1:Nx) {
+        x[j] <- x[j] + delt[j]
+        newf <- gradient(f,x, ...)
+        del <- (newf - reff)/delt[j]
+        hess[, j] <- del
+        x[j] <- refx[j]
+    }
+    colnames(hess) <- names(x)
+    rownames(hess) <- attr(del, "names")
+    return(hess)
+ }
 
 ################################################################################
 ## jacobian.full  : generates a full jacobian matrix by numerical differencing    ##

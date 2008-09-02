@@ -18,7 +18,7 @@
 }
 \author{Karline Soetaert <k.soetaert@nioo.knaw.nl>}
 \examples{############################################################
-# 1. Sensitivity analysis of the logistic differential equation 
+# 1. Sensitivity analysis of the logistic differential equation
 # dN/dt = r*(1-N/K)*N  , N(t0)=N0.
 
 # analytical solution of the logistic equation:
@@ -27,20 +27,26 @@ logistic <- function (x,times)
  with (as.list(x),
  {
   N=K/(1+(K-N0)/N0*exp(-r*times))
-  return(N)
+  return(c(N=N))
   })
 }
 
 # parameters for the US population from 1900
 x=c(N0=76.1,r=0.02,K=500)
 
-# Sensitivity function: SF: dfi/dxj at 
+# Sensitivity function: SF: dfi/dxj at
 # output intervals from 1900 to 1950
 SF<-gradient(f=logistic,x,times=0:50)
 
-# mean sensitivity, scaled for the value of the parameter: 
-# mean [dfi/(dxj/xj)]= mean (SF*x)
-rowMeans(t(SF)*x)
+# sensitivity, scaled for the value of the parameter:
+# [dfi/(dxj/xj)]= SF*x (columnise multiplication)
+sSF<-(t(t(SF)*x))
+matplot(sSF,xlab="time",ylab="relative sensitivity ",
+        main = "logistic equation",pch=1:3)
+legend("topleft",names(x),pch=1:3,col=1:3)
+
+# mean scaled sensitivity
+colMeans(sSF)
 
 ############################################################
 # 2. Stability of the budworm model, as a function of its
@@ -89,7 +95,9 @@ col=c("darkblue","lightblue"),pt.bg=c("darkblue","lightblue"))}
   f(x, ...). If \code{x} is a vector, then the first argument passed to \code{f} should also be a vector. 
   
   The gradient is estimated numerically, by perturbing the x-values.}
-\seealso{\code{\link{jacobian.full}}, for generating a full and \bold{square} gradient (jacobian) matrix and where the function call is more complex}
+\seealso{\code{\link{jacobian.full}}, for generating a full and \bold{square} gradient (jacobian) matrix and where the function call is more complex
+
+\code{\link{hessian}}, for generating the hessian matrix }
 \note{\code{gradient} can be used to calculate so-called \code{sensitivity functions}, 
   that estimate the effect of parameters on output variables.}
 \keyword{math}

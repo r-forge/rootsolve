@@ -40,8 +40,8 @@
       \code{time}, and whose next elements are global values that are required at
       each point in \code{times}.}
   \item{parms }{vector or list of parameters used in \code{func} or \code{jacfunc}.}
-  \item{stol }{steady-state tolerance; it is assumed that steady-state is reached if the sum of absolute values of the derivatives
-  drop below this number}
+  \item{stol }{steady-state tolerance; it is assumed that steady-state is reached if the average of absolute values of the derivatives
+  drops below this number}
   \item{rtol }{relative error tolerance of integrator, either a scalar or an array as
       long as \code{y}.  See details. }
   \item{atol }{absolute error tolerance of integrator, either a scalar or an array as

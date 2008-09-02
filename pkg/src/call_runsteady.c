@@ -235,7 +235,7 @@ SEXP call_lsode(SEXP y, SEXP times, SEXP func, SEXP parms, SEXP stol, SEXP rtol,
     derivs (&neq, &tin, xytmp, dy, out, ipar) ;
     for (j = 0; j < neq; j++) sumder = sumder+fabs(dy[j]); 
 
-    if (sumder < Stol)  break; 
+    if (sumder/neq < Stol)  break;
     
     /* errors? */
 	  if (istate == -2)

@@ -51,9 +51,7 @@
   pars <- list(gmax =0.5,eff = 0.5,
                ks =0.5, rB =0.01, dB =0.01, input=0.1)
   
-  tout    <- c(0,1e10)
-
-  steady(y=c(Bact=0.1,Sub=0),time=c(0,10000),
+  steady(y=c(Bact=0.1,Sub=0),time=0,
          func=model,parms=pars,pos=TRUE)  
 }
 \author{Karline Soetaert <k.soetaert@nioo.knaw.nl>}
