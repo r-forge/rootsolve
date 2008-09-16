@@ -75,7 +75,7 @@ O2BOD <- function(t,state,pars)
 # Model application#
 #==================#
 # parameters
-dx      <- 10        # grid size, meters
+dx      <- 100       # grid size, meters
 v       <- 1e2       # velocity, m/day
 x       <- seq(dx/2,10000,by=dx)  # m, distance from river
 N       <- length(x)
@@ -89,7 +89,8 @@ BOD_0   <- 1500      # mmol/m3 riverine BOD concentration
 state <- c(rep(200,N),rep(200,N))
 
 # running the model
-out   <- steady.1D (y=state,func=O2BOD,parms=NULL, nspec=2,pos=TRUE)
+print(system.time(
+ out   <- steady.1D (y=state,func=O2BOD,parms=NULL, nspec=2,pos=TRUE)))
 
 #==================#
 # Plotting output  #
@@ -105,6 +106,10 @@ plot(x,out$BODrate,xlab= "Distance from river",
      ylab="mmol/m3/d",main="BOD decay rate",type="l")
 par(mfrow=mf)
 
+# same, but now running dynamically to steady-state
+print(system.time(
+out   <- steady.1D (y=state,func=O2BOD,parms=NULL, nspec=2,
+                    time=c(0,1000),method="runsteady")))
 
 ##################################################################
 ######  EXAMPLE 2: Silicate diagenesis                      ######

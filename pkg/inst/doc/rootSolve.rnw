@@ -483,7 +483,9 @@ i.e. it is the negative of the flux gradient, where the flux is due to diffusion
 In the numerical approximation fo the flux, the concentration gradient is approximated as the subtraction of
 two matrices, with the columns or rows shifted (e.g. \code{Conc[2:n,]-Conc[1:(n-1),]}).
 
-The flux gradient is then also approximated by subtracting entire matrices (e.g. \code{Flux[2:(n+1),]-Flux[1:(n),]}).
+The flux gradient is then also approximated by subtracting entire matrices
+
+(e.g. \code{Flux[2:(n+1),]-Flux[1:(n),]}).
 This is very fast. The zero-flux at the boundaries is imposed by binding a column or row with 0-s.
 
 <<>>=
@@ -578,7 +580,7 @@ $\mathbf{\frac{{dx_{1..n}}}{{dt}} = 0}$
 
 $\frac{df(\mathbf{x})}{d\mathbf{x}}$&\code{gradient}     &  Estimates the gradient matrix of a function with respect to one or more x-values   \\ \hline
 $\frac{\partial \frac{ \partial(\mathbf{x})}{\partial t}}{\partial \mathbf{x}}$&\code{jacobian}     &  Estimates the jacobian matrix for a function f(x)   \\ \hline
-$\frac{\partial f(\mathbf{x})}{\partial x_i \partial x_j}$&\code{hessian}     &  Estimates the hessian matrix for a function f(x)   \\ \hline
+$\frac{\partial ^2 f(\mathbf{x})}{\partial x_i \partial x_j}$&\code{hessian}     &  Estimates the hessian matrix for a function f(x)   \\ \hline
 \hline
 \end{tabular}
 \end{table*}

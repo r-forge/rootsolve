@@ -79,7 +79,7 @@
     If \code{y} has a names attribute, it will be used to label the output values. }
   \item{... }{ the number of "global" values returned}
   The output will have the attribute \code{steady}, which returns TRUE, if steady-state has been reached and the attribute
-    \code{precis} with the precision attained during each iteration.
+    \code{precis} with an estimate of the precision attained during each iteration, the mean absolute rate of change (sum(abs(dy))/n).
 }
 \author{Karline Soetaert <k.soetaert@nioo.knaw.nl>}
 \examples{# 1000 simultaneous equations

@@ -15,7 +15,7 @@
 \usage{runsteady(y, times=c(0,Inf), func, parms, stol=1e-8, rtol=1e-6, atol=1e-6,  
   jacfunc=NULL, jactype="fullint", mf=NULL, verbose=FALSE, tcrit=NULL,  
   hmin=0, hmax=NULL, hini=0, ynames=TRUE, maxord=NULL, bandup=NULL, 
- banddown=NULL, maxsteps=5000, dllname=NULL, initfunc=dllname, 
+ banddown=NULL, maxsteps=100000, dllname=NULL, initfunc=dllname,
   initpar=parms, rpar=NULL, ipar=NULL, nout=0, outnames=NULL, ...)}
 \arguments{
   \item{y }{the initial (state) values for the ODE system. If \code{y} has a name attribute, the names will be used to label the output matrix.}
@@ -94,8 +94,10 @@
     If \code{y} has a names attribute, it will be used to label the output values. }
   \item{... }{ the number of "global" values returned}
 
-  The output will have the attribute \code{steady}, which returns TRUE, if steady-state has been reached and the attribute
-    \code{precis} with the precision attained during each iteration.
+  The output will have the attribute \code{steady}, which returns TRUE, if steady-state has been reached, the attribute
+    \code{precis} with the precision attained at the last iteration estimated as the mean absolute rate of change (sum(abs(dy))/n),
+    the attribute \code{time} with the simulation time reached and
+    the attribute \code{steps} with the number of steps performed.
       
     The output will also have the attributes \code{istate}, and \code{rstate}, two vectors with several useful elements of the dynamic simulation. 
     See details.
