@@ -135,6 +135,7 @@ control} performed by the solver. See help for \code{stode} for details.
 
 \bold{Models} may be defined in compiled C or Fortran code, as well as in R. See help for \code{stode} for details.}
 \seealso{\item \code{\link{stode}}, steady-state solver with full or banded jacobian.
+\item \code{\link{runsteady}}, for steady-state estimation by dynamically running till the derivatives become 0.
   \item \code{\link{steady.band}}, for steady-state estimation, when the jacobian matrix is banded, and where the state variables need NOT to be rearranged
   \item \code{\link{steady.1D}}, for steady-state estimation, when the jacobian matrix is banded, and where the state variables need to be rearranged}
 \keyword{math}

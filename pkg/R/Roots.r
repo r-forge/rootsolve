@@ -135,7 +135,7 @@ if (useFortran)
   for (i in 1:maxiter)
    {
     refx   <- x     
-    pp     <- max(abs(reffx)) # check convergence... 
+    pp     <- mean(abs(reffx)) # check convergence...
     precis <- c(precis,pp)
     ewt    <- rtol*abs(x)+atol
     if (max(abs(reffx/ewt))<1) break
@@ -174,6 +174,7 @@ if (useFortran)
 
 gradient<- function(f,    # function returning a set of function values, as a vector
                     x,    # variables
+                    centered = FALSE,
                     ...)  # additional arguments passed to function "f"...)              
 {
 
@@ -194,12 +195,22 @@ gradient<- function(f,    # function returning a set of function values, as a ve
        jacob  <- matrix(nrow=Nf,ncol=Nx,data=0)
        for (j in 1:Nx)
           {
-
+          # forward
            x[j] <- x[j]+delt[j]
 
            # recalculate model function value
            newf  <- f(x,...)
            del   <- (newf-reff)/delt[j]
+           
+           if (centered)
+            {
+           # backward formula
+           x[j] <- refx[j]-delt[j]
+           # recalculate model function value
+           newf  <- f(x,...)
+           del   <- (del-(newf-reff)/delt[j])/2
+            }
+
            # impact of the current variable on function values
            jacob [,j] <- del
 
@@ -214,7 +225,10 @@ gradient<- function(f,    # function returning a set of function values, as a ve
 ################################################################################
 ## hessian    : generates the hessian matrix by forward numerical differencing##
 ################################################################################
-hessian <- function (f, x, ...)
+hessian <- function (f,
+                     x,
+                     centered=FALSE,
+                     ...)
  {
     if (!is.numeric(x))
         stop("x-values should be numeric")
@@ -226,8 +240,17 @@ hessian <- function (f, x, ...)
     hess <- matrix(nrow = Nf, ncol = Nx, data = 0)
     for (j in 1:Nx) {
         x[j] <- x[j] + delt[j]
-        newf <- gradient(f,x, ...)
+        newf <- gradient(f,x, centered=centered, ...)
         del <- (newf - reff)/delt[j]
+        if (centered)
+            {
+           # backward formula
+           x[j] <- refx[j]-delt[j]
+           # recalculate model function value
+           newf  <- gradient(f,x, centered=centered, ...)
+           del   <- (del-(newf-reff)/delt[j])/2
+            }
+
         hess[, j] <- del
         x[j] <- refx[j]
     }

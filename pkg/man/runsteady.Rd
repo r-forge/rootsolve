@@ -20,7 +20,7 @@
 \arguments{
   \item{y }{the initial (state) values for the ODE system. If \code{y} has a name attribute, the names will be used to label the output matrix.}
   \item{times }{The simulation time. This should be a 2-valued vector, consisting of the initial time and the end time. 
-  The last value should be large enough to make sure that steady-state is effectively reached in this period.
+  The last time value should be large enough to make sure that steady-state is effectively reached in this period.
   The simulation will stop either when \code{times[2]} has been reached or when \code{maxsteps} have been performed.} 
   \item{func }{either an \R-function that computes the values of the
       derivatives in the ODE system (the \emph{model definition}) at time
@@ -138,7 +138,7 @@ y<-c(OM=1,O2=1,SO4=1,HS=1)
 print( system.time(ST <- stode(y=y,fun=model,parms=pars,pos=TRUE)))
 
 print( system.time(
-ST2 <- runsteady(y=y,fun=model,parms=pars,times=c(0,100))))
+ST2 <- runsteady(y=y,fun=model,parms=pars,times=c(0,1000))))
 
 rbind("Newton Raphson"=ST$y,"Runsteady"=ST2$y)
 }
@@ -185,7 +185,7 @@ rbind("Newton Raphson"=ST$y,"Runsteady"=ST2$y)
 
   See \code{\link{stode}} for details.
    
-  \bold{Models} may be defined in compiled C or Fortran code, as well as in an R-function. See \code{\link{stode}} for details.
+  \bold{Models} may be defined in compiled C or Fortran code, as well as in an R-function. See function \code{\link{stode}} for details.
   
   The output will have the \bold{attributes *istate*, and *rstate*}, two vectors with several useful elements. 
       \cr if \code{verbose} = TRUE, the settings of istate and rstate will be written to the screen. 
@@ -211,6 +211,9 @@ rbind("Newton Raphson"=ST$y,"Runsteady"=ST2$y)
       \item 4: A tolerance scale factor, greater than 1.0, computed when a request for too much accuracy was detected.
       
       For more information, see the comments in the original code lsode.f}
-\seealso{}
+\seealso{\item \code{\link{stode}}, for steady-state estimation using the Newton-Raphson method, when the jacobian matrix is banded or full.
+\item \code{\link{stodes}}, for steady-state estimation using the Newton-Raphson method, when the jacobian matrix is sparse.
+  \item \code{\link{steady.band}}, for steady-state estimation, when the jacobian matrix is banded, and where the state variables need NOT to be rearranged
+  \item \code{\link{steady.1D}}, for steady-state estimation, when the jacobian matrix is banded, and where the state variables need to be rearranged}
 \keyword{math}
 

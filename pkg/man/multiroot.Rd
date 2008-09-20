@@ -1,9 +1,11 @@
 \name{multiroot}
 \alias{multiroot}
 \title{Solves for n roots of n (nonlinear) equations}
-\description{Given a vector of variables, and a function that calculates a function value for each variable, 
- \cr estimates the root of the equations (i.e. the variable values where all function values = 0 )
- \cr assumes a full Jacobian matrix, uses the Newton-Raphson method}
+\description{Given a vector of n variables, and a set of n (nonlinear) equations in these variables,
+
+estimates the root of the equations, i.e. the variable values where all function values = 0.
+
+Assumes a full Jacobian matrix, uses the Newton-Raphson method}
 \usage{multiroot(f, start, maxiter=100, 
   rtol=1e-6, atol=1e-8, ctol=1e-8, 
   useFortran=TRUE, ...)}
@@ -23,7 +25,7 @@
   \item{f.root }{the value of the function evaluated at the \code{root}}
   \item{iter }{the number of iterations used}
   \item{estim.precis }{the estimated precision for \code{root}. 
-    It is defined as the maximal of the absolute function values (max(abs(\code{f.root}))) }
+    It is defined as the mean of the absolute function values (mean(abs(\code{f.root}))) }
 }
 \author{Karline Soetaert <k.soetaert@nioo.knaw.nl>}
 \examples{
@@ -77,13 +79,16 @@ The input parameters \code{rtol}, and \code{atol} determine the \bold {error
 
 In addition, the solver will stop if between two iterations, the maximal change in the values of \bold{x} is less than \code{ctol}.
 
-There is no checking whether the precision exceeds the capabilities of the machine.}
+There is no checking whether the requested precision exceeds the capabilities of the machine.}
 \seealso{\code{\link{steady}}, \code{\link{steady.1D}}, and \code{\link{steady.band}}, the root solvers 
 for a system of ordinary differential equations. Here variables are state-variables and the function
  estimates the rate of change.}
-\note{The Fortran implementation of the Newton-Raphson method function is generally faster than the \R implementation.
-\cr It makes use of function \code{steady}. Technically, multiroot is a wrapper around function \code{steady}.
-\cr The \R implementation has been included for didactic purposes.
-\cr It is NOT guaranteed that the method will converge to the root.}
+\note{The Fortran implementation of the Newton-Raphson method function (the default) is generally faster than the \R implementation.
+
+\code{multiroot} makes use of function \code{steady}. Technically, \code{multiroot} is just a wrapper around function \code{steady}.
+
+The \R implementation has been included for didactic purposes.
+
+It is NOT guaranteed that the method will converge to the root.}
 \keyword{optimize}
 

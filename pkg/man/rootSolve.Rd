@@ -12,9 +12,9 @@ Functions that:
 
   (2) find roots of non-linear equations by the Newton-Raphson method,
 
-  (3) estimate steady-state conditions of a system of (differential) equations in full, banded or sparse form, using the Newton-Raphson method,
+  (3) estimate steady-state conditions of a system of (differential) equations in full, banded or sparse form, using the Newton-Raphson method or by a dynamic run,
 
-  (4) solve the steady-state conditions for uni-and multicomponent 1-D and 2-D reactive transport models (boundary value problems of ODE).
+  (4) solve the steady-state conditions for uni-and multicomponent 1-D and 2-D reactive transport models (boundary value problems of ODE) using the method-of-lines approach.
 
 }
 \details{
@@ -22,7 +22,7 @@ Functions that:
     Package: \tab rootSolve\cr
     Type: \tab Package\cr
     Version: \tab 1.2\cr
-    Date: \tab 2008-07-17\cr
+    Date: \tab 2008-09-20\cr
     License: \tab GNU Public License 2 or above\cr
   }
 
@@ -55,14 +55,14 @@ rootSolve is designed for solving n roots of n nonlinear equations.
 \dontrun{
 
 ## run demos
-demo("rootSolve")
+demo("Jacobandroots")
+demo("Steadystate")
 
 ## open the directory with documents
 browseURL(paste(system.file(package="rootSolve"), "/doc", sep=""))
 
 ## main package vignette
 vignette("rootSolve")
-browseURL(paste(system.file(package="rootSolve"), "/doc", sep=""))
 }
 }
 

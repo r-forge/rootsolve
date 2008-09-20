@@ -4,16 +4,19 @@
 \description{Given a vector of variables (x), and a function (f) that estimates one function value or a
  set of function values (\eqn{f(x)}), estimates the gadient matrix, containing, on rows i and columns j
  \deqn{d(f(x)_i)/d(x_j)}
- \cr The gradient matrix is not necessarily square}
-\usage{gradient(f, x, ...)}
+
+  The gradient matrix is not necessarily square}
+\usage{gradient(f, x, centered = FALSE, ...)}
 \arguments{
   \item{f }{function returning one function value, or a vector of function values}
   \item{x }{either one value or a vector containing the x-value(s) at which the gradient matrix should be estimated}
+  \item{centered }{if TRUE, uses a centered difference approximation, else a forward difference approximation}
   \item{... }{other arguments passed to function \code{f}}
 }
 \value{
    The gradient matrix where the number of rows equals the length of \code{f} and the number of columns equals the length of \code{x}.
-    \cr the elements on i-th row and j-th column contain: \eqn{d((f(x))_i)/d(x_j)}
+
+    the elements on i-th row and j-th column contain: \eqn{d((f(x))_i)/d(x_j)}
     
 }
 \author{Karline Soetaert <k.soetaert@nioo.knaw.nl>}
@@ -98,7 +101,10 @@ col=c("darkblue","lightblue"),pt.bg=c("darkblue","lightblue"))}
 \seealso{\code{\link{jacobian.full}}, for generating a full and \bold{square} gradient (jacobian) matrix and where the function call is more complex
 
 \code{\link{hessian}}, for generating the hessian matrix }
-\note{\code{gradient} can be used to calculate so-called \code{sensitivity functions}, 
+\references{Soetaert, K. and P.M.J. Herman (2008). A practical guide to ecological modelling -
+using R as a simulation platform. Springer.
+}
+\note{\code{gradient} can be used to calculate so-called \code{sensitivity functions},
   that estimate the effect of parameters on output variables.}
 \keyword{math}
 
