@@ -85,6 +85,7 @@ multiroot <- function(f,              # function for which the root is sought
                       atol=1e-8,        # absolute tolerance 
                       ctol=1e-8,        # minimal change in dy 
                       useFortran=TRUE,
+                      positive=FALSE,
                       ...)            # additional arguments passed to function 'f'
  {
     N        <- length(start)  
@@ -111,7 +112,7 @@ if (useFortran)
 { 
   Fun <- function (time=0,x,parms=NULL) list(f(x,...))
  
-  x <- steady(y=start,time=0,func=Fun,parms=NULL,atol=atol,
+  x <- steady(y=start,time=0,func=Fun,parms=NULL,atol=atol,positive=positive,
               rtol=rtol,ctol=ctol,jacfunc="fullint",maxiter=maxiter)
   precis <- attr(x,"precis")
   attributes(x)<-NULL

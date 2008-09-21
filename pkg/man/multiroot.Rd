@@ -8,7 +8,7 @@ estimates the root of the equations, i.e. the variable values where all function
 Assumes a full Jacobian matrix, uses the Newton-Raphson method}
 \usage{multiroot(f, start, maxiter=100, 
   rtol=1e-6, atol=1e-8, ctol=1e-8, 
-  useFortran=TRUE, ...)}
+  useFortran=TRUE, positive=FALSE, ...)}
 \arguments{
   \item{f }{function for which the root is sought; it must return a vector with as many values as the length of \code{start}}
   \item{start }{vector containing initial guesses for the unknown x; if \code{start} has a name attribute, the names will be used to label the output vector.}
@@ -17,6 +17,7 @@ Assumes a full Jacobian matrix, uses the Newton-Raphson method}
   \item{atol }{absolute error tolerance, either a scalar or a vector, one value for each element in x}
   \item{ctol }{a scalar. If between two iterations, the maximal change in the variable values is less than this amount, then it is assumed that the root is found}
   \item{useFortran }{logical, if FALSE, then an \R -implementation of the Newton-Raphson method is used - see details}
+  \item{positive} {if TRUE, the unknowns y are forced to be non-negative numbers}
   \item{... }{additional arguments passed to function \code{f}}
 }
 \value{
