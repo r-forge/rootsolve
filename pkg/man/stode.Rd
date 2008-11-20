@@ -62,7 +62,7 @@
   \item{verbose }{if TRUE: full output to the screen, e.g. will output the steady-state settings}
   \item{bandup }{number of non-zero bands above the diagonal, in case the Jacobian is banded}
   \item{banddown }{number of non-zero bands below the diagonal, in case the jacobian is banded}
-  \item{positive }{if TRUE, the state variables \code{y} are forced to be non-negative numbers}
+  \item{positive }{either a logical or a vector with indices of the state variables that have to be non-negative; if TRUE, all state variables \code{y} are forced to be non-negative numbers}
   \item{maxiter }{maximal number of iterations during one call to the solver}
   \item{ynames }{if FALSE: names of state variables are not passed to function \code{func} ; this may speed up the simulation especially for multi-D models}
   \item{dllname }{a string giving the name of the shared library (without extension) that contains all the compiled function or subroutine definitions referred to in \code{func} and \code{jacfunc}.}
@@ -84,7 +84,45 @@
     \code{precis} with an estimate of the precision attained during each iteration, the mean absolute rate of change (sum(abs(dy))/n).
 }
 \author{Karline Soetaert <k.soetaert@nioo.knaw.nl>}
-\examples{# 1000 simultaneous equations
+\examples{
+#####################################################
+# Example 1. A simple sediment biogeochemical model
+#####################################################
+
+model<-function(t,y,pars)
+{
+
+with (as.list(c(y,pars)),{
+
+  Min       = r*OM
+  oxicmin   = Min*(O2/(O2+ks))
+  anoxicmin = Min*(1-O2/(O2+ks))* SO4/(SO4+ks2)
+
+  dOM  = Flux - oxicmin - anoxicmin
+  dO2  = -oxicmin      -2*rox*HS*(O2/(O2+ks)) + D*(BO2-O2)
+  dSO4 = -0.5*anoxicmin  +rox*HS*(O2/(O2+ks)) + D*(BSO4-SO4)
+  dHS  = 0.5*anoxicmin   -rox*HS*(O2/(O2+ks)) + D*(BHS-HS)
+
+  list(c(dOM,dO2,dSO4,dHS),SumS=SO4+HS)
+})
+}
+
+# parameter values
+pars <- c(D=1,Flux=100,r=0.1,rox =1,
+          ks=1,ks2=1,BO2=100,BSO4=10000,BHS = 0)
+# initial conditions
+y<-c(OM=1,O2=1,SO4=1,HS=1)
+
+# direct iteration  - enforces  positivitiy..
+ST <- stode(y=y,fun=model,parms=pars,pos=TRUE)
+
+ST
+
+
+
+#####################################################
+# Example 2. 1000 simultaneous equations
+#####################################################
 model <- function (time,OC,parms,decay,ing)
 {
  # model describing organic Carbon (C) in a sediment, 
@@ -107,7 +145,8 @@ dx   <- 0.01
 N    <- 1000 
 dist <- seq(dx/2,by=dx,len=N)
 Kz   <- 1  #bioturbation (diffusion), cm2/yr
-ss   <- stode(runif(N),func=model,parms=NULL,positive=TRUE, decay=5,ing=20)
+print( system.time(
+ss   <- stode(runif(N),func=model,parms=NULL,positive=TRUE, decay=5,ing=20)))
 
 plot(ss$y[1:N],dist,ylim=rev(range(dist)),type="l",lwd=2,
 xlab="Nonlocal exchange",ylab="sediment depth",main="stode, full jacobian")}

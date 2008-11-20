@@ -58,7 +58,7 @@ rpar=NULL, ipar=NULL, nout=0, outnames = NULL, ...)}
 		if not sufficient, \code{stodes} will return with a message indicating the size actually required.
     Therefore, some experimentation may be necessary to estimate the value of \code{ngp} 
     \cr If a solution is found, the minimal value of \code{ngp} actually required is returned by the solver (2nd element of attribute \code{dims}    }
-  \item{positive }{if TRUE, the state variables are forced to be non-negative numbers}
+  \item{positive }{either a logical or a vector with indices of the state variables that have to be non-negative; if TRUE, the state variables are forced to be non-negative numbers}
   \item{maxiter }{maximal number of iterations during one call to the solver}
   \item{ynames }{if FALSE: names of state variables are not passed to function \code{func} ; this may speed up the simulation especially for multi-D models}
   \item{dllname }{a string giving the name of the shared library (without extension) that contains all the compiled function or subroutine definitions referred to in \code{func}.}

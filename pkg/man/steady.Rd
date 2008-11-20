@@ -2,7 +2,7 @@
 \alias{steady}
 \title{General steady-state solver for a set of ordinary differential equations}
 \description{Estimates the steady-state condition for a system of ordinary differential equations. 
-	\cr This is a wrapper around steady-state solvers \code{stode} and \code{stodes}.}
+	\cr This is a wrapper around steady-state solvers \code{stode}, \code{stodes} and \code{runsteady}.}
 \usage{steady(y, time=0, func, parms=NULL, method="stode",...)}
 \arguments{
   \item{y }{the initial guess of (state) values for the ODE system, a vector. If \code{y} has a name attribute, the names will be used to label the output matrix.}
