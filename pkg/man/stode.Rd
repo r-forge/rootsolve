@@ -114,7 +114,7 @@ pars <- c(D=1,Flux=100,r=0.1,rox =1,
 y<-c(OM=1,O2=1,SO4=1,HS=1)
 
 # direct iteration  - enforces  positivitiy..
-ST <- stode(y=y,fun=model,parms=pars,pos=TRUE)
+ST <- stode(y=y,func=model,parms=pars,pos=TRUE)
 
 ST
 
@@ -221,7 +221,7 @@ This model can be solved as follows:
 \code{ks=1,ks2=1,BO2=100,BSO4=10000,BHS = 0)}\cr       
 
 \code{y<-c(OM=1,O2=1,SO4=1,HS=1)}\cr                       
-\code{ST <- stode(y=y,fun=model,parms=pars,pos=TRUE))}\cr 
+\code{ST <- stode(y=y,func=model,parms=pars,pos=TRUE))}\cr
    
 
   For \bold{code written in C}, the calling sequence for \code{func} must be as follows:
@@ -345,7 +345,7 @@ After loading the DLL, the model can be solved:
 
 \code{dyn.load("anoxmod.dll")}  
 
-\code{ST2 <- stode(y=y,fun="model",parms=pars,)}\cr
+\code{ST2 <- stode(y=y,func="model",parms=pars,)}\cr
 \code{dllname="anoxmod",initfunc="myinit",pos=TRUE,nout=1)}
 
 Examples in both C and Fortran are in the \file{dynload} subdirectory of

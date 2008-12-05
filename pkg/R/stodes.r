@@ -226,7 +226,10 @@ stodes        <- function(y,              # state variables
             if(ynames)  attr(y,"names")  <-  Ynames
             out2 <- Func2(time, y)[-1]
             out <- c(list(y=y), out2)
-        } else out <- list(y=out[1:n],var=out[(n+1):(n+Nglobal)])
+        } else {
+         out <- list(y=out[1:n],var=out[(n+1):(n+Nglobal)])
+         names(out$var) <- Nmtot
+         }
     } else {
      if(ynames)  attr(out,"names")  <-  Ynames
      out <- list(y=out)

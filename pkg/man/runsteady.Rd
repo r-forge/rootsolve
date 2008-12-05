@@ -135,10 +135,10 @@ pars <- c(D=1,Flux=100,r=0.1,rox =1,
 y<-c(OM=1,O2=1,SO4=1,HS=1)
 
 # direct iteration
-print( system.time(ST <- stode(y=y,fun=model,parms=pars,pos=TRUE)))
+print( system.time(ST <- stode(y=y,func=model,parms=pars,pos=TRUE)))
 
 print( system.time(
-ST2 <- runsteady(y=y,fun=model,parms=pars,times=c(0,1000))))
+ST2 <- runsteady(y=y,func=model,parms=pars,times=c(0,1000))))
 
 rbind("Newton Raphson"=ST$y,"Runsteady"=ST2$y)
 }

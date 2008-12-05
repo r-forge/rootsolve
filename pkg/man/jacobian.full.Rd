@@ -5,13 +5,14 @@
  function value for each (state) variable (e.g. the rate of change),
  estimates the Jacobian matrix (\eqn{d(f(x))/d(x)}) 
  \cr Assumes a full and square Jacobian matrix}
-\usage{jacobian.full(y, func, dy =NULL, time=0, parms=NULL, ...)}
+\usage{jacobian.full(y, func, dy =NULL, time=0, parms=NULL, pert=1e-8, ...)}
 \arguments{
   \item{y }{(state) variables, a vector; if \code{y} has a name attribute, the names will be used to label the Jacobian matrix columns}
   \item{func }{function that calculates one function value for each element of \code{y}; if an ODE system, \code{func} calculates the rate of change (see details)}
   \item{dy }{reference function value; if not specified, it will be estimated by calling \code{func}}
   \item{time }{time, passed to function \code{func}}
   \item{parms }{parameter values, passed to function \code{func}}
+  \item{pert }{numerical perturbation factor; increase depending on precision of model solution}
   \item{... }{other arguments passed to function \code{func}}
 }
 \value{
