@@ -160,12 +160,12 @@ Dongarra, J.J., J.R. Bunch,  C.B. Moler and G.W. Stewart, 1979. LINPACK user's g
 \details{The work is done by a Fortran 77 routine that implements the Newton-Raphson method. It uses code from LINPACK. 
 
 The form of the \bold{Jacobian} can be specified by \code{jactype} which can take the following values:
-
+  \itemize{
     \item jactype = "fullint" : a full jacobian, calculated internally by the solver, the default
     \item jactype = "fullusr" : a full jacobian, specified by user function \code{jacfunc}
     \item jactype = "bandusr" : a banded jacobian, specified by user function \code{jacfunc}; the size of the bands specified by \code{bandup} and \code{banddown}
     \item jactype = "bandint" : a banded jacobian, calculated by the solver; the size of the bands specified by \code{bandup} and \code{banddown}
-
+}
 if \code{jactype}= "fullusr" or "bandusr" then the user must supply a subroutine \code{jacfunc}.
 
 The input parameters \code{rtol}, \code{atol} and \code{ctol} determine the \bold{error
@@ -192,7 +192,7 @@ In addition, the solver will stop if between two iterations, the maximal change 
 
  In this case, \code{dllname} must give the name of the shared library (without extension) which must be loaded before lsode() is called.
 
-\item If \code{func} is a user-supplied \bold{R-function}, it must be called as: yprime = func(t, y, parms,...). 
+If \code{func} is a user-supplied \bold{R-function}, it must be called as: yprime = func(t, y, parms,...).
 t is the \code{time} at which the steady-state should be estimated, \code{y} is the current estimate of the variables in the ode system. 
 The return value of \code{func} should be a list, whose first element is a vector containing the derivatives of \code{y} with respect to \code{time}, 
 and whose next elements contains output variables whose values at steady-state are also required . 
@@ -350,10 +350,13 @@ After loading the DLL, the model can be solved:
 
 Examples in both C and Fortran are in the \file{dynload} subdirectory of
 the \code{rootSolve} package directory.}
-\seealso{\item \code{\link{stodes}}, for steady-state estimation using the Newton-Raphson method, when the jacobian matrix is sparse.
-\item \code{\link{runsteady}}, for steady-state estimation by dynamically running till the derivatives become 0.
-  \item \code{\link{steady.band}}, for steady-state estimation, when the jacobian matrix is banded, and where the state variables need NOT to be rearranged 
-  \item \code{\link{steady.1D}}, for steady-state estimation, when the jacobian matrix is banded, and where the state variables need to be rearranged}
+\seealso{ \code{\link{stodes}}, for steady-state estimation using the Newton-Raphson method, when the jacobian matrix is sparse.
+
+\code{\link{runsteady}}, for steady-state estimation by dynamically running till the derivatives become 0.
+
+ \code{\link{steady.band}}, for steady-state estimation, when the jacobian matrix is banded, and where the state variables need NOT to be rearranged
+
+ \code{\link{steady.1D}}, for steady-state estimation, when the jacobian matrix is banded, and where the state variables need to be rearranged}
 \note{The implementation of \code{stode} and substantial parts of the help file is similar to the implementation of the integration routines (e.g. \code{lsode}) from package deSolve.}
 \keyword{math}
 

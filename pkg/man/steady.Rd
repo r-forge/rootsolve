@@ -65,8 +65,11 @@
 \cr See the selected solver for the additional options}
 
 \seealso{\code{\link{stode}} and \code{\link{stodes}} for the additional options 
-  \item \code{\link{steady.1D}}, for steady-state estimation of 1-D models 
-  \item \code{\link{steady.2D}}, for steady-state estimation of 2-D models 
-  \item \code{\link{steady.band}}, for solving steady-state when the jacobian matrix is banded}
+
+   \code{\link{steady.1D}}, for steady-state estimation of 1-D models
+
+   \code{\link{steady.2D}}, for steady-state estimation of 2-D models
+
+   \code{\link{steady.band}}, for solving steady-state when the jacobian matrix is banded}
 \keyword{math}
 

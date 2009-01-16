@@ -231,6 +231,7 @@ mtext(outer=TRUE,side=3,line=-2,cex=1.5,"SiDIAmodel")}
 
 
 Two methods are implemented.
+  \itemize{
 \item The default method rearranges the state variables as A[1],B[1],...A[2],B[2],...A[3],B[3],.... This reformulation leads to a banded Jacobian with (upper and lower) half bandwidth = number of species. 
 Then function \code{stode} solves the banded problem.
 \item The second method uses function \code{stodes}. Based on the dimension of the problem, the method first calculates the sparsity pattern of the Jacobian, under the assumption 
@@ -239,13 +240,17 @@ Then function \code{stode} solves the banded problem.
   \cr Although a reasonable guess of \code{lrw} is made, it is possible that this will be too low. 
   In this case, \code{steady.1D} will return with an error message telling
   the size of the work array actually needed. In the second try then, set \code{lrw} equal to this number.
+}
 
   For single-species 1-D models, use \code{\link{steady.band}}. 
 
  If state variables are arranged as (e.g. A[1],B[1],A[2],B[2],A[3],B[3],... then the model should be solved with  \code{\link{steady.band}}}
 \seealso{\code{\link{stode}} and \code{\link{stodes}} for the additional options 
-  \item \code{\link{steady}}, for solving steady-state when the jacobian matrix is full 
-  \item \code{\link{steady.2D}}, for steady-state estimation of 2-D models 
-  \item \code{\link{steady.band}}, for steady-state solution, when the jacobian matrix is banded}
+
+   \code{\link{steady}}, for solving steady-state when the jacobian matrix is full
+
+   \code{\link{steady.2D}}, for steady-state estimation of 2-D models
+
+   \code{\link{steady.band}}, for steady-state solution, when the jacobian matrix is banded}
 \keyword{math}
 

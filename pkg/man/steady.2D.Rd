@@ -85,9 +85,13 @@ Although a reasonable guess of \code{lrw} is made, it is likely that this will b
 
   See \code{stodes} for the additional options}
 \seealso{\code{\link{stodes}} for the additional options 
-  \item \code{\link{steady}}, for solving steady-state when the jacobian matrix is full 
-  \item \code{\link{steady.1D}}, for solving steady-state for 1-D models 
-  \item \code{\link{steady.2D}}, for steady-state estimation of 2-D models 
-  \item \code{\link{steady.band}}, for steady-state solution, when the jacobian matrix is banded  }
+
+   \code{\link{steady}}, for solving steady-state when the jacobian matrix is full
+
+   \code{\link{steady.1D}}, for solving steady-state for 1-D models
+
+   \code{\link{steady.2D}}, for steady-state estimation of 2-D models
+
+   \code{\link{steady.band}}, for steady-state solution, when the jacobian matrix is banded  }
 \keyword{math}
 

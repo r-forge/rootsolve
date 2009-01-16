@@ -55,11 +55,12 @@ jacobian.band(y=c(1,2,3,4),func=mod)}
 	consistent with functions called from R-package \code{deSolve}, which contains integration routines.
 	
   This function call is as: \bold{function(time,y,parms,...)} where
+  \itemize{
 	\item \code{y} : (state) variable values at which the Jacobian is estimated.
 	\item \code{parms}: parameter vector  - need not be used.
 	\item \code{time}: time at which the Jacobian is estimated - in general, \code{time} will not be used.   
 	\item \code{...}: (optional) any other arguments
-
+}
   The Jacobian is estimated numerically, by perturbing the x-values.}
 \seealso{\code{\link{jacobian.full}}, for a full jacobian matrix}
 \keyword{math}
