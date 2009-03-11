@@ -73,10 +73,10 @@ stodes        <- function(y,              # state variables
       ian <- numeric(n+1)
       iw <- 1
       ian[1] <- 1
-   # column indices should be sorted...
+   # indices should be sorted...
       rr  <- inz[,2]
       if (min(rr[2:nnz]-rr[1:(nnz-1)])<0)
-        stop ("cannot proceed: row indices in nnz should be sorted")
+        stop ("cannot proceed: row indices in inz should be sorted")
       for(i in 1:n) {
         ii <- which (rr==i)
         il <- length(ii)
