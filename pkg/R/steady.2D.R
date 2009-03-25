@@ -28,9 +28,9 @@ steady.2D    <- function (y,
   else if (nspec * prod(dimens) != N) 
     stop("cannot run steady.2D: dimens[1]*dimens[2]*nspec is not equal to number of state variables")
   
-
-  out <- stodes(y=y,time=time,func=func,parms=parms,
-                nnz=c(nspec,dimens),sparsetype="2D",...)                    
+  # Note: stodes expects rev(dimens)..
+  out <- stodes(y=y, time=time, func=func, parms=parms,
+                nnz=c(nspec,rev(dimens)), sparsetype="2D", ...)
   return(out)
 }
 
