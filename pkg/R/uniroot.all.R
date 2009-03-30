@@ -3,16 +3,10 @@
 ## uniroot.all: multiple roots of one nonlinear equation
 ## =============================================================================
 
-uniroot.all <- function(
-        f,                    # the function for which the root is sought.
-        interval,             # a vector containing the end-points of the interval to be searched for the root.
-        lower= min(interval), # the lower end point of the interval to be searched.
-        upper= max(interval), # the upper end point of the interval to be searched.
-        tol= .Machine$double.eps^0.2,      # the desired accuracy (convergence tolerance).
-        maxiter= 1000,       # the maximum number of iterations.
-        n = 100,             #number of subintervals in which root is sought
-        ... )               #additional named or unnamed arguments to be passed to f (but beware of partial matching to other arguments).
-{
+uniroot.all <- function (f, interval, lower= min(interval),
+        upper= max(interval), tol= .Machine$double.eps^0.2,
+        maxiter= 1000, n = 100, ... ) {
+
 ## error checking as in uniroot...
   if (!missing(interval) && length(interval) != 2)
      stop("'interval' must be a vector of length 2")

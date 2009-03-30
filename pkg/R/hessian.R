@@ -1,27 +1,9 @@
 
 ## =============================================================================
-##                                                                            ##
-##   routines that find the root of a nonlinear function                      ##
-##                                                                            ##
-## jacobian.full : generates a full jacobian matrix by numerical differencing ##
-## jacobian.band : multidiagonal (banded) jacobian matrix by differencing     ##
-## multiroot  : root of multiple simultaneous nonlinear equations             ##
-##                                                                            ##
-## internal functions - not to be included in package:                        ##
-## -----------------------------                                              ##
-## Perturb     : adds the numerical differencing value to a value             ##
-##                                                                            ##
+## hessian    : generates the hessian matrix by numerical differencing
 ## =============================================================================
 
-## =============================================================================
-## hessian    : generates the hessian matrix by forward numerical differencing
-## =============================================================================
-
-hessian <- function (f,
-                     x,
-                     centered=FALSE,
-                     pert=1e-8,
-                     ...)
+hessian <- function (f, x, centered=FALSE, pert=1e-8,  ...)
 {
   if (!is.numeric(x))
       stop("x-values should be numeric")

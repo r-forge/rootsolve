@@ -6,16 +6,8 @@
 ## package deSolve
 ## =============================================================================
 
-steady.1D    <- function (y,
-                       time=0,
-                       func,
-                       parms=NULL,
-                       nspec = NULL,
-                       dimens = NULL,
-                       names = NULL,
-                       method="stode",
-                       ...)
-{
+steady.1D    <- function (y, time=0, func, parms=NULL, nspec = NULL,
+                       dimens = NULL, names = NULL, method="stode", ...) {
   if (any(!is.na(pmatch(names(list(...)), "jacfunc")))) 
     stop ("cannot run steady.1D with jacfunc specified - remove jacfunc from call list")
   if (is.null(dimens) && is.null(nspec)) 

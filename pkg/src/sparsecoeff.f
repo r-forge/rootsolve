@@ -2,7 +2,7 @@ c------------------------------------------ --------------------------*
 c SPARSITY of 1-D reaction-transport problems
 c--------------------------------------------------------------------*
 
-      SUBROUTINE sparse1d (Ntot, Nspec, nnz, ian, jan)
+      SUBROUTINE sparse1d (Ntot, Nspec, dim, cyclic, nnz, ian, jan)
 
 c--------------------------------------------------------------------*
 c Determines the sparsity structure of the Jacobian in 1-D reaction- *
@@ -25,18 +25,19 @@ C                                                                    *
 c--------------------------------------------------------------------*
 
 c total number of state variables,number of different species
-       INTEGER Ntot, Nspec
+       INTEGER Ntot, Nspec, dim, cyclic
 c maximal number of indices, sparsity arrays
        INTEGER nnz, ian(*), jan(*)
 c
-       INTEGER N, I, J, ij, K, L
-       
+       INTEGER N, I, J, ij, K, L, isp
+ 	     character *80 msg
+
 c check input
        IF (INT(Ntot/Nspec)*Nspec .NE. Ntot) THEN
-         write(*,*) 
+         write(msg,*)
      &("cannot generate sparse jacobian - N and nspec not compatible")
-        stop
-         ENDIF
+         call rexit(msg)
+       ENDIF
 
 c number of boxes
        N = Ntot/Nspec
@@ -45,25 +46,32 @@ c number of boxes
        ian(1) = 1
 
        DO i = 1, Nspec
+         isp = (i-1)*N
          DO j = 1, N
            K = (i-1)*N+j
 
 c interactions with current, upstream and downstream boxes
           
-             jan(ij) = K
-               ij      = ij +1
+           jan(ij) = K
+           ij      = ij +1
            IF (J<N) THEN
-                 jan(ij) = K+1
-               ij      = ij +1
+             jan(ij) = K+1
+             ij      = ij +1
+           ELSE IF (cyclic == 1) THEN
+              jan(ij) = isp + K
+              ij      = ij +1
            ENDIF
-               IF (J >1) THEN
-                 jan(ij) = K-1
-               ij      = ij +1
+           IF (J >1) THEN
+             jan(ij) = K-1
+             ij      = ij +1
+            ELSE IF (cyclic(1) == 1) THEN
+              jan(ij) = isp + (N-1)+ K
+              ij      = ij +1
            ENDIF
 c interactions with other species in the same box
             DO L = 1, Nspec
               IF (L == i) cycle
-                    jan(ij) = (L-1)*N+j
+              jan(ij) = (L-1)*N+j
               ij = ij +1            
             ENDDO
        
@@ -72,14 +80,14 @@ c interactions with other species in the same box
          ENDDO
        ENDDO
        nnz = ij -1
-c
+
       END SUBROUTINE sparse1d
 
 c--------------------------------------------------------------------*
 c SPARSITY of 1-D reaction-transport problems
 c--------------------------------------------------------------------*
 
-      SUBROUTINE sparse2d (Ntot, Nspec, dimens, nnz, ian, jan)
+      SUBROUTINE sparse2d (Ntot, Nspec, dimens, cyclic, nnz, ian, jan)
 
 c--------------------------------------------------------------------*
 c Determines the sparsity structure of the Jacobian in 1-D reaction- *
@@ -101,19 +109,22 @@ C                        i = JAN(k),  IAN(j) .le. k .lt. IAN(j+1).   *
 C                                                                    *
 c--------------------------------------------------------------------*
 
-c total number of state variables,number of different species
-       INTEGER Ntot, Nspec, dimens(2)
+c total number of state variables, number of different species
+c dimensions of the problem and whether cyclic boundaries or not
+       INTEGER Ntot, Nspec, dimens(2), cyclic(2)
+
 c maximal number of indices, sparsity arrays
        INTEGER nnz, ian(*), jan(*)
 c
-       INTEGER N, I, J, ij, K, L, M
-       
+       INTEGER N, I, J, ij, K, L, M , isp
+ 	     character *80 msg
+
 c check input
        IF (INT(Ntot/Nspec)*Nspec .NE. Ntot) THEN
-         write(*,*) 
+         write(msg,*)
      &("cannot generate sparse jacobian - N and nspec not compatible")
-        stop
-         ENDIF
+         call rexit(msg)
+       ENDIF
 
 c number of boxes
        N = dimens(1)*dimens(2)
@@ -122,35 +133,52 @@ c number of boxes
        ian(1) = 1
 
        DO i = 1, Nspec
+         isp = (i-1)*N
          DO j = 1, dimens(1)
            DO k = 1, dimens(2)
-            M = (i-1)*N+(j-1)*dimens(2)+k
+             M = isp +(j-1)*dimens(2)+k
 
 c interactions with current, upstream and downstream boxes
           
-             jan(ij) = M
-               ij      = ij +1
-           IF (k<dimens(2)) THEN
-                 jan(ij) = M+1
-               ij      = ij +1
-           ENDIF
-           IF (j<dimens(1)) THEN
-                 jan(ij) = M+dimens(2)
-               ij      = ij +1
-           ENDIF
-             IF (j >1) THEN
-                jan(ij) = M-dimens(2)
-               ij      = ij +1
-           ENDIF
-             IF (k >1) THEN
-                jan(ij) = M-1
+            jan(ij) = M
+            ij      = ij +1
+
+            IF (k<dimens(2)) THEN
+              jan(ij) = M+1
               ij      = ij +1
-           ENDIF
+            ELSE IF (cyclic(2) == 1) THEN
+              jan(ij) = isp + (j-1)*dimens(2) +1
+              ij      = ij +1
+            ENDIF
+
+            IF (j<dimens(1)) THEN
+              jan(ij) = M+dimens(2)
+              ij      = ij +1
+            ELSE IF (cyclic(1) == 1) THEN
+              jan(ij) = isp + K
+              ij      = ij +1
+            ENDIF
+
+            IF (j >1) THEN
+              jan(ij) = M-dimens(2)
+              ij      = ij +1
+            ELSE IF (cyclic(1) == 1) THEN
+              jan(ij) = isp + (dimens(1)-1)*dimens(2)+ K
+              ij      = ij +1
+            ENDIF
+
+            IF (k >1) THEN
+              jan(ij) = M-1
+              ij      = ij +1
+            ELSE IF (cyclic(2) == 1) THEN
+              jan(ij) = isp + j*dimens(2)
+              ij      = ij +1
+            ENDIF
 
 c interactions with other species in the same box
             DO L = 1, Nspec
               IF (L == i) cycle
-                    jan(ij) = (L-1)*N+(j-1)*dimens(2)+k
+              jan(ij) = (L-1)*N+(j-1)*dimens(2)+k
               ij = ij +1            
             ENDDO
        

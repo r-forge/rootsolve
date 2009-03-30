@@ -3,16 +3,9 @@
 ## multiroot: root of multiple simultaneous nonlinear equations
 ## =============================================================================
 
-multiroot <- function(f,              # function for which the root is sought
-                      start,          # vector containing initial guesses for the root
-                      maxiter=100,    # maximal number of iterations
-                      rtol=1e-6,        # relative tolerance  
-                      atol=1e-8,        # absolute tolerance 
-                      ctol=1e-8,        # minimal change in dy 
-                      useFortran=TRUE,
-                      positive=FALSE,
-                      ...)            # additional arguments passed to function 'f'
-{
+multiroot <- function(f, start, maxiter=100, rtol=1e-6, atol=1e-8, ctol=1e-8,        # minimal change in dy
+                      useFortran=TRUE, positive=FALSE, ...)  {
+
   N        <- length(start)
   if (!is.numeric(start))
     stop("start conditions should be numeric")

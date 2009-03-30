@@ -14,7 +14,8 @@ runsteady <- function(y, times=c(0,Inf), func, parms, stol=1e-8,
   rpar=NULL, ipar=NULL, nout=0, outnames=NULL,...)  
 {
 ## check input
-  if (!is.numeric(y))     stop("`y' must be numeric")
+  if (!is.numeric(y))
+    stop("`y' must be numeric")
   n <- length(y)
   if (!is.numeric(times))
     stop("`times' must be numeric")
@@ -24,24 +25,34 @@ runsteady <- function(y, times=c(0,Inf), func, parms, stol=1e-8,
     stop("`func' must be a function or character vector")
   if (is.character(func) && (is.null(dllname) || !is.character(dllname)))
     stop("You need to specify the name of the dll or shared library where func can be found (without extension)")
-  if (!is.numeric(stol))  stop("`stol' must be numeric")
-  if (!is.numeric(rtol))  stop("`rtol' must be numeric")
-  if (!is.numeric(atol))  stop("`atol' must be numeric")
-  if (!is.null(tcrit) & !is.numeric(tcrit)) stop("`tcrit' must be numeric")
+  if (!is.numeric(stol))
+    stop("`stol' must be numeric")
+  if (!is.numeric(rtol))
+    stop("`rtol' must be numeric")
+  if (!is.numeric(atol))
+    stop("`atol' must be numeric")
+  if (!is.null(tcrit) & !is.numeric(tcrit))
+    stop("`tcrit' must be numeric")
   if (!is.null(jacfunc) && !(is.function(jacfunc) || is.character(jacfunc)))
     stop("`jacfunc' must be a function or character vector")
   if (length(atol) > 1 && length(atol) != n)
     stop("`atol' must either be a scaler, or as long as `y'")
   if (length(rtol) > 1 && length(rtol) != n)
     stop("`rtol' must either be a scaler, or as long as `y'")
-  if (!is.numeric(hmin))   stop("`hmin' must be numeric")
-  if (hmin < 0)            stop("`hmin' must be a non-negative value")
+  if (!is.numeric(hmin))
+    stop("`hmin' must be numeric")
+  if (hmin < 0)
+    stop("`hmin' must be a non-negative value")
   if (is.null(hmax))
     hmax <- Inf
-  if (!is.numeric(hmax))   stop("`hmax' must be numeric")
-  if (hmax < 0)            stop("`hmax' must be a non-negative value")
-  if (hmax == Inf)  hmax <- 0
-  if (hini < 0)            stop("`hini' must be a non-negative value")
+  if (!is.numeric(hmax))
+    stop("`hmax' must be numeric")
+  if (hmax < 0)
+    stop("`hmax' must be a non-negative value")
+  if (hmax == Inf)
+    hmax <- 0
+  if (hini < 0)
+    stop("`hini' must be a non-negative value")
   if (!is.null(maxord))
     if(maxord < 1) stop("`maxord' must be >1")
 
@@ -64,15 +75,20 @@ runsteady <- function(y, times=c(0,Inf), func, parms, stol=1e-8,
     stop ("lsode: cannot perform integration: *jacfunc* NOT specified; either specify *jacfunc* or change *jactype* or *mf*")
   meth <- abs(imp)%/%10   # basic linear multistep method
 
-  if (is.null (maxord))       maxord <- ifelse(meth==1,12,5)
-  if (meth==1 && maxord > 12) stop ("lsode: maxord too large: should be <= 12")
-  if (meth==2 && maxord > 5 ) stop ("lsode: maxord too large: should be <= 5")
+  if (is.null (maxord))
+    maxord <- ifelse(meth==1,12,5)
+  if (meth==1 && maxord > 12)
+    stop ("lsode: maxord too large: should be <= 12")
+  if (meth==2 && maxord > 5 )
+    stop ("lsode: maxord too large: should be <= 5")
   if (miter %in% c(4,5) && is.null(bandup))   
     stop("lsode: bandup must be specified if banded jacobian")
   if (miter %in% c(4,5) && is.null(banddown)) 
     stop("lsode: banddown must be specified if banded jacobian")
-  if (is.null(banddown)) banddown <-1
-  if (is.null(bandup  )) bandup   <-1  
+  if (is.null(banddown))
+    banddown <-1
+  if (is.null(bandup  ))
+    bandup   <-1
 
 ### model and jacobian function  
   JacFunc <- NULL
@@ -165,7 +181,8 @@ runsteady <- function(y, times=c(0,Inf), func, parms, stol=1e-8,
 ## Call func once to figure out whether and how many "global"
 ## results it wants to return and some other safety checks
     tmp <- eval(Func2(times[1], y), rho)
-    if (!is.list(tmp)) stop("Model function must return a list\n")
+    if (!is.list(tmp))
+      stop("Model function must return a list\n")
     if (length(tmp[[1]]) != length(y))
        stop(paste("The number of derivatives returned by func() (",
                   length(tmp[[1]]),

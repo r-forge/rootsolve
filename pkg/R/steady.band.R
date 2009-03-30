@@ -5,15 +5,9 @@
 ## has similar calling sequence as integration routines from package deSolve
 ## =============================================================================
 
-steady.band  <- function (y,
-                          time=0,
-                          func,
-                          parms=NULL,
-                          nspec=NULL,
-                          bandup=nspec,
-                          banddown=nspec,
-                          ...)
-{
+steady.band  <- function (y, time=0, func, parms=NULL, nspec=NULL, bandup=nspec,
+                          banddown=nspec, ...)  {
+
   if (is.null(bandup)  )
     stop ("cannot run steady.band: bandup is not specified")
   if (is.null(banddown))

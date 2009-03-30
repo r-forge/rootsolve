@@ -6,13 +6,8 @@
 ## has similar calling sequence as integration routines from package deSolve
 ## =============================================================================
 
-steady.2D    <- function (y,
-                       time=0,
-                       func,
-                       parms=NULL,
-                       nspec=NULL,
-                       dimens,
-                       ...)
+steady.2D    <- function (y, time=0, func, parms=NULL, nspec=NULL, dimens,
+                cyclicBnd = NULL, ...)
 {
   if (any(!is.na(pmatch(names(list(...)), "jacfunc")))) 
     stop ("cannot run steady.2D with jacfunc specified - remove jacfunc from call list")
@@ -27,10 +22,17 @@ steady.2D    <- function (y,
     nspec = N/prod(dimens)
   else if (nspec * prod(dimens) != N) 
     stop("cannot run steady.2D: dimens[1]*dimens[2]*nspec is not equal to number of state variables")
-  
+
+  Bnd <- c(0,0)
+  if (! is.null(cyclicBnd)) {
+    if (max(cyclicBnd) > 2 )
+      stop ("cannot run steady.2D: cyclicBnd should be a vector or number not exceeding 2")
+    Bnd[cyclicBnd[cyclicBnd>0]]<-1
+  }
+
   # Note: stodes expects rev(dimens)..
   out <- stodes(y=y, time=time, func=func, parms=parms,
-                nnz=c(nspec,rev(dimens)), sparsetype="2D", ...)
+                nnz=c(nspec,rev(dimens), rev(Bnd)), sparsetype="2D", ...)
   return(out)
 }
 

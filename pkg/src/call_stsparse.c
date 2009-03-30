@@ -115,8 +115,8 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP chtol,
   C = (int *) R_alloc(neq, sizeof(int));
     for (j = 0; j < ny; j++) C[j] = 0;
 
-  dims = (int *) R_alloc(3, sizeof(int));
-    for (j = 0; j < 3; j++) dims[j] = 0;
+  dims = (int *) R_alloc(5, sizeof(int));
+    for (j = 0; j < 5; j++) dims[j] = 0;
 
   IC = (int *) R_alloc(neq, sizeof(int));
     for (j = 0; j < ny; j++) IC[j] = 0;
@@ -155,10 +155,14 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP chtol,
   if (type == 2)          {
     dims[0] = INTEGER(NNZ)[1]; /* number components*/ 
     dims[1] = INTEGER(NNZ)[2]; /* dimension x*/ 
+    dims[2] = INTEGER(NNZ)[3]; /* dimension x*/
   } else if (type == 3)   {
     dims[0] = INTEGER(NNZ)[1]; /* number components*/ 
     dims[1] = INTEGER(NNZ)[2]; /* dimension x*/ 
     dims[2] = INTEGER(NNZ)[3]; /* dimension y*/     
+    dims[3] = INTEGER(NNZ)[4]; /* cyclic bnd x*/
+    dims[4] = INTEGER(NNZ)[5]; /* cyclic bnd y*/
+
   }
 
 

@@ -4,30 +4,11 @@
 ##       Sparse Jacobian
 ## =============================================================================
 
-stodes        <- function(y,              # state variables
-                          time=0,           # time at which output is wanted
-                          func,             # function that returns rate of change
-                          parms=NULL,       # other parameters passed to func
-                          rtol=1e-6,        # relative tolerance
-                          atol=1e-8,        # absolute tolerance
-                          ctol=1e-8,        # minimal change in dy
-                          sparsetype="sparseint", # sparsity type
-                          verbose=FALSE,    #
-                          nnz=NULL,
-                          inz=NULL,
-                          lrw=NULL,ngp=NULL,
-                          positive = FALSE,
-                          maxiter=100,    # maximal number of steps during one call to the solver
-                          ynames=TRUE,      # if false: names of state variables are not passed to function func
-                          dllname=NULL,     #
-                          initfunc=dllname, #
-                          initpar=parms,    # to initialise common block/global variables
-                          rpar=NULL,           #
-                          ipar=NULL,          #
-                          nout=0,           # only if dllname is present: the number of output variables
-                          outnames=NULL,
-                          ...)              # accessory parameters passed to ??
-{
+stodes        <- function(y, time=0, func, parms=NULL, rtol=1e-6, atol=1e-8,
+        ctol=1e-8, sparsetype="sparseint", verbose=FALSE, nnz=NULL, inz=NULL,
+        lrw=NULL, ngp=NULL, positive = FALSE, maxiter=100, ynames=TRUE,
+        dllname=NULL, initfunc=dllname, initpar=parms, rpar=NULL,
+        ipar=NULL, nout=0, outnames=NULL, ...)  {
 ## check input
   if (!is.numeric(y))
     stop("`y' must be numeric")
@@ -92,12 +73,27 @@ stodes        <- function(y,              # state variables
     nspec  <- nnz[1]
     nnz    <- c(n*(2+nspec)-2*nspec,nnz)
     ngp    <- 3*nspec+1
+    if (nnz[4] == 1) { # cyclic boundary
+      nnz[1] <- nnz[1] + 2*nspec
+      ngp <- ngp + 1
+    }
+    
   } else if (sparsetype =="2D")    {
     Type   <- 3
     nspec  <- nnz[1]
     dimens <- nnz[2:3]
     nnz   <- c(n*(4+nspec)-2*nspec*(sum(dimens)),nnz)
     ngp    < 4*nspec+1
+    if (nnz[5] ==1) {  # cyclic boundary in x-direction
+      nnz[1] <- nnz[1] + 2*dimens[1]*nspec
+      ngp <- ngp + 1
+    }
+      
+    if (nnz[6] ==1) {
+      nnz[1] <- nnz[1] + 2*dimens[2]*nspec
+      ngp <- ngp +1
+    }
+    
 
   } else stop("cannot run stodes: sparsetype not known ")
 
@@ -111,6 +107,15 @@ stodes        <- function(y,              # state variables
     if (sparsetype=="1D")    txt<-"sparse 1-D jacobian, calculated internally" else
     if (sparsetype=="2D")    txt<-"sparse 2-D jacobian, calculated internally"
     print(data.frame(sparseType = sparsetype, message=txt))
+    if (sparsetype %in% c("1D","2D"))    {
+      print(paste("estimated number of nonzero elements: ",nnz[1]))
+      print(paste("estimated number of function calls: ",ngp))
+      print(paste("number of species: ",nnz[2]))
+    }
+    if (sparsetype =="2D")    {
+      print(paste("dimensions: ",nnz[3],nnz[4]))
+      print(paste("cyclic boundaries: ",nnz[5],nnz[6]))
+    }
   }
 
 ## model and jacobian function
@@ -219,7 +224,7 @@ stodes        <- function(y,              # state variables
 
   attributes(out)<-NULL
   if (Nglobal > 0) {
-    if (!is.character(func)) {         # if a DLL: already done...
+    if (!is.character(func)) {      # if a DLL: already done...
       y <- out                      # state variables of this time step
       if(ynames)  attr(y,"names")  <-  Ynames
       out2 <- Func2(time, y)[-1]
@@ -234,7 +239,11 @@ stodes        <- function(y,              # state variables
   }
   attr(out, "precis") <- precis
   attr(out, "steady") <- (steady[1]==1   )
-  attr(out, "dims"  ) <- steady[2:4]
+  if (!steady[1])
+    warning("steady-state not reached")
+  if (steady[4] < 0)  steady[4] <- NA
+  attr(out, "dims"  ) <- c(nnz = steady[2], ngp = steady[3],
+                           lrw = steady[4])
 
   if (verbose) {
     print("precision at each steady state step")

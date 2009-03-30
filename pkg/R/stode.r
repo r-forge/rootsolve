@@ -22,30 +22,12 @@
 ## the integration routines in the deSolve package.
 ## =============================================================================
 
-stode         <- function(y,              # state variables
-                          time=0,           # time at which output is wanted  
-                          func,             # function that returns rate of change
-                          parms=NULL,       # other parameters passed to func and jacfunc                        
-                          rtol=1e-6,        # relative tolerance  
-                          atol=1e-8,        # absolute tolerance 
-                          ctol=1e-8,        # minimal change in dy 
-                          jacfunc=NULL,     # jacobian 
-                          jactype = "fullint",  # jacobian
-                          verbose=FALSE,    # 
-                          bandup=1,         # upper band
-                          banddown=1,       # lower band
-                          positive = FALSE,  # positivity of state variables
-                          maxiter=100,    # maximal number of steps during one call to the solver
-                          ynames=TRUE,      # if false: names of state variables are not passed to function func
-                          dllname=NULL,     # 
-                          initfunc=dllname, # 
-                          initpar=parms,    # to initialise common block/global variables                          
-                          rpar=NULL,           #  
-                          ipar=NULL,          #
-                          nout=0,           # only if dllname is present: the number of output variables
-                          outnames = NULL,  #
-                          ...)              # accessory parameters passed to ??
-{
+stode         <- function(y, time=0, func, parms=NULL,
+       rtol=1e-6, atol=1e-8, ctol=1e-8, jacfunc=NULL, jactype = "fullint",
+       verbose=FALSE, bandup=1, banddown=1, positive = FALSE, maxiter=100,
+       ynames=TRUE, dllname=NULL, initfunc=dllname, initpar=parms,
+       rpar=NULL, ipar=NULL, nout=0, outnames = NULL, ...)  {
+
 ## check input
   if (!is.numeric(y))
     stop("`y' must be numeric")
@@ -264,6 +246,9 @@ stode         <- function(y,              # state variables
   }
   attr(out, "precis") <- precis
   attr(out, "steady") <- (steady==1   )
+  if (!steady)
+    warning("steady-state not reached")
+
   if (verbose) {
     print("precision at each steady state step")
     print(precis)
