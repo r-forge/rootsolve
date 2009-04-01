@@ -19,6 +19,15 @@ steady.1D    <- function (y, time=0, func, parms=NULL, nspec = NULL,
     stop("cannot run steady.1D: nspec is not an integer fraction of number of state variables")
   if (! is.null(names) && length(names) != nspec)
     stop("length of names should equal nspec")
+  if (nspec == 1 & method == "stode") {
+    out <- steady.band(y, time, func, parms, nspec, ...)
+    if (! is.null(names)) {
+      out[[1]] <- matrix(ncol=nspec,data=out[[1]])
+      colnames(out[[1]]) <- names
+    }
+    return(out)
+
+  }
   if (method=="stodes") {
     dimens <- N/nspec
     out <- stodes(y=y,time=time,func=func,parms=parms,
