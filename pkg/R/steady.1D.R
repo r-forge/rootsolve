@@ -7,7 +7,8 @@
 ## =============================================================================
 
 steady.1D    <- function (y, time=0, func, parms=NULL, nspec = NULL,
-                       dimens = NULL, names = NULL, method="stode", ...) {
+                       dimens = NULL, names = NULL, method="stode",
+                       cyclicBnd = NULL, ...) {
   if (any(!is.na(pmatch(names(list(...)), "jacfunc")))) 
     stop ("cannot run steady.1D with jacfunc specified - remove jacfunc from call list")
   if (is.null(dimens) && is.null(nspec)) 
@@ -19,6 +20,8 @@ steady.1D    <- function (y, time=0, func, parms=NULL, nspec = NULL,
     stop("cannot run steady.1D: nspec is not an integer fraction of number of state variables")
   if (! is.null(names) && length(names) != nspec)
     stop("length of names should equal nspec")
+  if (! is.null (cyclicBnd)) method <- "stodes"
+  
   if (nspec == 1 & method == "stode") {
     out <- steady.band(y, time, func, parms, nspec, ...)
     if (! is.null(names)) {
@@ -30,8 +33,15 @@ steady.1D    <- function (y, time=0, func, parms=NULL, nspec = NULL,
   }
   if (method=="stodes") {
     dimens <- N/nspec
+    Bnd <- 0
+    if (! is.null(cyclicBnd)) {
+    if (max(cyclicBnd) > 1 )
+      stop ("cannot run steady.1D: cyclicBnd should NULL or a value not exceeding 1")
+    Bnd <-1
+  }
+
     out <- stodes(y=y,time=time,func=func,parms=parms,
-                  nnz=c(nspec,dimens),sparsetype="1D",...)                    
+                  nnz=c(nspec,dimens,Bnd),sparsetype="1D",...)
   } else if (is.character(func)) {
     ii    <- as.vector(t(matrix(ncol=nspec,1:N)))   # from ordering per slice -> per spec
 

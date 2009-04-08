@@ -10,7 +10,7 @@
 }
 \usage{
 steady.1D(y, time=0, func, parms=NULL, nspec=NULL, dimens=NULL, 
-  names=NULL,method = "stode",...)}
+  names=NULL, method = "stode", cyclicBnd = NULL, ...)}
 \arguments{
   \item{y }{the initial guess of (state) values for the ODE system, a vector.
   }
@@ -46,6 +46,9 @@ steady.1D(y, time=0, func, parms=NULL, nspec=NULL, dimens=NULL,
     will be written as a matrix.
   }
   \item{method }{the solution method, one of "stode", "stodes" or "runsteady".
+  }
+  \item{cyclicBnd }{if a cyclic boundary exists, a value of \code{1} else
+    \code{NULL}; see details.
   }
   \item{... }{additional arguments passed to the solver function as defined
     by \code{method}.
@@ -268,7 +271,6 @@ mtext(outer=TRUE,side=3,line=-2,cex=1.5,"SiDIAmodel")
 
   A[1],A[2],A[3],....B[1],B[2],B[3],.... (for species A, B))
 
-
   Two methods are implemented.
   \itemize{
     \item The default method rearranges the state variables as
@@ -294,6 +296,14 @@ mtext(outer=TRUE,side=3,line=-2,cex=1.5,"SiDIAmodel")
 
   If state variables are arranged as (e.g. A[1],B[1],A[2],B[2],A[3],B[3],...
   then the model should be solved with  \code{\link{steady.band}}
+  
+  In some cases, a cyclic boundary condition exists. This is when the first
+  box interacts with the last box and vice versa. In this case, there
+  will be extra non-zero fringes in the Jacobian which need to be taken
+  into account. The occurrence of cyclic boundaries can be
+  toggled on by specifying argument \code{cyclicBnd=1}. If this is the
+  case, then the steady-state will be estimated using \code{stodes}.
+  The default is no cyclic boundaries.
 }
 \seealso{
   \code{\link{stode}} and \code{\link{stodes}} for the additional options

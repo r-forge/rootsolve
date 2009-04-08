@@ -58,14 +58,14 @@ c interactions with current, upstream and downstream boxes
              jan(ij) = K+1
              ij      = ij +1
            ELSE IF (cyclic == 1) THEN
-              jan(ij) = isp + K
+              jan(ij) = isp + 1
               ij      = ij +1
            ENDIF
            IF (J >1) THEN
              jan(ij) = K-1
              ij      = ij +1
-            ELSE IF (cyclic(1) == 1) THEN
-              jan(ij) = isp + (N-1)+ K
+           ELSE IF (cyclic == 1) THEN
+              jan(ij) = isp + N
               ij      = ij +1
            ENDIF
 c interactions with other species in the same box

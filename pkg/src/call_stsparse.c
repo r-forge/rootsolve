@@ -155,7 +155,7 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP chtol,
   if (type == 2)          {
     dims[0] = INTEGER(NNZ)[1]; /* number components*/ 
     dims[1] = INTEGER(NNZ)[2]; /* dimension x*/ 
-    dims[2] = INTEGER(NNZ)[3]; /* dimension x*/
+    dims[2] = INTEGER(NNZ)[3]; /* cyclic x*/
   } else if (type == 3)   {
     dims[0] = INTEGER(NNZ)[1]; /* number components*/ 
     dims[1] = INTEGER(NNZ)[2]; /* dimension x*/ 
