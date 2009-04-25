@@ -1,9 +1,8 @@
 ## =============================================================================
 ## steady.1D -- solves the steady-state condition of
-## ordinary differential equation systems
-## multi-component 1-D reaction-transport models
-## has a similar calling sequence as integration routines from
-## package deSolve
+## ordinary differential equation systems resulting from
+## multi-component 1-D PDE models
+## has a similar calling sequence as ode.1D from package deSolve
 ## =============================================================================
 
 steady.1D    <- function (y, time=0, func, parms=NULL, nspec = NULL,

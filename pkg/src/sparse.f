@@ -85,8 +85,8 @@ c-------------------------------------------------------------------------------
 
       CALL errSET (N, ITOL, RTOL, ATOL, SVAR, EWT)
 
-c determine sparse structure: if Type == 2 or 3: 
-c a 1-D or 2-D reaction-transport model; 
+c determine sparse structure: if Type == 2, 3, 4 :
+c a 1-D or 2-D or 3-D PDE model;
 c in this case the number of components, dimensions and cyclic bnd are in dims
       CALL xSparseStruct(N, nnz, ian, jan, igp, jgp, maxg, ngp,                &
      &    Svar, ewt, dSvar, beta, xmodel, time, out, nout, nonzero,            &
@@ -310,7 +310,7 @@ c-------------------------------------------------------------------*
        DOUBLE PRECISION  time, out(*), tiny
        EXTERNAL          xmodel
      
-       INTEGER           I, J, ij, Nspec, dimens(2), cyclic(2)
+       INTEGER           I, J, ij, Nspec, dimens(3), cyclic(3)
        DOUBLE PRECISION  CopyVar,beta(N),dSvar(N)
        DOUBLE PRECISION  DivDelt
        LOGICAL           enough, Full
@@ -327,10 +327,11 @@ c--------------------------------------------------------------------
 c Type of sparsity:
 c Type = 0: sparsity imposed; ian and jan are known
 c Type = 1: arbitrary sparsity, to be estimated
-c Type = 2: sparsity related to 1-D reaction transport model
-c Type = 3: sparsity related to 2-D reaction transport model
-c 
-c in the latter 2 cases the number of components (*nspec*),
+c Type = 2: sparsity related to 1-D PDE model
+c Type = 3: sparsity related to 2-D PDE model
+c Type = 4: sparsity related to 3-D PDE model
+c
+c in the latter 3 cases the number of components (*nspec*),
 c the dimensions of the problem and the cyclic boundaries are in dims
 c 
  
@@ -388,6 +389,16 @@ c 1-D problem
          cyclic(1) = dims(4)
          cyclic(2) = dims(5)
          CALL sparse2d(N, Nspec, dimens, cyclic, nnz, ian, jan)
+         nonzero = nnz
+       ELSE IF (Type == 4) THEN
+         Nspec = dims(1)
+         dimens(1) = dims(2)
+         dimens(2) = dims(3)
+         dimens(3) = dims(4)
+         cyclic(1) = dims(5)
+         cyclic(2) = dims(6)
+         cyclic(3) = dims(7)
+         CALL sparse3d(N, Nspec, dimens, cyclic, nnz, ian, jan)
          nonzero = nnz
        ENDIF
        

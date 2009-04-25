@@ -93,7 +93,26 @@ stodes        <- function(y, time=0, func, parms=NULL, rtol=1e-6, atol=1e-8,
       nnz[1] <- nnz[1] + 2*dimens[2]*nspec
       ngp <- ngp +1
     }
-    
+  } else if (sparsetype =="3D")    {
+    Type   <- 4
+    nspec  <- nnz[1]
+    dimens <- nnz[2:4]
+    nnz   <- c(n*(6+nspec)-3*nspec*(sum(dimens)),nnz)
+    ngp    < 5*nspec+1
+    if (nnz[6] ==1) {  # cyclic boundary in x-direction
+      nnz[1] <- nnz[1] + 2*dimens[1]*nspec
+      ngp <- ngp + 1
+    }
+
+    if (nnz[7] ==1) {
+      nnz[1] <- nnz[1] + 2*dimens[2]*nspec
+      ngp <- ngp +1
+    }
+    if (nnz[8] ==1) {
+      nnz[1] <- nnz[1] + 2*dimens[3]*nspec
+      ngp <- ngp +1
+    }
+
 
   } else stop("cannot run stodes: sparsetype not known ")
 
@@ -106,8 +125,9 @@ stodes        <- function(y, time=0, func, parms=NULL, rtol=1e-6, atol=1e-8,
     if (sparsetype=="sparseint")txt<-"sparse jacobian, calculated internally" else
     if (sparsetype=="1D")    txt<-"sparse 1-D jacobian, calculated internally" else
     if (sparsetype=="2D")    txt<-"sparse 2-D jacobian, calculated internally"
+    if (sparsetype=="3D")    txt<-"sparse 3-D jacobian, calculated internally"
     print(data.frame(sparseType = sparsetype, message=txt))
-    if (sparsetype %in% c("1D","2D"))    {
+    if (sparsetype %in% c("1D","2D","3D"))    {
       print(paste("estimated number of nonzero elements: ",nnz[1]))
       print(paste("estimated number of function calls: ",ngp))
       print(paste("number of species: ",nnz[2]))
@@ -115,6 +135,10 @@ stodes        <- function(y, time=0, func, parms=NULL, rtol=1e-6, atol=1e-8,
     if (sparsetype =="2D")    {
       print(paste("dimensions: ",nnz[3],nnz[4]))
       print(paste("cyclic boundaries: ",nnz[5],nnz[6]))
+    }
+    if (sparsetype =="3D")    {
+      print(paste("dimensions: ",nnz[3],nnz[4],nnz[5]))
+      print(paste("cyclic boundaries: ",nnz[6],nnz[7],nnz[8]))
     }
   }
 

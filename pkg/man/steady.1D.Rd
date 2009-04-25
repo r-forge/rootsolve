@@ -5,9 +5,10 @@
 }
 \description{
   Estimates the steady-state condition for a system of ordinary differential
-  equations that result from 1-Dimensional reaction-transport models that
-  include transport only between adjacent layers and that model many species.
-}
+  equations that result from 1-Dimensional partial differential equation
+  models that have been converted to ODEs by numerical differencing.
+
+  It is assumed that exchange occurs only between adjacent layers.}
 \usage{
 steady.1D(y, time=0, func, parms=NULL, nspec=NULL, dimens=NULL, 
   names=NULL, method = "stode", cyclicBnd = NULL, ...)}

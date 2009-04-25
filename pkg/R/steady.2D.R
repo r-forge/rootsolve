@@ -1,9 +1,8 @@
 ## =============================================================================
 ## steady.2D -- solves the steady-state condition of
-## ordinary differential equation systems
-## 2-D reaction-transport models
-## steady.band solves single-component 1-D reaction-transport models
-## has similar calling sequence as integration routines from package deSolve
+## ordinary differential equation systems resulting from
+## 2-D PDE models
+## has similar calling sequence as ode.2D from package deSolve
 ## =============================================================================
 
 steady.2D    <- function (y, time=0, func, parms=NULL, nspec=NULL, dimens,

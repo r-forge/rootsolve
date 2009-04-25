@@ -8,11 +8,8 @@
   Estimates the steady-state condition for a system of ordinary differential
   equations.
 
-  Assumes a banded jacobian matrix, but does not rearrange the state variables.
-  This is in contrast to \code{steady.1D}.
+  Assumes a banded jacobian matrix.
 
-  Suitable for 1-D models that include transport only between adjacent layers
-  and that model only one species.
 }
 \usage{
 steady.band(y, time=0, func, parms=NULL, 

@@ -1,8 +1,8 @@
 ## =============================================================================
 ## steady.band -- solves the steady-state condition of
-## ordinary differential equation systems
-## uni-component 1-D reaction-transport models
-## has similar calling sequence as integration routines from package deSolve
+## ordinary differential equation systems resulting from
+## uni-component 1-D PDE models
+## has similar calling sequence as ode.band from package deSolve
 ## =============================================================================
 
 steady.band  <- function (y, time=0, func, parms=NULL, nspec=NULL, bandup=nspec,
