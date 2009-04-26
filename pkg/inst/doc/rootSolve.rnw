@@ -531,7 +531,11 @@ par(mfrow=mf)
   The term $D_x \cdot \frac{\partial ^2 C}{\partial x^2}$ is in fact
   shorthand for:
   \[
-   - \frac{\partial Flux}{\partial x}$ where $Flux = -D_x \cdot \frac{\partial C}{\partial x}
+   - \frac{\partial Flux}{\partial x}
+  \]
+  where
+  \[
+    Flux = -D_x \cdot \frac{\partial C}{\partial x}
   \]
   i.e. it is the negative of the flux gradient, where the flux is due
   to diffusion.
