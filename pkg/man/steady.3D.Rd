@@ -122,8 +122,9 @@ diffusion3D <- function(t,Y,par)
   y  <- array(dim=c(n,n,n),data=10.)
 
   print(system.time(
-  ST3 <- steady.3D(y,func=diffusion3D,parms=NULL,pos=TRUE,dimens=c(n,n,n),
-                 lrw=30000000,atol=1e-10,rtol=1e-10,ctol=1e-10, verbose=TRUE)
+  ST3 <- steady.3D(y, func=diffusion3D, parms=NULL, pos=TRUE,
+                  dimens=c(n,n,n), lrw=100000,
+                  atol=1e-10, rtol=1e-10, ctol=1e-10, verbose=TRUE)
   ))
   y <- array(dim=c(n,n,n),data=ST3$y)
     filled.contour(y[,,n/2],color.palette=terrain.colors)
