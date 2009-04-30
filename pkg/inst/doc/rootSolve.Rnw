@@ -47,7 +47,9 @@ The Netherlands}
       ordinary differential equations (ODE). These functions are compatible
       with the ODE solvers in package \ds, which solve initial value ODEs.
       Separate solvers for full, banded and generally sparse problems
-      are included.
+      are included. These allow to estimate the steady-state of 1-D, 2-D
+      and 3-D partial differential equations (PDE) that have been rewritten
+      as a set of ODEs by numerical differencing.
     \item Functions calculate the Jaobian matrix or - more general - the
       gradient of functions with respect to independent variables.
   \end{itemize}
@@ -233,6 +235,63 @@ x<-multiroot(f2, start=1:25)$root
 (X<-matrix(nr=5,x))
 
 X%*%X%*%X
+@
+\subsection{n equations in n unknowns with known Jacobian}
+  If the Jacobian is known, OR it has a known sparsity structure, then it is
+  much more efficient to use one of the steady-state solvers (see next section)
+  \code{stode} or \code{stodes}; the former in case the Jacobian is full or
+  banded, the latter in case it has an arbitrary sparse structure.
+  
+  The steady-state solvers estimate the root of a system of ordinary
+  differential equations (ODE) and require the (ODE) function to be called as
+  \code{times,x,par}, where \code{x} are the unknowns to be estimated,
+  \code{times} and \code{par} are the times and parameter values respectively.
+
+  For functions that are not ordinary differential equations, the arguments
+  \code{times} and \code{par} are considered as dummy arguments.
+  
+  As an example, a set of linear equations, comprising 500 unknowns are solved.
+  Of course, one would do that using a nonlinear equation solver, but
+  rather by using \code{solve}.
+
+  However, the example is
+  included here to show how to make good use of the flexibility at which the
+  Jacobian can be specified, and to show that the methods are quite fast!
+  
+  We start by defining the linear system of equations: a (500x500) matrix
+  \code{A} and a vector \code{B} of length 500. It is solved with \code{solve},
+  \R's default solver for systems of linear equations. The time it takes to
+  do this is printed
+<<>>=
+A <- matrix(nr=500,nc=500,runif(500*500))
+B <- runif(500)
+
+print(system.time(X1 <- solve(A,B)))
+@
+
+  To use \code{stode} the nonlinear equation solver, it is noted that the
+  Jacobian is equal to matrix \code{A}. A function is created that returns
+  the Jacobian (or matrix A); the calling sequence of the Jacobian function
+  is \code{function(times,x,pars)}
+<<>>=
+jfun <- function (t,x,p) A
+@
+  
+  The function whose root is to be solved receives the current estimate of
+  \code{x}, and returns the difference \code{A x-B}, as a \code{list}
+<<>>=
+fun <- function(t,x,p) list (A %*%x-B)
+@
+
+  Next \code{stode} is called with jactype = "fullusr" (it is a full Jacobian,
+  and specified by the user):
+<<>>=
+print(system.time(X <- stode(y=1:500, func=fun, jactype="fullusr",
+   jacfunc=jfun)))
+@
+  Finally, both are the same
+<<>>=
+sum((X1-X$y)^2)
 @
 
 \section{Steady-state analysis}
@@ -613,6 +672,10 @@ filled.contour(Conc,color.palette=terrain.colors)
 \label{fig:twoD}
 \end{figure}
 
+\subsection{Steady-state solution of 3-D PDEs}
+  Function \code{steady.3D} the steady-state of
+  3-dimensional problems. See its help file for an example.
+  
 \section{Gradients, Jacobians and Hessians}
 \subsection{Gradient and Hessian matrices}
   Function \code{gradient} returns a forward difference approximation for
@@ -686,9 +749,10 @@ $\mathbf{\frac{{dx_{1..n}}}{{dt}} = 0}$
                    &\code{stodes}      & Iterative steady-state solver for ordinary differential equations (ODE), assuming an arbitrary \emph{s}parse Jacobian \\ \hline
                    &\code{runsteady}   & Steady-state solver for ODEs by dynamically running, assumes a full or banded Jacobian                         \\ \hline
                    &\code{steady}      & General steady-state solver for ODEs; wrapper around \emph{stode}, \emph{stodes} and \emph{runsteady}          \\ \hline
-                   &\code{steady.1D}   & General steady-state solver for ODEs resulting from multicomponent 1-dimensional reaction-transport problems   \\ \hline
-                   &\code{steady.band} & General steady-state solver for ODEs resulting from unicomponent 1-dimensional reaction-transport problems     \\ \hline
-                   &\code{steady.2D}   & General steady-state solver for ODEs resulting from 2-dimensional reaction-transport problems                  \\ \hline
+                   &\code{steady.1D}   & General steady-state solver for ODEs resulting from 1-dimensional partial differential equations   \\ \hline
+                   &\code{steady.band} & General steady-state solver for ODEs with banded Jacobian matrix     \\ \hline
+                   &\code{steady.2D}   & General steady-state solver for ODEs resulting from 2-dimensional partial differential equations               \\ \hline
+                   &\code{steady.3D}   & General steady-state solver for ODEs resulting from 3-dimensional partial differential equations               \\ \hline
 
 $\frac{df(\mathbf{x})}{d\mathbf{x}}$&\code{gradient}     &  Estimates the gradient matrix of a function with respect to one or more x-values   \\ \hline
 $\frac{\partial \frac{ \partial(\mathbf{x})}{\partial t}}{\partial \mathbf{x}}$&\code{jacobian}     &  Estimates the jacobian matrix for a function f(x)   \\ \hline

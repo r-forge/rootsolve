@@ -221,6 +221,38 @@ ss   <- stode(runif(N),func=model,parms=NULL,positive=TRUE, decay=5,ing=20)))
 
 plot(ss$y[1:N],dist,ylim=rev(range(dist)),type="l",lwd=2,
 xlab="Nonlocal exchange",ylab="sediment depth",main="stode, full jacobian")
+
+#####################################################
+# Example 3. Solving a system of linear equations
+#####################################################
+
+# this example is included to demonstrate how to use the "jactype" option.
+# (and that stode is quite efficient).
+
+A <- matrix(nr=500,nc=500,runif(500*500))
+B <- 1:500
+
+# this is how one would solve this in R
+print(system.time(X1<-solve(A,B)))
+
+# to use stode:
+# 1. create a function that receives the current estimate of x
+# and that returns the difference A\%*\%x-b, as a list:
+
+fun <- function (t,x,p)  # t and p are dummies here...
+  list(A\%*\%x-B)
+
+# 2. jfun returns the Jacobian: here this equals "A"
+jfun <- function (t,x,p) # all input parameters are dummies
+  A
+
+# 3. solve with jactype="fullusr" (a full Jacobian, specified by user)
+print (system.time(
+  X <- stode(y=1:500,func=fun, jactype="fullusr", jacfunc=jfun)
+  ))
+
+# the results are the same (within precision)
+sum((X1-X$y)^2)
 }
 
 \references{
