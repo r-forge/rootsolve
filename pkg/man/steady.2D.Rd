@@ -186,15 +186,27 @@ diffusion2Db <- function(t,Y,par)
   See \code{stodes} for the additional options.
 }
 \seealso{
-  \code{\link{stodes}} for the additional options.
 
-  \code{\link{steady}}, for solving steady-state when the jacobian matrix is
-    full.
+ \code{\link{steady}}, for a general interface to most of the steady-state
+   solvers
 
-  \code{\link{steady.1D}}, for solving steady-state for 1-D models.
+ \code{\link{steady.band}}, to find the steady-state of ODE models with a
+   banded Jacobian
 
-  \code{\link{steady.band}}, for steady-state solution, when the jacobian
-    matrix is banded.
+ \code{\link{steady.1D}},
+   \code{\link{steady.3D}}, steady-state solvers for 1-Dand 3-D
+   partial differential equations.
+
+ \code{\link{stode}}, iterative steady-state solver for ODEs with full
+   or banded Jacobian.
+
+ \code{\link{stodes}}, iterative steady-state solver for ODEs with arbitrary
+   sparse Jacobian.
+
+ \code{\link{runsteady}}, steady-state solver by dynamically running to
+   steady-state
+
 }
+
 \keyword{math}
 

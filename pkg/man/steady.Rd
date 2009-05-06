@@ -97,14 +97,23 @@ steady(y, time=0, func, parms=NULL, method="stode",...)}
 }
 
 \seealso{
-  \code{\link{stode}} and \code{\link{stodes}} for the additional options
+ \code{\link{steady.band}}, to find the steady-state of ODE models with a
+   banded Jacobian
 
-  \code{\link{steady.1D}}, for steady-state estimation of 1-D models
+ \code{\link{steady.1D}}, \code{\link{steady.2D}},
+   \code{\link{steady.3D}}, steady-state solvers for 1-D, 2-D and 3-D
+   partial differential equations.
 
-  \code{\link{steady.2D}}, for steady-state estimation of 2-D models
+ \code{\link{stode}}, iterative steady-state solver for ODEs with full
+   or banded Jacobian.
 
-  \code{\link{steady.band}}, for solving steady-state when the jacobian
-    matrix is banded.
+ \code{\link{stodes}}, iterative steady-state solver for ODEs with arbitrary
+   sparse Jacobian.
+
+ \code{\link{runsteady}}, steady-state solver by dynamically running to
+   steady-state
+
 }
+
 \keyword{math}
 

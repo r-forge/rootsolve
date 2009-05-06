@@ -53,7 +53,8 @@ hessian(f, x, centered = FALSE, pert=1e-8, ...)
   Because of that, it is not very precise.
 }
 \seealso{
-  \code{\link{gradient}}, for generating a gradient matrix.
+ \code{\link{gradient}}, for a full (not necessarily square) gradient matrix
+
 }
 \keyword{math}
 

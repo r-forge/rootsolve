@@ -69,7 +69,9 @@ The Netherlands}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% R/Sweave specific LaTeX commands.
 %% need no \usepackage{Sweave}
-%\VignetteIndexEntry{rootSolve}
+%\VignetteIndexEntry{roots, gradients and steady-states in R}
+%\VignetteKeywords{nonlinear equations, differential equations, roots, Jacobian, Hessian}
+%\VignettePackage{rootSolve}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Begin of the document
 \begin{document}

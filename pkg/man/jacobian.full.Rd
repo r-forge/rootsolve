@@ -149,10 +149,18 @@ eigen(jacobian.full(c(x=0,y=0),eqn2,parms=c(a=-1,b=1,e=1,f=1)))$values
 }
 
 \seealso{
-  \code{\link{jacobian.band}}, for a banded jacobian matrix.
+ \code{\link{jacobian.band}}, estimates the Jacobian matrix
+   assuming a banded structure.
 
-  \code{\link{gradient}}, for a full (not necessarily square) gradient matrix
-    and where the function call is simpler.
+ \code{\link{hessian}}, estimates the Hessian matrix.
+
+ \code{\link{gradient}}, for a full (not necessarily square) gradient matrix
+   and where the function call is simpler.
+
+ \code{\link{uniroot.all}}, to solve for all roots of one (nonlinear) equation
+
+ \code{\link{multiroot}}, to solve n roots of n (nonlinear) equations
+
 }
 
 \note{

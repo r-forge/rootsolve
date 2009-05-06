@@ -145,14 +145,24 @@ legend("topright",pch=c(NA,1),lty=c(1,NA),c("numeric","analytic"))
   in this case, use \code{steady.1D}
 }
 \seealso{
-  \code{\link{stode}} for the additional options
 
-  \code{\link{steady}}, for solving steady-state when the jacobian matrix
-    is full
+ \code{\link{steady}}, for a general interface to most of the steady-state
+   solvers
 
-  \code{\link{steady.1D}}, for solving steady-state of 1-D models.
+ \code{\link{steady.1D}}, \code{\link{steady.2D}},
+   \code{\link{steady.3D}}, steady-state solvers for 1-D, 2-D and 3-D
+   partial differential equations.
 
-  \code{\link{steady.2D}}, for solving steady-state of 2-D models.
+ \code{\link{stode}}, iterative steady-state solver for ODEs with full
+   or banded Jacobian.
+
+ \code{\link{stodes}}, iterative steady-state solver for ODEs with arbitrary
+   sparse Jacobian.
+
+ \code{\link{runsteady}}, steady-state solver by dynamically running to
+   steady-state
+
 }
+
 \keyword{math}
 

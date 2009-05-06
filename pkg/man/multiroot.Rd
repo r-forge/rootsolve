@@ -123,19 +123,32 @@ X\%*\%X\%*\%X
 }
 
 \seealso{
-  \code{\link{steady}}, \code{\link{steady.1D}}, and \code{\link{steady.band}},
-  the root solvers
-  for a system of ordinary differential equations. Here variables are
-  state-variables and the function estimates the rate of change.
+
+ \code{\link{uniroot.all}}, to solve for all roots of one (nonlinear) equation
+
+ \code{\link{steady}}, \code{\link{steady.band}},  \code{\link{steady.1D}},
+ \code{\link{steady.2D}}, \code{\link{steady.3D}}, steady-state solvers,
+   which find the roots of ODEs or PDEs. The function call differs from
+   \code{multiroot}.
+
+ \code{\link{jacobian.full}}, \code{\link{jacobian.band}}, estimates the
+   Jacobian matrix assuming a full or banded structure.
+
+ \code{\link{gradient}}, \code{\link{hessian}}, estimates the gradient
+   matrix or the Hessian.
 }
+
 \note{
   The Fortran implementation of the Newton-Raphson method function (the
   default) is generally faster than the \R implementation.
-
-  \code{multiroot} makes use of function \code{steady}.
-  Technically, \code{multiroot} is just a wrapper around function \code{steady}.
-
   The \R implementation has been included for didactic purposes.
+
+
+  \code{multiroot} makes use of function \code{stode}.
+  Technically, it is just a wrapper around function \code{stode}.
+  If the sparsity structure of the Jacobian is known, it may be more efficiently
+  to call \code{stode, stodes, steady, steady.1D, steady.2D, steady.3D}.
+  
 
   It is NOT guaranteed that the method will converge to the root.
 }

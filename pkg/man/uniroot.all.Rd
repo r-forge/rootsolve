@@ -58,8 +58,8 @@ f(AA)  # !!!
 ## Ecological modelling example ##
 ##################################
 
-# Example from the book of Soetaert and Herman(2008)
-# A practical guide to ecological modelling
+# Example from the book of Soetaert and Herman(2009)
+# A practical guide to ecological modelling -
 # using R as a simulation platform. Springer
 
 r   <- 0.05
@@ -81,7 +81,7 @@ eig <- vector()
 for (i in 1:length(Eq)) eig[i] <- sign (gradient(rate,Eq[i]))
 
 curve(rate(x),ylab="dx/dt",from=0,to=10,
-main="Budworm model, roots",sub= "Example from book of Soetaert and Herman")
+main="Budworm model, roots",sub= "Example from Soetaert and Herman, 2009")
 abline(h=0)
 points(x=Eq,y=rep(0,length(Eq)),pch=21,cex=2,bg=c("grey","black","white")[eig+2] )
 legend("topleft",pch=22,pt.cex=2,c("stable","saddle","unstable"),
@@ -93,7 +93,7 @@ col=c("grey","black","white"),pt.bg=c("grey","black","white"))}
   for steady-state analysis.
 
   See also second example of \code{\link{gradient}}
-  This example is discussed in the book by Soetaert and Herman (2008).
+  This example is discussed in the book by Soetaert and Herman (2009).
 }
 \seealso{
   \code{\link{uniroot}} for more information about input.

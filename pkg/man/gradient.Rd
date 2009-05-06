@@ -73,8 +73,8 @@ colMeans(sSF)
 # 2. Stability of the budworm model, as a function of its
 # rate of increase.
 #
-# Example from the book of Soetaert and Herman(2008)
-# A practical guide to ecological modelling
+# Example from the book of Soetaert and Herman(2009)
+# A practical guide to ecological modelling,
 # using R as a simulation platform. Springer
 # code and theory are explained in this book
 
@@ -101,7 +101,7 @@ rseq <- seq(0.01,0.07,by=0.0001)
 
 plot(0,xlim=range(rseq),ylim=c(0,10),type="n",
      xlab="r",ylab="B*",main="Budworm model, bifurcation",
-     sub="Example from book of Soetaert and Herman")
+     sub="Example from Soetaert and Herman, 2009")
 
 for (r in rseq) {
   st <- stability(r) 
@@ -123,7 +123,7 @@ col=c("darkblue","lightblue"),pt.bg=c("darkblue","lightblue"))}
   \code{\link{jacobian.full}}, for generating a full and \bold{square}
   gradient (jacobian) matrix and where the function call is more complex
 
-  \code{\link{hessian}}, for generating the hessian matrix
+  \code{\link{hessian}}, for generating the Hessian matrix
 }
 \references{
   Soetaert, K. and P.M.J. Herman (2008). A practical guide to ecological modelling -

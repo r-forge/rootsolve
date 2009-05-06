@@ -499,17 +499,23 @@ sum((X1-X$y)^2)
 }
 
 \seealso{
-  \code{\link{stodes}}, for steady-state estimation using the Newton-Raphson
-  method, when the jacobian matrix is sparse.
 
-  \code{\link{runsteady}}, for steady-state estimation by dynamically
-  running till the derivatives become 0.
+ \code{\link{steady}}, for a general interface to most of the steady-state
+   solvers
 
-  \code{\link{steady.band}}, for steady-state estimation, when the jacobian
-  matrix is banded, and where the state variables need NOT to be rearranged
+ \code{\link{steady.band}}, to find the steady-state of ODE models with a
+   banded Jacobian
 
-  \code{\link{steady.1D}}, for steady-state estimation, when the jacobian
-  matrix is banded, and where the state variables need to be rearranged
+ \code{\link{steady.1D}}, \code{\link{steady.2D}},
+   \code{\link{steady.3D}} steady-state solvers for 1-D, 2-D and 3-D
+   partial differential equations.
+
+ \code{\link{stodes}}, iterative steady-state solver for ODEs with arbitrary
+   sparse Jacobian.
+
+ \code{\link{runsteady}}, steady-state solver by dynamically running to
+   steady-state
+
 }
 
 \note{

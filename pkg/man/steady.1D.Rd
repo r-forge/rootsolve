@@ -154,7 +154,7 @@ out2  <- steady.1D (y=state,func=O2BOD,parms=NULL, nspec=2,
 ######  EXAMPLE 2: Silicate diagenesis                      ######
 ##################################################################
 # Example from the book:
-# Soetaert and Herman (2008).
+# Soetaert and Herman (2009).
 # a practical guide to ecological modelling -
 # using R as a simulation platform.
 # Springer
@@ -307,15 +307,27 @@ mtext(outer=TRUE,side=3,line=-2,cex=1.5,"SiDIAmodel")
   The default is no cyclic boundaries.
 }
 \seealso{
-  \code{\link{stode}} and \code{\link{stodes}} for the additional options
 
-  \code{\link{steady}}, for solving steady-state when the jacobian matrix
-    is full
+ \code{\link{steady}}, for a general interface to most of the steady-state
+   solvers
 
-  \code{\link{steady.2D}}, for steady-state estimation of 2-D models
+ \code{\link{steady.band}}, to find the steady-state of ODE models with a
+   banded Jacobian
 
-  \code{\link{steady.band}}, for steady-state solution, when the jacobian
-    matrix is banded
+ \code{\link{steady.2D}},
+   \code{\link{steady.3D}}, steady-state solvers for 2-D and 3-D
+   partial differential equations.
+
+ \code{\link{stode}}, iterative steady-state solver for ODEs with full
+   or banded Jacobian.
+
+ \code{\link{stodes}}, iterative steady-state solver for ODEs with arbitrary
+   sparse Jacobian.
+
+ \code{\link{runsteady}}, steady-state solver by dynamically running to
+   steady-state
+
 }
+
 \keyword{math}
 

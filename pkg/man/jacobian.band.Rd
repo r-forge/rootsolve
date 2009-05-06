@@ -100,7 +100,18 @@ jacobian.band(y=c(1,2,3,4),func=mod)
 }
 
 \seealso{
-  \code{\link{jacobian.full}}, for a full jacobian matrix.
+ \code{\link{jacobian.full}}, estimates the Jacobian matrix
+   assuming a full matrix.
+
+ \code{\link{hessian}}, estimates the Hessian matrix.
+
+ \code{\link{gradient}}, for a full (not necessarily square) gradient matrix
+   and where the function call is simpler.
+
+ \code{\link{uniroot.all}}, to solve for all roots of one (nonlinear) equation
+
+ \code{\link{multiroot}}, to solve n roots of n (nonlinear) equations
+
 }
 \keyword{math}
 
