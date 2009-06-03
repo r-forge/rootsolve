@@ -107,7 +107,8 @@ options(width=70)
   \end{itemize}
 
   The package was created to solve the steady-state and stability analysis
-  examples in the book of \cite{Soetaert08}.
+  examples in the book of \cite{Soetaert08}. Please cite this work if you
+  use the package.
 
   The various functions in \rs are given in table (1).
 
