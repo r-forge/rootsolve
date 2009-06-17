@@ -40,7 +40,7 @@ The Netherlands}
 
 \Abstract{ \R package \rs \citep{rootSolve} includes
   \begin{itemize}
-    \item root-finding algorithms to solve for the n roots of n nonlinear
+    \item root-finding algorithms to solve for the roots of n nonlinear
       equations, using a Newton-Raphson method.
     \item An extension of \R function \code{uniroot}
     \item Functions that find the steady-state condition of a set of
@@ -178,7 +178,7 @@ options(width=70)
 
 \subsection{n equations in n unknowns}
   Except for polynomial root finding, to date \R has no functions that
-  retrieve n roots of n nonlinear equations.
+  retrieve the roots of multiple nonlinear equations.
 
   Function \emph{multiroot} in \rs implements the Newton-Raphson method
   (e.g. \cite{Press92}) to solve this type of problem. As the Newton-Raphson
@@ -745,7 +745,7 @@ $a<x<b$            & \rb{\code{uniroot.all}} & \rb{Finds many (all) roots of one
 
 $f(x) = 0$         & \code{multiroot}        & unconstrained root of one nonlinear equation                          \\  \hline
 
-$\mathbf{f(x)=0}$  & \code{multiroot}        & Solves for n roots of n (nonlinear) equations                         \\  \hline
+$\mathbf{f(x)=0}$  & \code{multiroot}        & Finds the roots of n (nonlinear) equations                         \\  \hline
 
 $\mathbf{\frac{{dx_{1..n}}}{{dt}} = 0}$
                    &\code{stode}       & Iterative steady-state solver for ordinary differential equations (ODE), assuming a full or banded Jacobian    \\ \hline

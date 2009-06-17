@@ -31,7 +31,10 @@ Functions that:
      License: \tab GNU Public License 2 or above\cr
   }
 
-rootSolve is designed for solving n roots of n nonlinear equations.
+rootSolve was created to solve the examples from chapter 7 (stability and
+steady-state) from the book of Soetaert and Herman, 2009.
+
+Please cite this work when using rootSolve.
 
 }
 

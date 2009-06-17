@@ -47,6 +47,9 @@ Estimates the steady-state condition for a system of
     \code{time}, and whose next elements (possibly with a
     \code{\link{names}} attribute) are global values that are required as
     output.
+    
+    The derivatives
+    should be specified in the same order as the state variables \code{y}.
 
     If \code{func} is a string, then \code{dllname} must give the name
     of the shared library (without extension) which must be loaded

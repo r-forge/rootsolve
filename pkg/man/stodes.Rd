@@ -51,6 +51,9 @@ stodes(y, time=0, func, parms=NULL, rtol=1e-6, atol=1e-8,
     \code{\link{names}} attribute) are global values that are required as
     output.
     
+    The derivatives
+    should be specified in the same order as the state variables \code{y}.
+    
     If \code{func} is a string, then \code{dllname} must give the name
     of the shared library (without extension) which must be loaded
     before \code{stodes()} is called.  see Details for more information.

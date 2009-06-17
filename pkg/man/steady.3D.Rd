@@ -35,6 +35,9 @@ steady.3D(y, time=0, func, parms=NULL, nspec=NULL, dimens,
     vector containing the derivatives of \code{y} with respect to
     \code{time}, and whose next elements are global values whose steady-state
     value is also required.
+    
+    The derivatives
+    should be specified in the same order as the state variables \code{y}.
   }
   \item{parms }{parameters passed to \code{func}.
   }
