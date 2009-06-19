@@ -89,10 +89,12 @@ options(width=70)
 
   The root of a function f(x) is the value of x for which f(x) = 0.
 
-  Package \rs deals with finding \textbf{n} roots of \textbf{n}
+  Package \rs deals with finding the roots of \textbf{n}
   nonlinear (or linear) equations. \\This is, it finds the values
   \[
-    x_i ^*  \quad (i=1,n)\] for which \[f_j ({\mathbf{x}}^* ) =
+    x_i ^*  \quad (i=1,n)
+  \] for which
+  \[f_j ({\mathbf{x}}^* ) =
         \mathbf{0} \quad(j=1,n)
   \]
 
@@ -241,20 +243,10 @@ X%*%X%*%X
 @
 \subsection{n equations in n unknowns with known Jacobian}
   If the Jacobian is known, OR it has a known sparsity structure, then it is
-  much more efficient to use one of the steady-state solvers (see next section)
-  \code{stode} or \code{stodes}; the former in case the Jacobian is full or
-  banded, the latter in case it has an arbitrary sparse structure.
-  
-  The steady-state solvers estimate the root of a system of ordinary
-  differential equations (ODE) and require the (ODE) function to be called as
-  \code{times,x,par}, where \code{x} are the unknowns to be estimated,
-  \code{times} and \code{par} are the times and parameter values respectively.
+  much more efficient to take that into account;
 
-  For functions that are not ordinary differential equations, the arguments
-  \code{times} and \code{par} are considered as dummy arguments.
-  
   As an example, a set of linear equations, comprising 500 unknowns are solved.
-  Of course, one would do that using a nonlinear equation solver, but
+  Of course, one would not do that using a nonlinear equation solver, but
   rather by using \code{solve}.
 
   However, the example is
@@ -264,7 +256,7 @@ X%*%X%*%X
   We start by defining the linear system of equations: a (500x500) matrix
   \code{A} and a vector \code{B} of length 500. It is solved with \code{solve},
   \R's default solver for systems of linear equations. The time it takes to
-  do this is printed
+  do this is printed (in seconds):
 <<>>=
 A <- matrix(nr=500,nc=500,runif(500*500))
 B <- runif(500)
@@ -272,27 +264,27 @@ B <- runif(500)
 print(system.time(X1 <- solve(A,B)))
 @
 
-  To use \code{stode} the nonlinear equation solver, it is noted that the
+  To use \code{multiroot} the nonlinear equation solver, it is noted that the
   Jacobian is equal to matrix \code{A}. A function is created that returns
   the Jacobian (or matrix A); the calling sequence of the Jacobian function
-  is \code{function(times,x,pars)}
+  is \code{function(x)}
 <<>>=
-jfun <- function (t,x,p) A
+jfun <- function (x) A
 @
   
   The function whose root is to be solved receives the current estimate of
-  \code{x}, and returns the difference \code{A x-B}, as a \code{list}
+  \code{x}, and returns the difference \code{A x-B}:
 <<>>=
-fun <- function(t,x,p) list (A %*%x-B)
+fun <- function(x) A %*%x-B
 @
 
-  Next \code{stode} is called with jactype = "fullusr" (it is a full Jacobian,
-  and specified by the user):
+Next \code{multiroot} is called with jactype = "fullusr" (it is a full Jacobian,
+and specified by the user):
 <<>>=
-print(system.time(X <- stode(y=1:500, func=fun, jactype="fullusr",
+print(system.time(X <- multiroot(start=1:500, f=fun, jactype="fullusr",
    jacfunc=jfun)))
 @
-  Finally, both are the same
+  Finally, both solutions are the same
 <<>>=
 sum((X1-X$y)^2)
 @
@@ -679,6 +671,111 @@ filled.contour(Conc,color.palette=terrain.colors)
   Function \code{steady.3D} the steady-state of
   3-dimensional problems. See its help file for an example.
   
+\section{Boundary value problems}
+
+  \code{multiroot.1D} can be used to solve boundary value problems of ordinary
+  differential equations.
+
+  The following differential equation:
+  \[
+  0=f(x,y,\frac{dy}{dx},\frac{d^2y}{dx^2})
+  \]2
+
+  with boundary conditions
+
+  $y_{x=a} = ya$, at the start and $y_{x=b}=yb$
+  at the end of the integration interval [a,b] is solved as follows:
+
+  \begin{enumerate}
+  \item First the integration interval x is discretized,
+   \begin{verbatim}
+   dx <- 0.01
+   x <- seq(a,b,by=dx)
+   \end{verbatim}
+
+   where \code{dx} should be small enough, such as to keep the numerical
+   discretisation error reasonable.
+
+  \item Then the first- and second-order
+  derivatives are differenced on this numerical
+  grid.
+
+  R's \code{diff} function is very efficient in taking numerical
+  differences, so it is used to approximate the first-, and second-order
+  derivates as follows.
+
+
+  A \emph{first-order derivative y'} can be approximated either as:
+  \begin{itemize}
+    \item y'=\code{diff(c(ya,y))/dx} if only the initial condition ya is prescribed,
+    \item y'=\code{diff(c(y,yb))/dx} if only the final condition, yb is prescribed,
+    \item y'=\code{0.5*(diff(c(ya,y))/dx+diff(c(y,yb))/dx)} if initial, ya,
+      and final condition, yb are prescribed.
+  \end{itemize}
+  The latter (centered differences) is to be preferred.
+
+  A \emph{second-order derivative y''} can be approximated by differencing twice.
+
+  y''=\code{diff(diff(c(ya,y,yb))/dx)/dx}
+
+  \item Finally, function \code{multiroot.1D} is used to locate the root.
+
+  \end{enumerate}
+\subsection{test problem 22}
+As an example, the following boundary value problem will be solved:
+  \begin{eqnarray*}
+    \xi y'' + y' + y^2 = 0 \\
+    y_{x=0} = 0 \\
+    y_{x=1} = 1/2
+  \end{eqnarray*}
+This is problem number 22 from a set of test boundary value problems which can
+be found at: \url{http://www.ma.ic.ac.uk/~jcash/BVP_software/PROBLEMS.PDF}.
+
+First the function whose root has to solved is implemented:
+<<>>=
+bvp22 <- function (y, xi) {
+  dy2 <- diff(diff(c(ya,y,yb))/dx)/dx
+  dy  <- 0.5*(diff(c(ya,y))/dx+diff(c(y,yb))/dx)
+  
+  return(xi*dy2+dy+y^2)
+}
+@
+Then the grid [0,1] is discretised and the boundary values defined
+<<>>=
+dx <- 0.001
+x  <- seq(0,1,by=dx)
+N <- length(x)
+ya <- 0
+yb <- 0.5
+@
+The model is solved for different values of $\xi$ and the output plotted.
+With the settings of dx, the root of 1001 equations needs to be found; the
+time it takes (in \emph{mili}seconds) is printed for the first application.
+<<>>=
+print(system.time(
+Y1<- multiroot.1D(f=bvp22, start=runif(N), nspec=1, xi=0.1)
+)*1000)
+Y2<- multiroot.1D(f=bvp22, start=runif(N), nspec=1, xi=0.05)
+Y3<- multiroot.1D(f=bvp22, start=runif(N), nspec=1, xi=0.01)
+
+@
+<<label=bnd, include=FALSE>>=
+plot(x,Y3$root, type="l", col="green", lwd=2,
+  main="bvp test problem 22" ,ylab="y")
+lines(x,Y2$root, col="red", lwd=2)
+lines(x,Y1$root, col="blue", lwd=2)
+@
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{figure}
+\begin{center}
+<<label=figbnd,fig=TRUE,echo=FALSE>>=
+<<bnd>>
+@
+\end{center}
+\caption{Solution of the boundary value problem, for three values of $\xi$}
+\label{fig:bnd}
+\end{figure}
+
 \section{Gradients, Jacobians and Hessians}
 \subsection{Gradient and Hessian matrices}
   Function \code{gradient} returns a forward difference approximation for

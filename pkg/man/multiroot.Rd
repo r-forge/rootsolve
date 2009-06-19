@@ -16,7 +16,9 @@
 \usage{
 multiroot(f, start, maxiter=100, 
   rtol=1e-6, atol=1e-8, ctol=1e-8, 
-  useFortran=TRUE, positive=FALSE, ...)
+  useFortran=TRUE, positive=FALSE,
+  jacfunc=NULL, jactype="fullint",
+  verbose=FALSE, bandup=1, banddown=1, ...)
 }
 \arguments{
   \item{f }{function for which the root is sought; it must return a vector
@@ -43,6 +45,39 @@ multiroot(f, start, maxiter=100,
   }
   \item{positive}{if \code{TRUE}, the unknowns y are forced to be
     non-negative numbers.
+  }
+  \item{jacfunc }{if not \code{NULL}, a user-supplied \R function that
+    estimates the Jacobian of the system of differential equations
+    dydot(i)/dy(j). In some circumstances, supplying \code{jacfunc}
+    can speed up the computations.  The \R calling sequence for
+    \code{jacfunc} is identical to that of \code{func}.
+
+    If the Jacobian is a full matrix, \code{jacfunc} should return a matrix
+    dydot/dy, where the ith row contains the derivative of \eqn{dy_i/dt}
+    with respect to \eqn{y_j}, or a vector containing the matrix elements
+    by columns.
+
+    If the Jacobian is banded, \code{jacfunc} should return a matrix containing
+    only the nonzero bands of the jacobian, (dydot/dy), rotated row-wise.
+    
+  }
+  \item{jactype }{the structure of the Jacobian, one of "fullint", "fullusr",
+    "bandusr", "bandint", or "sparse" - either full or banded and
+      estimated internally or by the user, or arbitrary sparse.
+     If the latter, then the solver will call, \code{\link{stodes}},
+     else \code{\link{stode}}
+
+     If the Jacobian is arbitrarily "sparse", then it will be calculated by
+     the solver (i.e. it is not possible to also specify \code{jacfunc}).
+  }
+  \item{verbose }{if \code{TRUE}: full output to the screen, e.g. will output
+    the steady-state settings.
+  }
+  \item{bandup }{number of non-zero bands above the diagonal, in case the
+    Jacobian is banded.
+  }
+  \item{banddown }{number of non-zero bands below the diagonal, in case the
+    jacobian is banded.
   }
   \item{... }{additional arguments passed to function \code{f}.
   }
@@ -123,6 +158,7 @@ X\%*\%X\%*\%X
 }
 
 \seealso{
+ \code{\link{stode}}, which uses a different function call.
 
  \code{\link{uniroot.all}}, to solve for all roots of one (nonlinear) equation
 
