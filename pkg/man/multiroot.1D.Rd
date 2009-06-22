@@ -139,6 +139,8 @@ lines(x,Y1$root,col="blue")
   \code{multiroot.1D} is similar to \code{\link{steady.1D}}, except for the
   function specification which is simpler in \code{multiroot.1D}.
   
+  It is to be used to solve (simple) boundary value problems of
+  differential equations.
 
   The following differential equation:
   \deqn{0=f(x,y,\frac{dy}{dx},\frac{d^2y}{dx^2})}{0=f(x,y,y',y'')}
@@ -150,13 +152,13 @@ lines(x,Y1$root,col="blue")
 
   as follows:
   
-  1. First the integration interval x is discretized,
+  1. First the integration interval x is discretized, for instance:
 
   \code{dx <- 0.01}
   
   \code{x <- seq(a,b,by=dx)}
 
-  where \code{dx} should be small enough.
+  where \code{dx} should be small enough to keep numerical errors small.
 
   2. Then the first- and second-order
   derivatives are differenced on this numerical
@@ -172,7 +174,7 @@ lines(x,Y1$root,col="blue")
     \item{y'=\code{0.5*(diff(c(ya,y))/dx+diff(c(y,yb))/dx)}}{if initial, ya,
       and final condition, yb are prescribed.}
   }
-  The latter (centered differences is to be preferred).
+  The latter (centered differences) is to be preferred.
   
   A \emph{second-order derivative y''} can be approximated by differencing twice.
 
@@ -201,16 +203,7 @@ lines(x,Y1$root,col="blue")
 }
 
 \note{
-  The Fortran implementation of the Newton-Raphson method function (the
-  default) is generally faster than the \R implementation.
-  The \R implementation has been included for didactic purposes.
-
-
-  \code{multiroot} makes use of function \code{stode}.
-  Technically, it is just a wrapper around function \code{stode}.
-  If the sparsity structure of the Jacobian is known, it may be more efficiently
-  to call \code{stode, stodes, steady, steady.1D, steady.2D, steady.3D}.
-  
+  \code{multiroot.1D} makes use of function \code{steady.1D}.
 
   It is NOT guaranteed that the method will converge to the root.
 }

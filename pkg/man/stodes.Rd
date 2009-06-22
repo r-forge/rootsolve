@@ -247,7 +247,7 @@ plot(ss$y[1:N],dist,ylim=rev(range(dist)),type="l",lwd=2,
   for details.
 
   \bold{Models} may be defined in compiled C or Fortran code, as well as in
-  \R. See help for \code{stode} for details.
+  \R. See package vignette for details on how to write models in compiled code.
 }
 
 \seealso{

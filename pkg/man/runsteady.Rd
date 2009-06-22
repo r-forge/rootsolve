@@ -140,12 +140,12 @@
   }
   \item{dllname }{a string giving the name of the shared library (without
     extension) that contains all the compiled function or subroutine
-    definitions refered to in \code{func} and \code{jacfunc}. See help of
-    \code{stode}.
+    definitions refered to in \code{func} and \code{jacfunc}. See package
+    vignette.
   }
   \item{initfunc }{if not NULL, the name of the initialisation function (which
-    initialises values of parameters), as provided in \file{dllname}. See help
-    of \code{stode}.
+    initialises values of parameters), as provided in \file{dllname}. See
+    package vignette.
   }
   \item{initpar }{only when \file{dllname} is specified and an initialisation
     function \code{initfunc} is in the dll: the parameters passed to the

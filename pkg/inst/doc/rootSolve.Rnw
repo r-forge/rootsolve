@@ -25,10 +25,10 @@
 \Plaintitle{Package rootSolve: roots, gradients and steady-states in R}
 
 \Keywords{roots of nonlinear equations, gradient, Jacobian, Hessian,
-  steady-state, boundary value ODE, \proglang{R}}
+  steady-state, boundary value ODE, method of lines, \proglang{R}}
 
 \Plainkeywords{roots of nonlinear equations, gradient, Jacobian, Hessian,
-  steady-state, boundary value ODE, R}
+  steady-state, boundary value ODE, method of lines, R}
 
 
 \author{Karline Soetaert\\
@@ -50,8 +50,8 @@ The Netherlands}
       are included. These allow to estimate the steady-state of 1-D, 2-D
       and 3-D partial differential equations (PDE) that have been rewritten
       as a set of ODEs by numerical differencing.
-    \item Functions calculate the Jaobian matrix or - more general - the
-      gradient of functions with respect to independent variables.
+    \item Functions calculate the Hessian and Jaobian matrix or - more
+      general - the gradient of functions with respect to independent variables.
   \end{itemize}
 }
 
@@ -379,14 +379,17 @@ pars <- c(D=1,Flux=100,r=0.1,rox =1,
 y<-c(OM=1,O2=1,SO4=1,HS=1)
 
 print(system.time(
-runsteady(y=y,fun=model,parms=pars,times=c(0,1e5))$y
+RS<-runsteady(y=y,fun=model,parms=pars,times=c(0,1e5))
 ))
+RS
 @
-
+The output shows the steady-state concentrations (\code{ST$y}), and the
+output variable (\code{ST$SumS}), the time and the number of timesteps it
+took to reach steady-state (attribute "time", "steps").
 \subsection{Using the Newton-Raphson method}
-  Functions \emph{stode}, \emph{stodes}, \emph{steady}, \emph{steady.1D},
-  \emph{steady.2D}, and \emph{steady.band} find the steady-state by the
-  iterative Newton-Raphson method (e.g. \cite{Press92}.
+  Functions \code{stode}, \code{stodes}, \code{steady}, \code{steady.1D},
+  \code{steady.2D}, \code{steady.3D}, and \code{steady.band} find the
+  steady-state by the iterative Newton-Raphson method (e.g. \cite{Press92}.
 
   The same model as above can also be solved using \code{stode}. This is
   faster than running dynamically to steady-state, but not all models can be
@@ -420,7 +423,8 @@ stode(y=y,fun=model,parms=pars,pos=TRUE)
 
   $y(1) = 1$ and $y(6) = -0.5$
 
-  The spatial derivatives are approximated using centred differences:
+  The spatial derivatives are approximated using centred differences
+  \footnote{in a later section, an alternative approximation is used}:
   \[
     \frac{\partial ^2{y}}{\partial {x^2}}\approx \frac{y_{i+1}-2 \cdot y_i + y_{i-1}}{\Delta x ^2}
   \]
@@ -599,6 +603,7 @@ par(mfrow=mf)
   shifted (e.g. \code{Conc[2:n,]-Conc[1:(n-1),]}).
 
   The flux gradient is then also approximated by subtracting entire matrices
+  
   (e.g. \code{Flux[2:(n+1),]-Flux[1:(n),]}).
   This is very fast. The zero-flux at the boundaries is imposed by binding a
   column or row with 0-s.
@@ -672,14 +677,20 @@ filled.contour(Conc,color.palette=terrain.colors)
   3-dimensional problems. See its help file for an example.
   
 \section{Boundary value problems}
+  The previous example from functions \code{steady.1D, steady.2D and steady.3D}
+  solved bundary value problems, in a way that the function call is compatible
+  with initial value problem solvers from package \ds.
 
-  \code{multiroot.1D} can be used to solve boundary value problems of ordinary
-  differential equations.
+  Function \code{multiroot.1D} can also be used to solve boundary value
+  problems of ordinary differential equations, but has a simpler function
+  interface. It also uses the method-of-lines approach. Another package,
+  \pkg{bvpSolve} provides two totally different methods to solve boundary
+  values problems \citep{bvpSolve}.
 
   The following differential equation:
   \[
   0=f(x,y,\frac{dy}{dx},\frac{d^2y}{dx^2})
-  \]2
+  \]
 
   with boundary conditions
 
@@ -740,7 +751,8 @@ bvp22 <- function (y, xi) {
   return(xi*dy2+dy+y^2)
 }
 @
-Then the grid [0,1] is discretised and the boundary values defined
+Then the grid [0,1] is discretised (\code{x}) and the boundary values
+(\code{ya,yb}) defined
 <<>>=
 dx <- 0.001
 x  <- seq(0,1,by=dx)
@@ -756,7 +768,9 @@ print(system.time(
 Y1<- multiroot.1D(f=bvp22, start=runif(N), nspec=1, xi=0.1)
 )*1000)
 Y2<- multiroot.1D(f=bvp22, start=runif(N), nspec=1, xi=0.05)
+print(system.time(
 Y3<- multiroot.1D(f=bvp22, start=runif(N), nspec=1, xi=0.01)
+)*1000)
 
 @
 <<label=bnd, include=FALSE>>=
@@ -775,6 +789,179 @@ lines(x,Y1$root, col="blue", lwd=2)
 \caption{Solution of the boundary value problem, for three values of $\xi$}
 \label{fig:bnd}
 \end{figure}
+\section{writing functions in compiled code}
+
+Similarly as for the models that are solved with integration routines from
+package \ds, the models solved by the steady-state routines (\code{stode,
+stodes, steady, steady.1D, steady.2D, steady.3D}) can be written in compiled
+code (C or Fortran).
+
+A vignette ("compiledCode") from package \ds can be consulted for how to do
+that. Here the simple sediment
+biogeochemical model from chapter 2.1 is implemented in \code{C} and \code{Fortran}.
+
+\subsection{main function in C-code}
+For \emph{code written in C}, the calling sequence for \code{func} must
+be as follows:
+
+\begin{verbatim}
+  void anoxmod(int *neq, double *t, double *y, double *ydot,
+  double *yout, int *ip)
+
+  double OM, O2, SO4, HS;
+  double Min, oxicmin, anoxicmin;
+  if (ip[0] <1) error("nout should be at least 1");
+  OM  = y[0];
+  O2  = y[1];
+  SO4 = y[2];
+  HS  = y[3];
+  Min       = r*OM;
+  oxicmin   = Min*(O2/(O2+ks));
+  anoxicmin = Min*(1-O2/(O2+ks))* SO4/(SO4+ks2);
+
+  ydot[0]  = Flux - oxicmin - anoxicmin;
+  ydot[1]  = -oxicmin      -2*rox*HS*(O2/(O2+ks)) + D*(BO2-O2);
+  ydot[2]  = -0.5*anoxicmin  +rox*HS*(O2/(O2+ks)) + D*(BSO4-SO4);
+  ydot[3]  =  0.5*anoxicmin  -rox*HS*(O2/(O2+ks)) + D*(BHS-HS);
+
+  yout[0] = SO4+HS;
+
+\end{verbatim}
+
+  where \code{*neq} is the number of equations, \code{*t} is the value
+  of the independent variable, \code{y} points to a double precision
+  array of length \code{*neq} that contains the current value of the
+  state variables, and \code{ydot} points to an array that will contain
+  the calculated derivatives.
+
+  \code{yout} points to a double precision vector whose first \code{nout}
+  values are other output variables (different from the state variables
+  \code{y}), and the next values are double precision values as passed by
+  parameter \code{rpar} when calling the steady-state solver. The key to the
+  elements of \code{yout} is set in \code{*ip}.
+
+  \code{*ip} points to an integer vector whose length is at least 3;
+  the first element contains the number of output values (which should
+  be equal to \code{nout}),
+  its second element contains the length of \code{*yout}, and the third
+  element contains the length of \code{*ip};
+  next are integer values, as passed by parameter \code{ipar} when calling
+  the steady-state solver.
+
+\subsection{main function in FORTRAN-code}
+  For \emph{code written in Fortran}, the calling sequence for \code{func}
+  must be as in the following example:
+  
+\begin{verbatim}
+  subroutine model (neq, t, y, ydot, yout, ip)
+  double precision t, y(4), ydot(4), yout(*)
+  double precision OM,O2,SO4,HS
+  double precision min, oxicmin, anoxicmin
+
+  integer neq, ip(*)
+  double precision D, Flux, r, rox, ks, ks2, BO2, BSO4, BHS
+  common /myparms/D, Flux, r, rox, ks, ks2, BO2, BSO4, BHS
+
+  IF (ip(1) < 1) call rexit("nout should be at least 1")
+  OM  = y(1)
+  O2  = y(2)
+  SO4 = y(3)
+  HS  = y(4)
+  Min       = r*OM
+  oxicmin   = Min*(O2/(O2+ks))
+  anoxicmin = Min*(1-O2/(O2+ks))* SO4/(SO4+ks2)
+
+  ydot(1)  = Flux - oxicmin - anoxicmin
+  ydot(2)  = -oxicmin      -2*rox*HS*(O2/(O2+ks)) + D*(BO2-O2)
+  ydot(3)  = -0.5*anoxicmin  +rox*HS*(O2/(O2+ks)) + D*(BSO4-SO4
+  ydot(4)  =  0.5*anoxicmin  -rox*HS*(O2/(O2+ks)) + D*(BHS-HS)
+
+  yout(1) = SO4+HS
+  return
+  end
+\end{verbatim}
+
+  Note that we start by checking whether enough room is allocated for the
+  output variables, else an error is passed to R (\code{rexit}) and the
+  integration is stopped.
+
+  In this example, parameters are kept in a common block (called
+  \code{myparms}) in the Fortran code
+
+\subsection{initialisation subroutine}
+  In order to put parameters in the common block from the calling \R
+  code, an \emph{initialisation subroutine} as specified in \code{initfunc}
+  should be defined. This function has as its sole argument a function
+  \code{steadyparms} that fills a double array with double precision
+  values.  In the example here, the initialisation subroutine is called
+  \code{myinit}:
+
+\begin{verbatim}
+  subroutine myinit(steadyparms)
+
+  external steadyparms
+  double precision parms(9)
+  common /myparms/parms
+
+  call steadyparms(9, parms)
+
+  return
+  end
+\end{verbatim}
+
+  Here \code{myinit} just calls \code{steadyparms} with the dimension of
+  the parameter vector, and the array \code{parms} that will contain the
+  parameter values.
+
+  The corresponding C-code is:
+  
+\begin{verbatim}
+  void initanox (void (* steadyparms)(int *, double *))
+
+  int N = 9;
+  steadyparms(&N, parms);
+\end{verbatim}
+
+\subsection{jacobian subroutine}
+  If it is desired to supply a Jacobian to the solver, then the Jacobian
+  must be defined in compiled code if the ode system is.  The C function
+  call for such a function must be as follows:
+
+\begin{verbatim}
+  void myjac(int *neq, double *t, double *y, int *ml,
+             int *mu, double *pd, int *nrowpd, double *yout, int *ip)
+\end{verbatim}
+
+  The corresponding subroutine call in Fortran is:
+
+\begin{verbatim}
+  subroutine myjac (neq, t, y, ml, mu, pd, nrowpd, yout, ip)
+  integer neq, ml, mu, nrowpd, ip(*)
+  double precision y(*), pd(nrowpd,*), yout(*)
+\end{verbatim}
+
+\subsection{Estimating steady-state for models written in compiled code}
+
+  To run the model using e.g. the Fortran code, the code in anoxmod.f must
+  first be compiled.
+
+  This can be done in R itself:
+
+\code{system("R CMD SHLIB anoxmod.f")}
+
+  which will create file anoxmod.dll
+
+  After loading the DLL, the model can be solved:
+
+\begin{verbatim}
+dyn.load("anoxmod.dll")
+
+ST2 <- stode(y=y,func="model",parms=pars,)
+dllname="anoxmod",initfunc="myinit",pos=TRUE,nout=1)
+\end{verbatim}
+
+  Examples in both C and Fortran are in the \code{dynload} subdirectory of
+  the \code{rootSolve} package directory.
 
 \section{Gradients, Jacobians and Hessians}
 \subsection{Gradient and Hessian matrices}
@@ -829,7 +1016,14 @@ jacobian.full(y=c(1,2,3,4),func=mod)
 jacobian.band(y=c(1,2,3,4),func=mod)
 @
 \clearpage
+\section{Finally}
+This vignette was created using Sweave \citep{Leisch02}.
 
+It takes 2.2 seconds to "Sweave" the file; this is about the time needed
+to solve all the examples.
+
+The computer on which this is run is an Intel Core (TM)2
+Duo CPU T9300 2.5 GHz pentium PC with 3 GB of RAM
 \begin{table*}[t]
 \caption{Summary of the functions in package \rs;
   values in \textbf{bold} are vectors}\label{tb:rs}
@@ -843,6 +1037,7 @@ $a<x<b$            & \rb{\code{uniroot.all}} & \rb{Finds many (all) roots of one
 $f(x) = 0$         & \code{multiroot}        & unconstrained root of one nonlinear equation                          \\  \hline
 
 $\mathbf{f(x)=0}$  & \code{multiroot}        & Finds the roots of n (nonlinear) equations                         \\  \hline
+                   & \code{multiroot.1D}        & Finds the roots of n (nonlinear) equations generated by discretisation of ODE, using the method-of-lines approach                        \\  \hline
 
 $\mathbf{\frac{{dx_{1..n}}}{{dt}} = 0}$
                    &\code{stode}       & Iterative steady-state solver for ordinary differential equations (ODE), assuming a full or banded Jacobian    \\ \hline

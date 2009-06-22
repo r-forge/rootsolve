@@ -93,7 +93,7 @@ steady(y, time=0, func, parms=NULL, method="stode",...)}
 \details{
   This is simply a wrapper around the various steady-state solvers.
 
-  See help file of \code{\link{stode}} for information about specifying the
+  See package vignette for information about specifying the
   model in compiled code.
 
   See the selected solver for the additional options.
