@@ -26,8 +26,8 @@ Functions that:
   \tabular{ll}{
      Package: \tab rootSolve\cr
      Type: \tab Package\cr
-     Version: \tab 1.4\cr
-     Date: \tab 2009-01-31\cr
+     Version: \tab 1.5\cr
+     Date: \tab 2009-06-01\cr
      License: \tab GNU Public License 2 or above\cr
   }
 
