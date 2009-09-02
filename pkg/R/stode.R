@@ -216,7 +216,10 @@ stode         <- function(y, time=0, func, parms=NULL,
      if (min(positive) < 1) stop ("the elements of 'positive' should be >0")
 
   }
-  out <- .Call("call_dsteady", y, as.double(time), Func, as.double(initpar),
+
+  if(is.null(initfunc))
+     initpar <- NULL # parameter init not needed if function is not a DLL
+  out <- .Call("call_dsteady", y, as.double(time), Func,  as.double(initpar),
     ctol, atol, rtol, as.integer(itol), rho,  JacFunc, ModelInit, as.integer(verbose),
     as.integer(imp),as.integer(bandup),as.integer(banddown),as.integer(maxiter),
     as.integer(Pos),as.integer(positive),as.integer(Nglobal),as.integer(nabd),

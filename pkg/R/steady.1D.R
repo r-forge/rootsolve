@@ -35,7 +35,7 @@ steady.1D    <- function (y, time=0, func, parms=NULL, nspec = NULL,
     Bnd <- 0
     if (! is.null(cyclicBnd)) {
     if (max(cyclicBnd) > 1 )
-      stop ("cannot run steady.1D: cyclicBnd should NULL or a value not exceeding 1")
+      stop ("cannot run steady.1D: cyclicBnd should be NULL or a value not exceeding 1")
     Bnd <-1
   }
 

@@ -11,6 +11,6 @@ Description: Routines to find the root of nonlinear functions, and to perform st
   (4) solve the steady-state conditions for uni-and multicomponent 1-D, 2-D, and 3-D partial differential equations, that have been converted to ODEs
     by numerical differencing (using the method-of-lines approach).
   Includes fortran code.
-License: GPL
+License: GPL (>= 2)
 LazyData: yes
 Packaged: Sat September 20 2008; karlines

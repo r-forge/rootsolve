@@ -235,7 +235,10 @@ stodes        <- function(y, time=0, func, parms=NULL, rtol=1e-6, atol=1e-8,
       stop ("the elements of 'positive' should be >0")
   }
 
-  out <- .Call("call_stsparse", y, as.double(time), Func, as.double(initpar),
+  if(is.null(initfunc))
+     initpar <- NULL # parameter init not needed if function is not a DLL
+
+  out <- .Call("call_stsparse", y, as.double(time), Func,  as.double(initpar),
     ctol, atol, rtol, as.integer(itol), rho,  ModelInit, as.integer(verbose),
     as.integer(imp),as.integer(nnz),as.integer(lrw),as.integer(ngp),
     as.integer(maxiter),as.integer(Pos),as.integer(positive),
