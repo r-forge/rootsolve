@@ -78,6 +78,8 @@ steady.1D    <- function (y, time=0, func, parms=NULL, nspec = NULL,
       colnames(out[[1]]) <- names
     }
   }
-  
+  class(out) <- c("steady1D","list")    # a steady-state 
+  attr(out,"dimens") <- dimens
+  attr(out, "nspec") <- nspec
   return(out)
 }

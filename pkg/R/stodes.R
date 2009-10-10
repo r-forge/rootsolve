@@ -210,6 +210,8 @@ stodes        <- function(y, time=0, func, parms=NULL, rtol=1e-6, atol=1e-8,
     stop(paste("The number of derivatives returned by func() (",length(
     tmp[[1]]), "must equal the length of the initial conditions vector (",
        length(y), ")", sep = ""))
+  if (any(is.na(tmp[[1]])))
+      stop("Model function must return a list of values, of which first element has length =length of y\n ")
 
     # use "unlist" here because some output variables are vectors/arrays
   Nglobal <- if (length(tmp) > 1)
