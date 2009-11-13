@@ -133,11 +133,11 @@ stodes        <- function(y, time=0, func, parms=NULL, rtol=1e-6, atol=1e-8,
       print(paste("number of species: ",nnz[2]))
     }
     if (sparsetype =="2D")    {
-      print(paste("dimensions: ",nnz[3],nnz[4]))
+      print(paste("dimensions: ",nnz[4],nnz[3]))
       print(paste("cyclic boundaries: ",nnz[5],nnz[6]))
     }
     if (sparsetype =="3D")    {
-      print(paste("dimensions: ",nnz[3],nnz[4],nnz[5]))
+      print(paste("dimensions: ",nnz[5],nnz[4],nnz[3]))
       print(paste("cyclic boundaries: ",nnz[6],nnz[7],nnz[8]))
     }
   }
