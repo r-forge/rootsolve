@@ -12,7 +12,7 @@ void F77_NAME(dsparse)(void (*)(int *, double *, double *, double *, double*, in
 		     int *, int *, int *, int *, double *, int*,
          int *, double *, int *, int*);
 
-static void stsparse_derivs (int *neq, double *t, double *y, double *ydot, 
+static void C_stsparse_derivs (int *neq, double *t, double *y, double *ydot, 
                             double *yout, int *iout)
 {
   int i;
@@ -29,9 +29,6 @@ static void stsparse_derivs (int *neq, double *t, double *y, double *ydot,
 
 }
 
-
-
-
 SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP chtol, 
 		SEXP atol, SEXP rtol, SEXP itol, SEXP rho, SEXP initfunc, 
 		SEXP verbose, SEXP mf, SEXP NNZ, SEXP NSP, SEXP NGP, SEXP nIter, SEXP Posit,
@@ -45,7 +42,7 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP chtol,
   int    *R, *C, *IC, *ian, *jan, *igp, *jgp, *isp, *dims;
   int    len, isDll ;
     
-  deriv_func *derivs;
+  C_deriv_func_type *derivs;
   init_N_Protect();
 
   jt    = INTEGER(mf)[0];        
@@ -163,9 +160,9 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP chtol,
 
   if (isDll)
     {
-      derivs = (deriv_func *) R_ExternalPtrAddr(func);
+      derivs = (C_deriv_func_type *) R_ExternalPtrAddr(func);
 
-    } else {  derivs = (deriv_func *) stsparse_derivs;  
+    } else {  derivs = (C_deriv_func_type *) C_stsparse_derivs;  
       PROTECT(stsparse_deriv_func = func); incr_N_Protect();
       PROTECT(stsparse_envir = rho);incr_N_Protect();
     }

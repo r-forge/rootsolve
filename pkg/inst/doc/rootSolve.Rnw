@@ -657,10 +657,9 @@ diffusion2D <- function(t,conc,par)
                  lrw=1000000,atol=1e-10,rtol=1e-10,ctol=1e-10)
   ))
 @
-The S3 plot method is used to generate the steady-state plot; R's function
-\code{filled.contour} is used rather than \code{image} to do so.
+The S3 image method is used to generate the steady-state plot.
 <<label=steady2D, include=FALSE>>=
-plot(ST3,main="2-D diffusion+production", image=FALSE, xlab="x", ylab="y")
+image(ST3,main="2-D diffusion+production", xlab="x", ylab="y")
 @
 \setkeys{Gin}{width=0.4\textwidth}
 \begin{figure}

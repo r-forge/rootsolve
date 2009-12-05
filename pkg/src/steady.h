@@ -8,9 +8,9 @@ int ndim, nspec;
 double *y2,*dy2;
 
 /* steady_utils.c globals */
-extern SEXP steady_deriv_func;
-extern SEXP steady_jac_func;
-extern SEXP steady_envir;
+extern SEXP Rst_deriv_func;
+extern SEXP Rst_jac_func;
+extern SEXP Rst_envir;
 
 extern SEXP stsparse_deriv_func;
 extern SEXP stsparse_jac_func;
@@ -35,5 +35,5 @@ void initOut(int isDll, int neq, SEXP nOut, SEXP Rpar, SEXP Ipar);
 int nout, ntot, isOut, lrpar, lipar, *ipar;
 double *out;
 
-typedef void deriv_func(int *, double *, double *,double *,double *, int *);
-typedef void init_func(void (*)(int *, double *));
+typedef void C_deriv_func_type(int *, double *, double *,double *,double *, int *);
+typedef void C_init_func_type(void (*)(int *, double *));

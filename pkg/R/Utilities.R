@@ -35,9 +35,14 @@ selectstvar <- function (which,var) {
 
     if (!is.numeric(which)) {
         ln <- length(which)
-        Select <- which(var %in% which)
-        if (length(Select) != ln)
-            stop("not all variables in 'which' are in 'x'")
+        # keep ordering...
+        Select <- NULL
+        for ( i in 1:ln) {
+          ss <- which(which[i]==var)
+          if (length(ss) ==0)
+            stop("variable", which[i], "not in var")
+          Select <- c(Select,ss)
+        }        
     }
     else {
         Select <- which   # "Select now refers to the column number
@@ -90,7 +95,7 @@ plot.steady1D <- function (x, which = NULL, grid = NULL, xyswap=FALSE,
         on.exit(devAskNewPage(oask))
     }
     
-    Main <- is.null(dots$main)
+    Main <-  if (is.null(dots$main)) var else rep(dots$main, length.out =np)
 
     labs <- (is.null(dots$xlab) && is.null(dots$ylab))
     xxlab <- if (is.null(dots$xlab))  "x"  else dots$xlab
@@ -101,8 +106,7 @@ plot.steady1D <- function (x, which = NULL, grid = NULL, xyswap=FALSE,
     yylab <- rep(yylab, length.out = np)
 
     for (i in which) {
-        if (Main)
-            dots$main <- colnames(x)[i]
+        dots$main <- Main[i]
             
         if (! xyswap) {            
           dots$xlab <- xxlab[i]
@@ -125,14 +129,15 @@ plot.steady1D <- function (x, which = NULL, grid = NULL, xyswap=FALSE,
 
 ### ============================================================================
 
-plot.steady2D <- function (x, which = NULL, image= TRUE, ask = NULL, ...) {
+image.steady2D <- function (x, which = NULL, 
+    add.contour = FALSE, grid = NULL, ask = NULL, ...) {
 
 # if x is vector, check if there is more than one species...  
     X <- x$y
     out <- list()
+    nspec <- attributes(x)$nspec
+    dimens <- attributes(x)$dimens
     if (is.vector(X)) {
-      nspec <- attributes(x)$nspec
-      dimens <- attributes(x)$dimens
       if (length(X) - nspec*prod(dimens) != 0) 
         stop("length of 'x' should be = 'nspec' * prod(dimens) if x is a vector")
       x <- matrix(nc = nspec, data = X)
@@ -142,12 +147,11 @@ plot.steady2D <- function (x, which = NULL, image= TRUE, ask = NULL, ...) {
         out[[i]] <- matrix(nr=dimens[1], nc=dimens[2], data =
           X[(istart+1):(istart+prod(dimens))])
       }
-    } else x <- X   # only state variables
-   
+    } else 
+        out <- X   # only state variables
       
-    if (is.null(which)) which <- 1:ncol(x)
-    var <- colnames(x)
-    if(is.null(var)) var <- 1:ncol(x)
+    if (is.null(which)) which <- 1:nspec
+    var <- 1:nspec
     which <- selectstvar(which,var)
     
     np <- length(which)
@@ -164,33 +168,31 @@ plot.steady2D <- function (x, which = NULL, image= TRUE, ask = NULL, ...) {
         on.exit(devAskNewPage(oask))
     }
     
-    Main <- is.null(dots$main)
+    Main <-  if (is.null(dots$main)) var else rep(dots$main, length.out =np)
 
     labs <- (is.null(dots$xlab) && is.null(dots$ylab))
     xxlab <- if (is.null(dots$xlab))  "x"  else dots$xlab
-    yylab <- if (is.null(dots$ylab))  ""   else dots$ylab 
-    if (image) {
+    yylab <- if (is.null(dots$ylab))  "y"   else dots$ylab 
     dots$col <- if (is.null(dots$col)) 
       colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
              "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))(100) else dots$col
-    } else
-    dots$color <- if (is.null(dots$color)) 
-      colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
-             "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000")) else dots$color
     
     ## allow individual xlab and ylab (vectorized)
     xxlab <- rep(xxlab, length.out = np)
     yylab <- rep(yylab, length.out = np)
 
     for (i in which) {
-        if (Main)
-            dots$main <- colnames(x)[i]
+        dots$main <- Main[i]
             
         dots$xlab <- xxlab[i]
         dots$ylab <- yylab[i]
-        if(image)
-          do.call("image", c(alist(out[[i]]), dots)) else
-          do.call("filled.contour", c(alist(out[[i]]), dots)) 
+        List <- alist(z=out[[i]])
+        if (! is.null(grid)) {
+          List$x <- grid$x
+          List$y <- grid$y
+        }  
+          do.call("image", c(List, dots)) 
+        if (add.contour) do.call("contour", c(List, add=TRUE))
           
     }
 }

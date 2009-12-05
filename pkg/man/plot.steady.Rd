@@ -1,6 +1,6 @@
 \name{plot.steady1D}
 \alias{plot.steady1D}
-\alias{plot.steady2D}
+\alias{image.steady2D}
 \title{
  Plot Method for steady1D and steady2D Objects
 }
@@ -10,7 +10,8 @@ Plot the output of steady-state solver routines.
 \usage{
 \method{plot}{steady1D}(x, which = NULL, grid = NULL, 
   xyswap =FALSE, ask = NULL, ...)
-\method{plot}{steady2D}(x, which = NULL, image = TRUE, ask = NULL, ...)
+\method{image}{steady2D}(x, which = NULL, add.contour = FALSE, 
+  grid = NULL, ask = NULL, ...)
 }
 
 \arguments{
@@ -21,9 +22,13 @@ Plot the output of steady-state solver routines.
   \item{which }{the name(s) or the index to the variables that should be
     plotted.  Default = all variables. }
 
-  \item{grid }{A vector of values against which the 1-D steady-state solution
-    has to be plotted. If \code{NULL}, then steady-state solutions are plotted
-    against the index. }
+  \item{grid }{For 1-D plots of output generated with \code{steady.1D}, 
+    a vector of values against which the 1-D steady-state solution 
+    has to be plotted. If \code{NULL}, then steady-state solutions 
+    are plotted against the index. 
+    
+    for \code{image} plots of output generated with \code{steady.2D}: 
+    the x- and y-grid, as a \code{list}.}
 
   \item{ask }{logical; if \code{TRUE}, the user is \emph{ask}ed before
     each plot, if \code{NULL} the user is only asked if more than one
@@ -34,8 +39,7 @@ Plot the output of steady-state solver routines.
   \item{xyswap }{if \code{TRUE}, then x-and y-values are swapped and the 
     y-axis is from top to bottom. Useful for drawing vertical profiles.}
     
-  \item{image }{if \code{TRUE}, will use R-function \code{\link{image}},
-    else \code{\link{filled.contour}} to make the 2D plot}
+  \item{add.contour }{if \code{TRUE}, will add contours to the image plot. }
 
   \item{\dots}{additional graphics arguments passed to
     \code{\link{plot.default}} (for 1D) or \code{image} (for 2D)}
@@ -134,11 +138,13 @@ diffusion2D <- function(t,Y,par)
   r     <- 0.025     # consumption rate
 
   n  <- 100
-  y  <- matrix(nr=n,nc=n,10.)
+  Y  <- matrix(nr=n,nc=n,10.)
 
-  ST <- steady.2D(y,func=diffusion2D,parms=NULL,pos=TRUE,dimens=c(n,n),
+  ST <- steady.2D(Y,func=diffusion2D,parms=NULL,pos=TRUE,dimens=c(n,n),
                  lrw=1000000,atol=1e-10,rtol=1e-10,ctol=1e-10)
-  plot(ST)
+  grid <- list(x=seq(dx/2, by = dx, length.out=n), 
+               y=seq(dy/2, by = dy, length.out=n))
+  image(ST, grid = grid)
 
 }
 \keyword{ hplot }

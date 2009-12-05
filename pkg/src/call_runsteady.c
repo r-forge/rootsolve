@@ -13,11 +13,11 @@ void F77_NAME(dlsode)(void (*)(int *, double *, double *, double *, double *, in
 		     int *, double *, int *);
 
 /* interface between fortran function call and R function 
-   Fortran code calls lsode_derivs(N, t, y, ydot, yout, iout) 
+   Fortran code calls C_ode_derivs(N, t, y, ydot, yout, iout) 
    R code called as lsode_deriv_func(time, y) and returns ydot 
    Note: passing of parameter values and "..." is done in R-function runsteady*/
 
-static void lsode_derivs (int *neq, double *t, double *y, 
+static void C_ode_derivs (int *neq, double *t, double *y, 
                           double *ydot, double *yout, int *iout)
 {
   int i;
@@ -36,7 +36,7 @@ static void lsode_derivs (int *neq, double *t, double *y,
 
 /* interface between fortran call to jacobian and R function */
 
-static void lsode_jac (int *neq, double *t, double *y, int *ml,
+static void C_ode_jac (int *neq, double *t, double *y, int *ml,
 		    int *mu, double *pd, int *nrowpd, double *yout, int *iout)
 {
   int i;
@@ -55,7 +55,7 @@ static void lsode_jac (int *neq, double *t, double *y, int *ml,
 
 
 /* give name to data types */
-typedef void jac_func  (int *, double *, double *, int *,
+typedef void C_jac_func_type  (int *, double *, double *, int *,
 		                    int *, double *, int *, double *, int *);
 
 /* MAIN C-FUNCTION, CALLED FROM R-code */
@@ -78,8 +78,8 @@ SEXP call_lsode(SEXP y, SEXP times, SEXP func, SEXP parms, SEXP stol, SEXP rtol,
   int neq, itol, itask, istate, iopt, *iwork, jt, mflag, is;
   int isDll, Steady;
   
-  deriv_func *derivs;
-  jac_func   *jac=NULL;
+  C_deriv_func_type *derivs;
+  C_jac_func_type   *jac=NULL;
 
 /******************************************************************************/
 /******                         STATEMENTS                               ******/
@@ -140,12 +140,12 @@ SEXP call_lsode(SEXP y, SEXP times, SEXP func, SEXP parms, SEXP stol, SEXP rtol,
 
   if (isDll ==1) 
     { /* DLL address passed to fortran */
-      derivs = (deriv_func *) R_ExternalPtrAddr(func);  
+      derivs = (C_deriv_func_type *) R_ExternalPtrAddr(func);  
       /* no need to communicate with R - but output variables set here */
 	  
     } else {
       /* interface function between fortran and R passed to Fortran*/ 
-      derivs = (deriv_func *) lsode_derivs; 
+      derivs = (C_deriv_func_type *) C_ode_derivs; 
       /* needed to communicate with R */
       lsode_deriv_func = func;
       lsode_envir = rho;
@@ -156,10 +156,10 @@ SEXP call_lsode(SEXP y, SEXP times, SEXP func, SEXP parms, SEXP stol, SEXP rtol,
     {
       if (isDll ==1)
 	    {
-	     jac = (jac_func *) R_ExternalPtrAddr(jacfunc);
+	     jac = (C_jac_func_type *) R_ExternalPtrAddr(jacfunc);
 	    } else  {
 	     lsode_jac_func = jacfunc;
-	     jac = lsode_jac;
+	     jac = C_ode_jac;
 	    }
     }
 

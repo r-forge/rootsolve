@@ -26,9 +26,9 @@ void my_unprotect(int n)
 
 /* Globals :*/ 
 
-SEXP steady_deriv_func;
-SEXP steady_jac_func;
-SEXP steady_envir;
+SEXP Rst_deriv_func;
+SEXP Rst_jac_func;
+SEXP Rst_envir;
 SEXP st_gparms;
 
 SEXP stsparse_deriv_func;
@@ -47,10 +47,10 @@ Parameter initialisation functions
 void initParms(SEXP Initfunc, SEXP Parms) {
 
   if (inherits(Initfunc, "NativeSymbol"))  {
-    init_func *initializer;
+    C_init_func_type *initializer;
 
     PROTECT(st_gparms = Parms);     incr_N_Protect();
-    initializer = (init_func *) R_ExternalPtrAddr(Initfunc);
+    initializer = (C_init_func_type *) R_ExternalPtrAddr(Initfunc);
     initializer(Initstparms);
   }
 
@@ -63,6 +63,8 @@ void Initstparms(int *N, double *parms)
   Nparms = LENGTH(st_gparms);
   if ((*N) != Nparms)
     {
+      warning("Number of parameters passed to solver, %i; number in DLL, %i\n",
+      Nparms, *N);
       PROBLEM "Confusion over the length of parms"
       ERROR;
     } 
