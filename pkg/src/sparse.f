@@ -92,7 +92,7 @@ c in this case the number of components, dimensions and cyclic bnd are in dims
      &    Svar, ewt, dSvar, beta, xmodel, time, out, nout, nonzero,            &
      &    Type, dims)
 
-c finds a minimum degree ordering of the rows and columns of 
+c find a minimum degree ordering of the rows and columns  
       CALL odrv(N,ian,jan,a,r,ic,nsp,isp,1,flag)
       IF (flag .NE. 0) CALL warnflag(flag,N)
       DO k = 1,N
@@ -109,9 +109,8 @@ c Iterations
       DO I = 1, maxiter 
         niter = I
 
-
 c Create sparse jacobian
-        CALL xSparseJacob (N, nnz, ian, jan, igp, jgp, ngp,                   &
+        CALL xSparseJacob (N, nnz, ian, jan, igp, jgp, ngp,                    &
      &     Svar, ewt, dSvar, beta, xmodel, time, out, nout, a)
 
 c Check convergence 
@@ -138,7 +137,7 @@ c--------------------------------------------------------------
 c first time: path=2; performs nnfc - matrix factorisation
 c next  time: path=4; performs nntc - solves a^T*x=b
 
-        CALL cdrv(N,r,c,ic,  ian,jan,a,beta,x,nsp,isp,rsp,esp,
+        CALL cdrv(N,r,c,ic,  ian,jan,a,beta,x,nsp,isp,rsp,esp,                 &
      &        path,flag)
         IF (flag .NE. 0) CALL warnflag(flag,N)
         path = 4
@@ -423,7 +422,7 @@ c********************************************************************
 c-------------------------------------------------------------------*
 c Determines the jacobian, based on the known sparsity structure    * 
 c Uses finite differences:                                          *
-c For N state variables there are N+1 calls to the model* 
+c For N state variables there are N+1 calls to the model            * 
 c-------------------------------------------------------------------*
 
        IMPLICIT NONE
