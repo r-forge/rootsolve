@@ -26,7 +26,7 @@ steady.1D    <- function (y, time=NULL, func, parms=NULL, nspec = NULL,
     stop (" 'method' should be one of 'stode', 'stodes', 'runsteady'")   
 
   if (is.null(time)) {
-    if (!method %in% c("stode", "stodes")) 
+    if (method %in% c("stode", "stodes")) 
       time <- 0
     else
       time <- c(0,Inf)  

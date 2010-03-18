@@ -130,7 +130,7 @@ plot.steady1D <- function (x, which = NULL, grid = NULL, xyswap=FALSE,
 ### ============================================================================
 
 image.steady2D <- function (x, which = NULL, 
-    add.contour = FALSE, grid = NULL, ask = NULL, ...) {
+    add.contour = FALSE, grid = NULL, ask = NULL, xtype="image", ...) {
 
 # if x is vector, check if there is more than one species...  
     X <- x$y
@@ -173,6 +173,15 @@ image.steady2D <- function (x, which = NULL,
     labs <- (is.null(dots$xlab) && is.null(dots$ylab))
     xxlab <- if (is.null(dots$xlab))  "x"  else dots$xlab
     yylab <- if (is.null(dots$ylab))  "y"   else dots$ylab 
+
+    if (xtype=="persp")
+      dotscol <- dots$col 
+
+    else if (xtype == "filled.contour")
+    dots$color.palette <- if (is.null(dots$color.palette)) 
+      colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
+             "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))else dots$color.palette
+    else
     dots$col <- if (is.null(dots$col)) 
       colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
              "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))(100) else dots$col
@@ -188,10 +197,18 @@ image.steady2D <- function (x, which = NULL,
         dots$ylab <- yylab[i]
         List <- alist(z=out[[i]])
         if (! is.null(grid)) {
-          List$x <- grid$x
-          List$y <- grid$y
-        }  
-          do.call("image", c(List, dots)) 
+          List$x <- grid[[1]]
+          List$y <- grid[[2]]
+        }
+        if (xtype=="persp")
+           if(is.null(dotscol))  
+             dots$col <- drapecol(out[[i]],
+               colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
+              "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))(100))
+           else
+              dots$col<-drapecol(out[[i]],dotscol)
+        
+        do.call(xtype, c(List, dots)) 
         if (add.contour) do.call("contour", c(List, add=TRUE))
           
     }

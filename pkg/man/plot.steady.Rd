@@ -11,7 +11,7 @@ Plot the output of steady-state solver routines.
 \method{plot}{steady1D}(x, which = NULL, grid = NULL, 
   xyswap =FALSE, ask = NULL, ...)
 \method{image}{steady2D}(x, which = NULL, add.contour = FALSE, 
-  grid = NULL, ask = NULL, ...)
+  grid = NULL, ask = NULL, xtype = "image", ...)
 }
 
 \arguments{
@@ -41,6 +41,9 @@ Plot the output of steady-state solver routines.
     
   \item{add.contour }{if \code{TRUE}, will add contours to the image plot. }
 
+  \item{xtype }{the name of the plotting function to use, one of "image", 
+    "filled.contour", "persp".}
+
   \item{\dots}{additional graphics arguments passed to
     \code{\link{plot.default}} (for 1D) or \code{image} (for 2D)}
 }
@@ -49,6 +52,8 @@ Plot the output of steady-state solver routines.
   The number of panels per page is automatically determined up to 3 x 3
   (\code{par(mfrow=c(3, 3))}). This default can be overwritten by
   specifying user-defined settings for \code{mfrow} or \code{mfcol}.
+  Set \code{mfrow} equal to \code{NULL} to avoid the plotting function to 
+  change user-defined \code{mfrow} or \code{mfcol} settings
 
   Other graphical parameters can be passed as well. Parameters
   \code{xlab} and \code{ylab} are vectorized, so it is possible to
