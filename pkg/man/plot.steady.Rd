@@ -11,7 +11,7 @@ Plot the output of steady-state solver routines.
 \method{plot}{steady1D}(x, which = NULL, grid = NULL, 
   xyswap =FALSE, ask = NULL, ...)
 \method{image}{steady2D}(x, which = NULL, add.contour = FALSE, 
-  grid = NULL, ask = NULL, xtype = "image", ...)
+  grid = NULL, ask = NULL, method = "image", ...)
 }
 
 \arguments{
@@ -41,8 +41,8 @@ Plot the output of steady-state solver routines.
     
   \item{add.contour }{if \code{TRUE}, will add contours to the image plot. }
 
-  \item{xtype }{the name of the plotting function to use, one of "image", 
-    "filled.contour", "persp".}
+  \item{method }{the name of the plotting function to use, one of "image", 
+    "filled.contour", "contour" or "persp".}
 
   \item{\dots}{additional graphics arguments passed to
     \code{\link{plot.default}} (for 1D) or \code{image} (for 2D)}

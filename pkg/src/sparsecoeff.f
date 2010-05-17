@@ -134,7 +134,7 @@ c interactions with current, upstream and downstream boxes
               jan(ij) = M+1
               ij      = ij +1
             ELSE IF (cyclic(2) == 1) THEN
-              jan(ij) = isp + (j-1)*dimens(2) +1
+              jan(ij) = isp + (j-1)*dimens(2) +1    
               ij      = ij +1
             ENDIF
 
@@ -143,7 +143,7 @@ c interactions with current, upstream and downstream boxes
               ij      = ij +1
             ELSE IF (cyclic(1) == 1) THEN
               jan(ij) = isp + K
-              ij      = ij +1
+              ij      = ij +1  
             ENDIF
 
             IF (j >1) THEN
@@ -158,7 +158,7 @@ c interactions with current, upstream and downstream boxes
               jan(ij) = M-1
               ij      = ij +1
             ELSE IF (cyclic(2) == 1) THEN
-              jan(ij) = isp + j*dimens(2)
+              jan(ij) = isp + j*dimens(1)
               ij      = ij +1
             ENDIF
 

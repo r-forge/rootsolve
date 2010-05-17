@@ -83,13 +83,14 @@ stodes        <- function(y, time=0, func, parms=NULL, rtol=1e-6, atol=1e-8,
     dimens <- nnz[2:3]
     nnz   <- c(n*(4+nspec)-2*nspec*(sum(dimens)),nnz)
     ngp    < 4*nspec+1
+    dimmax <- max(dimens)
     if (nnz[5] ==1) {  # cyclic boundary in x-direction
-      nnz[1] <- nnz[1] + 2*dimens[1]*nspec
+      nnz[1] <- nnz[1] + 2*dimmax*nspec
       ngp <- ngp + 1
     }
       
     if (nnz[6] ==1) {
-      nnz[1] <- nnz[1] + 2*dimens[2]*nspec
+      nnz[1] <- nnz[1] + 2*dimmax*nspec
       ngp <- ngp +1
     }
   } else if (sparsetype =="3D")    {

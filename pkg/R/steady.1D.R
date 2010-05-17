@@ -52,7 +52,8 @@ steady.1D    <- function (y, time=NULL, func, parms=NULL, nspec = NULL,
                   nnz=c(nspec,dimens,Bnd),sparsetype="1D",...)
   } else if (is.character(func)) {
     ii    <- as.vector(t(matrix(ncol=nspec,1:N)))   # from ordering per slice -> per spec
-
+    if (bandwidth != 1)
+      stop ("cannot combine DLL with 'bandwidth' not = 1") 
     if (method!="stode")
       stop ("cannot run steady.1D: method should be stode if func is a DLL")
     out <- stode(y=y[ii],time=time,func=func,parms=parms,

@@ -193,46 +193,46 @@ c**********************************************************************
 c       WRITE ERROR/WARNINGS OF SPARSE SOLVER                         *
 c**********************************************************************
 
-	     SUBROUTINE warnflag(flag,N)
-	     INTEGER flag, iflag,N
+	 SUBROUTINE warnflag(flag,N)
+	 INTEGER flag, iflag,N
 	 
- 	     character *80 msg
+ 	 character *80 msg
 
-	     iflag = INT(flag/N)
-	     iflag = INT(flag/N)
-	     IF (iflag .EQ. 1) THEN
+	 iflag = INT(flag/N)
+	 IF (iflag .EQ. 1) THEN
          write(msg,'(A10,I10)') "  row nr: ", flag-iflag
-	       call rwarn("sparse solver: null row in a")
-         call rwarn(msg)
+	   call rwarn("sparse solver: null row in a")
+         call rexit(msg)
        ELSE if (iflag .EQ. 2) THEN
          write(msg,'(A10,I10)') "  row nr: ", flag-iflag
-	       call rwarn("sparse solver: duplicate entry in a")
-         call rwarn(msg)
+	   call rwarn("sparse solver: duplicate entry in a")
+         call rexit(msg)
        ELSE if (iflag .EQ. 3) THEN
          write(msg,'(A10,I10)') "  row nr: ", flag-iflag
-	       call rwarn("insufficient storage in nsfc")
-         call rwarn(msg)
+	   call rwarn("insufficient storage in nsfc")
+         call rexit(msg)
        ELSE if (iflag .EQ. 4) THEN
-	       call rwarn("insufficient storage in nnfc")
+	   call rwarn("insufficient storage in nnfc")
        ELSE if (iflag .EQ. 5) THEN
          write(msg,'(A10,I10)') "  row nr: ", flag-iflag
-	       call rwarn("sparse solver: null pivot")
-         call rwarn(msg)
+	   call rwarn("sparse solver: null pivot")
+         call rexit(msg)
        ELSE if (iflag .EQ. 6) THEN
          write(msg,'(A10,I10)') "  row nr: ", flag-iflag
-  	     call rwarn("insufficient storage in nsfc")
-         call rwarn(msg)
+  	   call rwarn("insufficient storage in nsfc")
+         call rexit(msg)
        ELSE if (iflag .EQ. 7) THEN
-	       call rwarn("insufficient storage in nnfc")
+	   call rwarn("insufficient storage in nnfc")
        ELSE if (iflag .EQ. 8) THEN
          write(msg,'(A10,I10)') "  row nr: ", flag-iflag
-  	     call rwarn("sparse solver: zero pivot")
+         call rwarn("sparse solver: zero pivot")
+         call rexit(msg)
        ELSE if (iflag .EQ. 9) THEN
-	       call rwarn("insufficient storage in md")
+	   call rexit("insufficient storage in md")
        ELSE if (iflag .EQ. 10) THEN
-	       call rwarn("insufficient storage in cdrv/odrv")
+	   call rexit("insufficient storage in cdrv/odrv")
        ELSE if (iflag .EQ. 11) THEN
-	       call rwarn("illegal path specifications")
+	   call rexit("illegal path specifications")
        ENDIF
        RETURN
 	     END SUBROUTINE warnflag

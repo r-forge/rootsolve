@@ -11,7 +11,8 @@
   It is assumed that exchange occurs only between adjacent layers.}
 \usage{
 steady.1D(y, time=NULL, func, parms = NULL, nspec = NULL, dimens = NULL, 
-  names = NULL, method = "stode", cyclicBnd = NULL, bandwidth = 1, ...)}
+  names = NULL, method = "stode", cyclicBnd = NULL, bandwidth = 1, ...)
+}
 \arguments{
   \item{y }{the initial guess of (state) values for the ODE system, a vector.
   }

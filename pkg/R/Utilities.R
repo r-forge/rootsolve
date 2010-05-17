@@ -126,11 +126,32 @@ plot.steady1D <- function (x, which = NULL, grid = NULL, xyswap=FALSE,
     }
 }
 
+### ============================================================================
+# to drape a color over a persp plot.
+### ============================================================================
+
+
+drapecol <- function (A, col = colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
+              "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))(100), NAcol = "white") 
+{
+    nr <- nrow(A)
+    nc <- ncol(A)
+    ncol <- length(col)
+    AA <- 0.25 * (A[1:(nr - 1), 1:(nc - 1)] + A[1:(nr - 1), 2:nc] + 
+        A[2:nr, 1:(nc - 1)] + A[2:nr, 2:nc])
+    Ar <- range(AA, na.rm = TRUE)
+    rn <- Ar[2] - Ar[1]
+    ifelse(rn != 0, drape <- col[1 + trunc((AA - Ar[1])/rn * 
+        (ncol - 1))], drape <- rep(col[1], ncol))
+    drape[is.na(drape)] <- NAcol
+    return(drape)
+}
+
 
 ### ============================================================================
 
 image.steady2D <- function (x, which = NULL, 
-    add.contour = FALSE, grid = NULL, ask = NULL, xtype="image", ...) {
+    add.contour = FALSE, grid = NULL, ask = NULL, method="image", ...) {
 
 # if x is vector, check if there is more than one species...  
     X <- x$y
@@ -174,10 +195,10 @@ image.steady2D <- function (x, which = NULL,
     xxlab <- if (is.null(dots$xlab))  "x"  else dots$xlab
     yylab <- if (is.null(dots$ylab))  "y"   else dots$ylab 
 
-    if (xtype=="persp")
+    if (method=="persp")
       dotscol <- dots$col 
 
-    else if (xtype == "filled.contour")
+    else if (method == "filled.contour")
     dots$color.palette <- if (is.null(dots$color.palette)) 
       colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
              "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))else dots$color.palette
@@ -200,7 +221,7 @@ image.steady2D <- function (x, which = NULL,
           List$x <- grid[[1]]
           List$y <- grid[[2]]
         }
-        if (xtype=="persp")
+        if (method=="persp")
            if(is.null(dotscol))  
              dots$col <- drapecol(out[[i]],
                colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
@@ -208,7 +229,7 @@ image.steady2D <- function (x, which = NULL,
            else
               dots$col<-drapecol(out[[i]],dotscol)
         
-        do.call(xtype, c(List, dots)) 
+        do.call(method, c(List, dots)) 
         if (add.contour) do.call("contour", c(List, add=TRUE))
           
     }
