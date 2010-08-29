@@ -235,3 +235,94 @@ image.steady2D <- function (x, which = NULL,
     }
 }
 
+### ============================================================================
+
+image.steady3D <- function (x, which = NULL, 
+    add.contour = FALSE, grid = NULL, ask = NULL, method="image", ...) {
+
+# if x is vector, check if there is more than one species...  
+    X <- x$y
+    out    <- list()
+    nspec  <- attributes(x)$nspec
+    dimens <- attributes(x)$dimens
+    Nz <- dimens[3]
+    if (is.vector(X)) {
+      if (length(X) - nspec*prod(dimens) != 0) 
+        stop("length of 'x' should be = 'nspec' * prod(dimens) if x is a vector")
+      x <- matrix(nc = nspec, data = X)
+      
+      for ( i in 1:nspec){
+        istart <- (i-1)*prod(dimens) 
+        out[[i]] <- array(dim = dimens, data =
+          X[(istart+1):(istart+prod(dimens))])
+      }
+    } else 
+        out <- X   # only state variables
+      
+    if (is.null(which)) which <- 1:nspec
+    var <- 1:nspec
+    which <- selectstvar(which,var)
+    
+    np <- length(which)
+
+    dots <- list(...)
+    nmdots <- names(dots)
+
+    # number of figures in a row and 
+    # interactively wait if there are remaining figures
+   
+    ask <- setplotpar(nmdots, dots, np, ask)
+    if (ask) {
+        oask <- devAskNewPage(TRUE)
+        on.exit(devAskNewPage(oask))
+    }
+    
+    Main <-  if (is.null(dots$main)) var else rep(dots$main, length.out =np)
+
+    labs <- (is.null(dots$xlab) && is.null(dots$ylab))
+    xxlab <- if (is.null(dots$xlab))  "x"  else dots$xlab
+    yylab <- if (is.null(dots$ylab))  "y"   else dots$ylab 
+
+    if (method=="persp")
+      dotscol <- dots$col 
+
+    else if (method == "filled.contour")
+    dots$color.palette <- if (is.null(dots$color.palette)) 
+      colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
+             "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))else dots$color.palette
+    else
+    dots$col <- if (is.null(dots$col)) 
+      colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
+             "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))(100) else dots$col
+    
+    ## allow individual xlab and ylab (vectorized)
+    xxlab <- rep(xxlab, length.out = np)
+    yylab <- rep(yylab, length.out = np)
+
+    for (i in which) {
+            
+        dots$xlab <- xxlab[i]
+        dots$ylab <- yylab[i]
+        List <- list()
+        if (! is.null(grid)) {
+          List$x <- grid[[1]]
+          List$y <- grid[[2]]
+        }
+        for (z in 1:Nz){
+          dots$main <- paste("var",Main[i],"z = ", z)
+          zdat <- out[[i]][,,z]
+          List$z <- zdat
+          if (method=="persp")
+            if(is.null(dotscol))  
+              dots$col <- drapecol(zdat,
+                colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
+               "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))(100))
+            else
+              dots$col<-drapecol(zdat,dotscol)
+        
+          do.call(method, c(List, dots)) 
+          if (add.contour) do.call("contour", c(List, add=TRUE))
+       }   
+    }
+}
+

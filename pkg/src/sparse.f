@@ -78,7 +78,7 @@ c model and jacobian function
       INTEGER          nout(*) 
       DOUBLE PRECISION time
 c
-      INTEGER i, j, k, esp
+      INTEGER i, j, k, esp, im, jm
       character (len=80) msg
 c-------------------------------------------------------------------------------
       SteadyStateReached = .FALSE.
@@ -91,7 +91,6 @@ c in this case the number of components, dimensions and cyclic bnd are in dims
       CALL xSparseStruct(N, nnz, ian, jan, igp, jgp, maxg, ngp,                &
      &    Svar, ewt, dSvar, beta, xmodel, time, out, nout, nonzero,            &
      &    Type, dims)
-
 c find a minimum degree ordering of the rows and columns  
       CALL odrv(N,ian,jan,a,r,ic,nsp,isp,1,flag)
       IF (flag .NE. 0) CALL warnflag(flag,N)

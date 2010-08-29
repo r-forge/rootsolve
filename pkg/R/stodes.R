@@ -97,19 +97,19 @@ stodes        <- function(y, time=0, func, parms=NULL, rtol=1e-6, atol=1e-8,
     Type   <- 4
     nspec  <- nnz[1]
     dimens <- nnz[2:4]
+    dimmax <- max(dimens)
     nnz   <- c(n*(6+nspec)-3*nspec*(sum(dimens)),nnz)
     ngp    < 5*nspec+1
     if (nnz[6] ==1) {  # cyclic boundary in x-direction
-      nnz[1] <- nnz[1] + 2*dimens[1]*nspec
+      nnz[1] <- nnz[1] + 2*dimens[2]*dimens[3]*nspec
       ngp <- ngp + 1
     }
-
     if (nnz[7] ==1) {
-      nnz[1] <- nnz[1] + 2*dimens[2]*nspec
+      nnz[1] <- nnz[1] + 2*dimens[1]*dimens[3]*nspec
       ngp <- ngp +1
     }
     if (nnz[8] ==1) {
-      nnz[1] <- nnz[1] + 2*dimens[3]*nspec
+      nnz[1] <- nnz[1] + 2*dimens[1]*dimens[2]*nspec
       ngp <- ngp +1
     }
 
