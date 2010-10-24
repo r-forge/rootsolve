@@ -9,18 +9,22 @@
 Plot the output of steady-state solver routines.
 }
 \usage{
-\method{plot}{steady1D}(x, which = NULL, grid = NULL, 
-  xyswap =FALSE, ask = NULL, ...)
+\method{plot}{steady1D}(x, ..., which = NULL, grid = NULL, 
+  xyswap =FALSE, ask = NULL, obs = NULL, obspar= list())
 \method{image}{steady2D}(x, which = NULL, add.contour = FALSE, 
-  grid = NULL, ask = NULL, method = "image", ...)
+  grid = NULL, ask = NULL, method = "image", legend = FALSE, ...)
 \method{image}{steady3D}(x, which = NULL, add.contour = FALSE, 
-  grid = NULL, ask = NULL, method = "image", ...)
+  grid = NULL, ask = NULL, method = "image", legend = FALSE, ...)
 }
 
 \arguments{
   \item{x }{an object of class \code{steady1D}, or \code{steady2D} as 
     returned by the solvers \code{steady.1D} and \code{steady.2D}, and 
-    to be plotted.}
+    to be plotted.
+    
+    For \code{steady1D} objects, it is allowed to pass several objects 
+    after \code{x} (unnamed) - see second example.
+    }
 
   \item{which }{the name(s) or the index to the variables that should be
     plotted.  Default = all variables. }
@@ -42,13 +46,38 @@ Plot the output of steady-state solver routines.
   \item{xyswap }{if \code{TRUE}, then x-and y-values are swapped and the 
     y-axis is from top to bottom. Useful for drawing vertical profiles.}
     
+  \item{obs }{a \code{data.frame} or \code{matrix} with "observed data" that 
+    will be added as \code{points} to the plots. 
+    The first column of \code{obs} should contain the grid-variables as 
+    specified in argument \code{grid}. If \code{obs} is not \code{NULL} and 
+    \code{which} is \code{NULL}, then the variables, common to both 
+    \code{obs} and \code{x} will be plotted.}
+
+  \item{obspar }{additional graphics arguments passed to \code{points}, for 
+    plotting the observed data
+  }
+
   \item{add.contour }{if \code{TRUE}, will add contours to the image plot. }
 
   \item{method }{the name of the plotting function to use, one of "image", 
     "filled.contour", "contour" or "persp".}
 
-  \item{\dots}{additional graphics arguments passed to
-    \code{\link{plot.default}} (for 1D) or \code{image} (for 2D, 3D)}
+  \item{legend }{if \code{TRUE}, a color legend will be drawn next to 
+    the "image", or "persp" plot.}
+
+  \item{\dots}{additional arguments.
+  
+    The graphical arguments are passed to
+    \code{\link{plot.default}} (for 1D) or \code{image} (for 2D, 3D)
+    
+    For \code{plot.steady1D}, the dots may contain other objects of class 
+    \code{steady1D}, as returned by \code{steady.1D}, and 
+    to be plotted on the same graphs as \code{x}  - see second example.
+    \code{x} and and these other objects should be compatible, 
+    i.e. the names should be the same and they should have same number of rows.
+    
+    For \code{plot.steady1D}, the arguments after \ldots must be matched exactly.     
+    }
 }
 
 \details{
@@ -79,13 +108,13 @@ Plot the output of steady-state solver routines.
 #==================#
 # Model equations  #
 #==================#
-O2BOD <- function(t,state,pars) {
+O2BOD <- function(t, state, pars) {
   BOD <- state[1:N]
   O2  <- state[(N+1):(2*N)]
 
 # BOD dynamics
-  FluxBOD <-  v*c(BOD_0,BOD)  # fluxes due to water transport
-  FluxO2  <-  v*c(O2_0,O2)
+  FluxBOD <-  v * c(BOD_0, BOD)  # fluxes due to water transport
+  FluxO2  <-  v * c(O2_0, O2)
   
   BODrate <- r*BOD*O2/(O2+10)  # 1-st order consumption, Monod in oxygen
 
@@ -93,7 +122,7 @@ O2BOD <- function(t,state,pars) {
   dBOD         <- -diff(FluxBOD)/dx  - BODrate
   dO2          <- -diff(FluxO2)/dx   - BODrate + p*(O2sat-O2)
 
-  return(list(c(dBOD=dBOD,dO2=dO2)))
+  return(list(c(dBOD = dBOD, dO2 = dO2)))
 
  }    # END O2BOD
  
@@ -116,14 +145,53 @@ BOD_0   <- 1500      # mmol/m3 riverine BOD concentration
 state <- c(rep(200,N),rep(200,N))
 
 # running the model
- out   <- steady.1D (y=state, func=O2BOD, parms=NULL,
-                     nspec=2, pos=TRUE, names=c("BOD","O2"))
+out   <- steady.1D (y = state, func = O2BOD, parms = NULL,
+                    nspec = 2, pos = TRUE, 
+                     names = c("BOD", "O2"))
 
 # output
- plot(out, type="l", lwd=2, ylab=c("mmol/m3","mmol O2/m3"), grid=x)
+plot(out, type="l", lwd=2, ylab=c("mmol/m3","mmol O2/m3"), grid=x)
+
+# observations
+obs <- matrix (ncol = 2, data = c(seq(0, 10000, 2000),
+                                c(1400, 900,400,100,10,10)))
+
+colnames(obs) <- c("Distance", "BOD")
+
+# plot with observations
+plot(out, type="l", lwd=2, ylab="mmol/m3", obs = obs, 
+     pch = 16, cex = 1.5, grid=x)
 
 ## =======================================================================
-## Diffusion in 2-D; zero-gradient boundary conditions
+##  EXAMPLE 2: 1D model, BOD + O2 - second run                               
+## =======================================================================
+# new runs with different v
+v       <- 50       # velocity, m/day
+
+# running the model a second time
+out2   <- steady.1D (y = state, func = O2BOD, parms = NULL,
+                     nspec = 2, pos = TRUE, names = c("BOD","O2"))
+
+
+v       <- 200       # velocity, m/day
+
+# running the model a second time
+out3   <- steady.1D (y = state, func = O2BOD, parms = NULL,
+                     nspec = 2, pos = TRUE, names = c("BOD","O2"))
+
+# output of all three scenarios at once
+plot(out, out2, out3, type = "l", lwd = 2, 
+     ylab = c("mmol/m3", "mmol O2/m3"), grid = x ,
+     obs = obs, which = c("BOD", "O2"))
+  
+# change plot pars
+plot(out, out2, out3, type = "l", lwd = 2, 
+     ylab = c("mmol/m3","mmol O2/m3"), 
+     grid = x, col = c("blue", "green"), log = "y",  
+     obs = obs, obspar = list(pch = 16, col = "red", cex = 2))
+
+## =======================================================================
+## EXAMPLE 3: Diffusion in 2-D; zero-gradient boundary conditions
 ## =======================================================================
 
 diffusion2D <- function(t,Y,par)
