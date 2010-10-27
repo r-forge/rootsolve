@@ -199,17 +199,21 @@ plot.steady1D <- function (x, ..., which = NULL, grid = NULL,
 ## variables to be plotted
     varnames <- c(colnames(xx),names(x)[-1])
     if(is.null(varnames)) varnames <- 1:ncol(xx)
+
+    xother <- names(x)[-1]                    # other names
+
     Which <- which 
     
     if (is.null(Which) & is.null(obs))        # All variables plotted
       Which <- 1:ncol(xx)
     else if (is.null(Which)) {                # All common variables in xx and obs plotted
-     Which <- which(varnames %in% obsname)
+     Which <- which(c(varnames,xother) %in% obsname)
      Which <- varnames[Which]                 # names rather than 
+     if (length (Which) == 0)
+       stop ("observed data and model output have no variables in common")
     } 
 
 ## Some variables may not be state variables (not in x$y, but in other list values)
-    xother <- names(x)[-1]
     ii <- which (xother %in% Which) 
 
     if (length(ii) > 0)  {
@@ -220,6 +224,9 @@ plot.steady1D <- function (x, ..., which = NULL, grid = NULL,
     varnames <- colnames(xx)
 
 ## Position of variables to be plotted in "x" 
+     if (length (Which) == 0)
+       stop ("nothing to plot")
+
     xWhich <- selectstvar(Which,varnames)
     np <- length(xWhich)
 
@@ -345,7 +352,14 @@ plot.steady1D <- function (x, ..., which = NULL, grid = NULL,
               Dotmain$xlab <- xl
           }
   
-        Dotmain$xlim <- xxlim[[ip]]  
+        if (is.null(xxlim[[ip]])) {
+          xrange <- Range(NULL, grid, Xlog)
+          if (! is.na(io)) 
+            xrange <- Range(xrange, obs[,1], Xlog)
+          Dotmain$xlim <- xrange
+
+        } else 
+          Dotmain$xlim <- xxlim[[ip]]  
             
         do.call("plot", c(alist(grid, xx[, i]), Dotmain, Dotpoints))
          
@@ -377,9 +391,12 @@ plot.steady1D <- function (x, ..., which = NULL, grid = NULL,
         } else 
           Dotmain$xlim <- xxlim[[ip]]
           
-        if (is.null(yylim[[ip]])) 
-          Dotmain$ylim <- rev(range(grid))    # y-axis reversed
-        else
+        if ( is.null (yylim[[ip]])){
+          yrange <- Range(NULL, range(grid), Ylog)
+          if (! is.na(io)) 
+             yrange <- Range(yrange, obs[,1], Ylog)
+          Dotmain$ylim <- rev(yrange)
+        } else
           Dotmain$ylim <- yylim[[ip]]  
 
         do.call("plot", c(alist(xx[, i], grid), Dotmain, Dotpoints))
