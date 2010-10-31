@@ -109,11 +109,34 @@ selectstvar <- function (which, var, NAallowed = FALSE) {
 ### Merge two observed data files; assumed that first column = 'x' and ignored
 ### ============================================================================
 
+# from 3-columned format (what, where, value) to wide format...
+convert2wide <- function(Data) {
+    cnames   <- as.character(unique(Data[,1]))
+    
+    MAT      <- Data[Data[,1] == cnames[1], 2:3]
+    colnames.MAT <- c("x", cnames[1])
+
+    for ( ivar in cnames[-1]) {
+      sel <- Data[Data[,1] == ivar, 2:3]
+      nt  <- cbind(sel[,1],matrix(nrow = nrow(sel), ncol = ncol(MAT)-1, data = NA),sel[,2])
+      MAT <- cbind(MAT, NA)
+      colnames(nt) <- colnames(MAT)
+      MAT <- rbind(MAT, nt)
+      colnames.MAT <- c(colnames.MAT, ivar)
+    }  
+  colnames(MAT) <- colnames.MAT
+  return(MAT)
+}
+
+
 mergeObs <- function(obs, Newobs) {
       
   if (! class(Newobs) %in% c("data.frame","matrix"))
     stop ("the elements in 'obs' should be either a 'data.frame' or a 'matrix'")
       
+  if (is.character(Newobs[,1]) | is.factor(Newobs[,1])) 
+    Newobs <- convert2wide(Newobs)
+
   obsname <- colnames(obs)
 
 ## check if some observed variables in NewObs are already in obs
@@ -185,6 +208,8 @@ plot.steady1D <- function (x, ..., which = NULL, grid = NULL,
          }
        obsname <- colnames(obs) 
       } else {
+       if (is.character(obs[,1]) | is.factor(obs[,1])) 
+          obs <- convert2wide(obs)
        obsname <- colnames(obs) 
        if (! class(obs) %in% c("data.frame", "matrix"))
          stop ("'obs' should be either a 'data.frame' or a 'matrix'")
@@ -193,6 +218,7 @@ plot.steady1D <- function (x, ..., which = NULL, grid = NULL,
     DD <- duplicated(obsname)
     if (sum(DD) > 0)  
       obs <- mergeObs(obs[,!DD], cbind(obs[,1],obs[,DD]))
+
     nobs <- nrow(obs.pos)   
     }
 

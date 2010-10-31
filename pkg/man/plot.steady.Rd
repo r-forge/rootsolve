@@ -24,6 +24,7 @@ Plot the output of steady-state solver routines.
     
     For \code{steady1D} objects, it is allowed to pass several objects 
     after \code{x} (unnamed) - see second example.
+    
     }
 
   \item{which }{the name(s) or the index to the variables that should be
@@ -50,10 +51,16 @@ Plot the output of steady-state solver routines.
     will be added as \code{points} to the plots. \code{obs} can also be a 
     \code{list} with multiple data.frames and/or matrices containing 
     observed data. 
+    
     The first column of \code{obs} should contain the grid-variables as 
     specified in argument \code{grid}. If \code{obs} is not \code{NULL} and 
     \code{which} is \code{NULL}, then the variables, common to both 
-    \code{obs} and \code{x} will be plotted.}
+    \code{obs} and \code{x} will be plotted.
+    
+    If the first column of \code{obs} consists of factors, or characters (strings),
+    then it is assumed that the data are presented in long (database) format,
+    where the first three columns contain (name, grid, y).  
+    }
 
   \item{obspar }{additional graphics arguments passed to \code{points}, for 
     plotting the observed data. If \code{obs} is a \code{list} containing multiple
@@ -177,6 +184,13 @@ colnames(obs) <- c("Distance", "BOD")
 # plot with observations
 plot(out, type="l", lwd=2, ylab="mmol/m3", obs = obs, 
      pch = 16, cex = 1.5, grid=x)
+
+# similar but data in "long" format
+OUT <- data.frame(name = "BOD", obs)
+\dontrun{
+plot(out, type="l", lwd=2, ylab="mmol/m3", obs = OBS, 
+     pch = 16, cex = 1.5, grid=x)
+}
 
 ## =======================================================================
 ##  EXAMPLE 2: 1D model, BOD + O2 - second run                               
