@@ -2,19 +2,24 @@
 \alias{plot.steady1D}
 \alias{image.steady2D}
 \alias{image.steady3D}
+\alias{summary.rootSolve}
 \title{
- Plot Method for steady1D, steady2D and steady3D Objects
+ Plot and Summary Method for steady1D, steady2D and steady3D Objects
 }
 \description{
 Plot the output of steady-state solver routines.
 }
 \usage{
 \method{plot}{steady1D}(x, ..., which = NULL, grid = NULL, 
-  xyswap =FALSE, ask = NULL, obs = NULL, obspar= list())
+              xyswap = FALSE, ask = NULL, 
+              obs = NULL, obspar = list())
 \method{image}{steady2D}(x, which = NULL, add.contour = FALSE, 
-  grid = NULL, ask = NULL, method = "image", legend = FALSE, ...)
+              grid = NULL, ask = NULL, 
+              method = "image", legend = FALSE, ...)
 \method{image}{steady3D}(x, which = NULL, add.contour = FALSE, 
-  grid = NULL, ask = NULL, method = "image", legend = FALSE, ...)
+              grid = NULL, ask = NULL, 
+              method = "image", legend = FALSE, ...)
+\method{summary}{rootSolve}(object, ...)
 }
 
 \arguments{
@@ -53,13 +58,17 @@ Plot the output of steady-state solver routines.
     observed data. 
     
     The first column of \code{obs} should contain the grid-variables as 
-    specified in argument \code{grid}. If \code{obs} is not \code{NULL} and 
-    \code{which} is \code{NULL}, then the variables, common to both 
-    \code{obs} and \code{x} will be plotted.
+    specified in argument \code{grid}. 
+    The other columns contain the observed values
+    and they should have names that are known in \code{x}.    
     
     If the first column of \code{obs} consists of factors, or characters (strings),
     then it is assumed that the data are presented in long (database) format,
-    where the first three columns contain (name, grid, y).  
+    where the first three columns contain (name, grid, value).  
+    
+    If \code{obs} is not \code{NULL} and 
+    \code{which} is \code{NULL}, then the variables, common to both 
+    \code{obs} and \code{x} will be plotted.
     }
 
   \item{obspar }{additional graphics arguments passed to \code{points}, for 
@@ -77,7 +86,11 @@ Plot the output of steady-state solver routines.
   \item{legend }{if \code{TRUE}, a color legend will be drawn next to 
     the "image", or "persp" plot.}
 
-  \item{\dots}{additional arguments.
+  \item{object }{object of class \code{rootSolve} whose summary has to be 
+    calculated.
+  } 
+
+  \item{\dots}{additional arguments passed to the methods.
   
     The graphical arguments are passed to
     \code{\link{plot.default}} (for 1D) or \code{image} (for 2D, 3D)
@@ -146,8 +159,7 @@ O2BOD <- function(t, state, pars) {
   dO2          <- -diff(FluxO2)/dx   - BODrate + p*(O2sat-O2)
 
   return(list(c(dBOD = dBOD, dO2 = dO2)))
-
- }    # END O2BOD
+}    # END O2BOD
  
  
 #==================#
@@ -165,15 +177,18 @@ O2_0    <- 50        # mmol/m3 riverine oxygen conc
 BOD_0   <- 1500      # mmol/m3 riverine BOD concentration
 
 # initial guess:
-state <- c(rep(200,N),rep(200,N))
+state <- c(rep(200,N), rep(200,N))
 
 # running the model
 out   <- steady.1D (y = state, func = O2BOD, parms = NULL,
                     nspec = 2, pos = TRUE, 
-                     names = c("BOD", "O2"))
+                    names = c("BOD", "O2"))
+
+summary(out)
 
 # output
-plot(out, type="l", lwd=2, ylab=c("mmol/m3","mmol O2/m3"), grid=x)
+plot(out, grid = x, type = "l", lwd = 2, 
+     ylab = c("mmol/m3", "mmol O2/m3"))
 
 # observations
 obs <- matrix (ncol = 2, data = c(seq(0, 10000, 2000),
@@ -182,14 +197,14 @@ obs <- matrix (ncol = 2, data = c(seq(0, 10000, 2000),
 colnames(obs) <- c("Distance", "BOD")
 
 # plot with observations
-plot(out, type="l", lwd=2, ylab="mmol/m3", obs = obs, 
-     pch = 16, cex = 1.5, grid=x)
+plot(out, grid = x, type = "l", lwd = 2, ylab = "mmol/m3", obs = obs, 
+     pch = 16, cex = 1.5)
 
 # similar but data in "long" format
 OUT <- data.frame(name = "BOD", obs)
 \dontrun{
-plot(out, type="l", lwd=2, ylab="mmol/m3", obs = OBS, 
-     pch = 16, cex = 1.5, grid=x)
+plot(out, grid = x, type = "l", lwd = 2, ylab = "mmol/m3", obs = OBS, 
+     pch = 16, cex = 1.5)
 }
 
 ## =======================================================================
@@ -200,23 +215,23 @@ v       <- 50       # velocity, m/day
 
 # running the model a second time
 out2   <- steady.1D (y = state, func = O2BOD, parms = NULL,
-                     nspec = 2, pos = TRUE, names = c("BOD","O2"))
+                     nspec = 2, pos = TRUE, names = c("BOD", "O2"))
 
 
 v       <- 200       # velocity, m/day
 
 # running the model a second time
 out3   <- steady.1D (y = state, func = O2BOD, parms = NULL,
-                     nspec = 2, pos = TRUE, names = c("BOD","O2"))
+                     nspec = 2, pos = TRUE, names = c("BOD", "O2"))
 
 # output of all three scenarios at once
 plot(out, out2, out3, type = "l", lwd = 2, 
-     ylab = c("mmol/m3", "mmol O2/m3"), grid = x ,
+     ylab = c("mmol/m3", "mmol O2/m3"), grid = x,
      obs = obs, which = c("BOD", "O2"))
   
 # change plot pars
 plot(out, out2, out3, type = "l", lwd = 2, 
-     ylab = c("mmol/m3","mmol O2/m3"), 
+     ylab = c("mmol/m3", "mmol O2/m3"), 
      grid = x, col = c("blue", "green"), log = "y",  
      obs = obs, obspar = list(pch = 16, col = "red", cex = 2))
 
@@ -224,37 +239,37 @@ plot(out, out2, out3, type = "l", lwd = 2,
 ## EXAMPLE 3: Diffusion in 2-D; zero-gradient boundary conditions
 ## =======================================================================
 
-diffusion2D <- function(t,Y,par)
-  {
+diffusion2D <- function(t,Y,par)  {
    y    <- matrix(nr=n,nc=n,data=Y)  # vector to 2-D matrix
    dY   <- -r*y        # consumption
    BND   <- rep(1,n)   # boundary concentration 
 
    #diffusion in X-direction; boundaries=imposed concentration
-   Flux <- -Dx * rbind(y[1,]-BND,(y[2:n,]-y[1:(n-1),]),BND-y[n,])/dx
+   Flux <- -Dx * rbind(y[1,]-BND, (y[2:n,]-y[1:(n-1),]), BND-y[n,])/dx
    dY   <- dY - (Flux[2:(n+1),]-Flux[1:n,])/dx
 
    #diffusion in Y-direction
-   Flux <- -Dy * cbind(y[,1]-BND,(y[,2:n]-y[,1:(n-1)]),BND-y[,n])/dy
-   dY    <- dY - (Flux[,2:(n+1)]-Flux[,1:n])/dy
-
+   Flux <- -Dy * cbind(y[,1]-BND, (y[,2:n]-y[,1:(n-1)]), BND-y[,n])/dy
+   dY    <- dY - (Flux[ ,2:(n+1)]-Flux[ ,1:n])/dy
+                                              
    return(list(as.vector(dY)))
-  }
+}
 
   # parameters
-  dy    <- dx <- 1   # grid size
-  Dy    <- Dx <- 1   # diffusion coeff, X- and Y-direction
-  r     <- 0.025     # consumption rate
+dy    <- dx <- 1   # grid size
+Dy    <- Dx <- 1   # diffusion coeff, X- and Y-direction
+r     <- 0.025     # consumption rate
 
-  n  <- 100
-  Y  <- matrix(nr=n,nc=n,10.)
+n  <- 100
+Y  <- matrix(nrow = n, ncol = n, 10.)
 
-  ST <- steady.2D(Y,func=diffusion2D,parms=NULL,pos=TRUE,dimens=c(n,n),
-                 lrw=1000000,atol=1e-10,rtol=1e-10,ctol=1e-10)
-  grid <- list(x=seq(dx/2, by = dx, length.out=n), 
-               y=seq(dy/2, by = dy, length.out=n))
-  image(ST, grid = grid)
-
+ST <- steady.2D(Y, func = diffusion2D, parms = NULL, pos = TRUE,
+                dimens = c(n, n), lrw = 1000000,
+                atol = 1e-10, rtol = 1e-10, ctol = 1e-10)
+grid <- list(x = seq(dx/2, by = dx, length.out = n), 
+             y = seq(dy/2, by = dy, length.out = n))
+image(ST, grid = grid)
+summary(ST)
 }
 \keyword{ hplot }
 

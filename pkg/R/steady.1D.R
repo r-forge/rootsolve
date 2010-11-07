@@ -90,7 +90,8 @@ steady.1D    <- function (y, time=NULL, func, parms=NULL, nspec = NULL,
       colnames(out[[1]]) <- names
     }
   }
-  class(out) <- c("steady1D","list")    # a steady-state 
+  class(out) <- c("steady1D","rootSolve","list")    # a steady-state 
+  if (is.null(dimens))  dimens <- N/nspec
   attr(out,"dimens") <- dimens
   attr(out, "nspec") <- nspec
   attr(out,"ynames") <- names

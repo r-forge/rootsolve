@@ -18,12 +18,13 @@
 }
 
 \usage{
-stodes(y, time=0, func, parms=NULL, rtol=1e-6, atol=1e-8,
-  ctol=1e-8, sparsetype="sparseint",verbose=FALSE,
-  nnz=NULL, inz=NULL, lrw=NULL, ngp=NULL, positive=FALSE, maxiter=100,
-  ynames=TRUE, dllname=NULL, initfunc=dllname, initpar=parms,
-  rpar=NULL, ipar=NULL, nout=0, outnames = NULL, 
-  spmethod="yale", control=NULL,...)
+stodes(y, time = 0, func, parms = NULL, rtol = 1e-6, atol = 1e-8,
+       ctol = 1e-8, sparsetype = "sparseint", verbose = FALSE,
+       nnz = NULL, inz = NULL, lrw = NULL, ngp = NULL, 
+       positive = FALSE, maxiter = 100, ynames = TRUE, 
+       dllname = NULL, initfunc = dllname, initpar = parms,
+       rpar = NULL, ipar = NULL, nout = 0, outnames = NULL, 
+       spmethod = "yale", control = NULL,...)
 }
 
 \arguments{
@@ -180,7 +181,7 @@ stodes(y, time=0, func, parms=NULL, rtol=1e-6, atol=1e-8,
 ## 1000 simultaneous equations
 ## =======================================================================
 
-model <- function (time,OC,parms,decay,ing)
+model <- function (time, OC, parms, decay, ing)
 {
  # model describing C in a sediment,
  # Upper boundary = imposed flux, lower boundary = zero-gradient
@@ -197,18 +198,19 @@ model <- function (time,OC,parms,decay,ing)
  dOC[N/2]  <- dOC[N/2] + ing*sum(OC[1:5])
  list(dOC)
 }
+
 v    <- 0.1    # cm/yr
 flux <- 10
 dx   <- 0.01
 N    <- 1000
-dist <- seq(dx/2,by=dx,len=N)
+dist <- seq(dx/2, by = dx, len = N)
 Kz   <- 1  #bioturbation (diffusion), cm2/yr
-ss   <- stodes(runif(N),func=model,parms=NULL,
-               positive=TRUE, decay=5,ing=20,verbose=TRUE)
+ss   <- stodes(runif(N), func = model, parms = NULL,
+               positive = TRUE, decay = 5, ing = 20, verbose = TRUE)
 
-plot(ss$y[1:N],dist,ylim=rev(range(dist)),type="l",lwd=2,
-     xlab="Nonlocal exchange",ylab="sediment depth",
-     main="stodes, sparse jacobian")
+plot(ss$y[1:N], dist, ylim = rev(range(dist)), type = "l", lwd = 2,
+     xlab = "Nonlocal exchange", ylab = "sediment depth",
+     main = "stodes, sparse jacobian")
 }
 
 \references{

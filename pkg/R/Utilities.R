@@ -187,6 +187,20 @@ plot.steady1D <- function (x, ..., which = NULL, grid = NULL,
       if (is.null(colnames(x))) colnames(x) <- 1:ncol(x)
       x
     }
+    if (! is.null(grid))
+      if (! is.vector(grid))
+        stop("'grid' should be a vector")
+  preparex <- function(Which, xother, x, xx) {
+    ii <- which (xother %in% Which) 
+    if (length (ii) == length(Which))
+      xx <- NULL
+    if (length(ii) > 0)  {
+      xnew <-  matrix(ncol = length(ii), data = x[[ii+ 1]])
+      colnames(xnew) <- xother[ii]
+      xx <- cbind (xx, xnew)
+    }  
+    return(xx)
+  }
 
     xx <- checkX (x)
 
@@ -233,20 +247,14 @@ plot.steady1D <- function (x, ..., which = NULL, grid = NULL,
     if (is.null(Which) & is.null(obs))        # All variables plotted
       Which <- 1:ncol(xx)
     else if (is.null(Which)) {                # All common variables in xx and obs plotted
-     Which <- which(c(varnames,xother) %in% obsname)
+     Which <- which(c(varnames, xother) %in% obsname)
      Which <- varnames[Which]                 # names rather than 
      if (length (Which) == 0)
        stop ("observed data and model output have no variables in common")
     } 
 
 ## Some variables may not be state variables (not in x$y, but in other list values)
-    ii <- which (xother %in% Which) 
-
-    if (length(ii) > 0)  {
-      xnew <-  matrix(ncol = length(ii), data = x[[ii+ 1]])
-      colnames(xnew) <- xother[ii]
-      xx <- cbind (xx,xnew)
-    }  
+    xx <- preparex (Which, xother, x, xx)
     varnames <- colnames(xx)
 
 ## Position of variables to be plotted in "x" 
@@ -293,9 +301,8 @@ plot.steady1D <- function (x, ..., which = NULL, grid = NULL,
 ## check compatibility of all steady1D objects    
     if (nother > 0) {
       for ( i in 1:nother) {             
-        
-        x2[[i]] <- checkX(x2[[i]])
-
+        X <- checkX(x2[[i]])
+        x2[[i]] <- preparex (Which, xother, x2[[i]], X)
         if (min(dim(x2[[i]]) - dim(xx) == c(0, 0)) == 0)   
           stop(" 'x2' and 'x' are not compatible - dimensions not the same")
         if (min(colnames(x2[[i]]) == varnames) == 0)

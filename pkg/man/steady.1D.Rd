@@ -10,8 +10,10 @@
 
   It is assumed that exchange occurs only between adjacent layers.}
 \usage{
-steady.1D(y, time=NULL, func, parms = NULL, nspec = NULL, dimens = NULL, 
-  names = NULL, method = "stode", cyclicBnd = NULL, bandwidth = 1, ...)
+steady.1D(y, time = NULL, func, parms = NULL, 
+          nspec = NULL, dimens = NULL, 
+          names = NULL, method = "stode", 
+          cyclicBnd = NULL, bandwidth = 1, ...)
 }
 \arguments{
   \item{y }{the initial guess of (state) values for the ODE system, a vector.
@@ -100,9 +102,8 @@ steady.1D(y, time=NULL, func, parms = NULL, nspec = NULL, dimens = NULL,
 #==================#
 # Model equations  #
 #==================#
-O2BOD <- function(t, state, pars)
+O2BOD <- function(t, state, pars) {
 
-{
   BOD <- state[1:N]
   O2  <- state[(N+1):(2*N)]
 
@@ -118,7 +119,7 @@ O2BOD <- function(t, state, pars)
 
   return(list(c(dBOD = dBOD, dO2 = dO2), BODrate = BODrate))
 
- }    # END O2BOD
+}    # END O2BOD
  
  
 #==================#
@@ -127,7 +128,7 @@ O2BOD <- function(t, state, pars)
 # parameters
 dx      <- 100       # grid size, meters
 v       <- 1e2       # velocity, m/day
-x       <- seq(dx/2,10000,by=dx)  # m, distance from river
+x       <- seq(dx/2, 10000, by = dx)  # m, distance from river
 N       <- length(x)
 r       <- 0.1       # /day, first-order decay of BOD
 p       <- 0.1       # /day, air-sea exchange rate
@@ -172,6 +173,8 @@ out2 <- steady.1D (y = state, func = O2BOD, parms = NULL, nspec = 2,
 plot(out2, grid=x, xlab = "Distance from river",
      ylab = "mmol/m3", type = "l", lwd = 2)
                          
+plot(out, out2, grid=x, xlab = "Distance from river", which = "BODrate",
+     ylab = "mmol/m3", type = "l", lwd = 2)
 
 ## =======================================================================
 ##   EXAMPLE 2: Silicate diagenesis                      
@@ -186,9 +189,9 @@ plot(out2, grid=x, xlab = "Distance from river",
 # Model equations    #
 #====================#
 
-SiDIAmodel <- function (time=0,    # time, not used here
-                        Conc,      # concentrations: BSi, DSi
-                        parms=NULL) # parameter values; not used
+SiDIAmodel <- function (time = 0,    # time, not used here
+                        Conc,        # concentrations: BSi, DSi
+                        parms = NULL) # parameter values; not used
 {
  BSi<- Conc[1:N]
  DSi<- Conc[(N+1):(2*N)]
@@ -224,7 +227,7 @@ SiDIAmodel <- function (time=0,    # time, not used here
 #====================#
 # sediment parameters
 thick    <- 0.1                       # thickness of sediment layers (cm)
-Intdepth <- seq(0,10,by=thick)        # depth at upper interface of layers
+Intdepth <- seq(0, 10, by = thick)    # depth at upper interface of layers
 Nint     <- length(Intdepth)          # number of interfaces
 Depth    <- 0.5*(Intdepth[-Nint] +Intdepth[-1]) # depth at middle of layers
 N        <- length(Depth)                       # number of layers
@@ -240,31 +243,31 @@ IntPor   <- pordeep + (por0-pordeep)*exp(-Intdepth*porcoef)
 dB0      <- 1/365           # cm2/day      - bioturbation coefficient
 dBcoeff  <- 2
 mixdepth <- 5               # cm
-Db       <- pmin(dB0,dB0*exp(-(Intdepth-mixdepth)*dBcoeff))
+Db       <- pmin(dB0, dB0*exp(-(Intdepth-mixdepth)*dBcoeff))
 
 # biogeochemical parameters
 SedDisp  <- 0.4             # diffusion coefficient, cm2/d
 rDissSi  <- 0.005           # dissolution rate, /day
 EquilSi  <- 800             # equilibrium concentration
 pow      <- 1
-BSidepo  <- 0.2*100          # nmol/cm2/day
-bwDSi    <- 150              # mmol/m3
+BSidepo  <- 0.2*100         # nmol/cm2/day
+bwDSi    <- 150             # mmol/m3
 
 # initial guess of state variables-just random numbers between 0,1
 Conc     <- runif(2*N)
 
-# three runs with different deposition rates                                      n
+# three runs with different deposition rates                                      
 BSidepo  <- 0.2*100          # nmol/cm2/day
-sol  <- steady.1D (Conc, func=SiDIAmodel, parms=NULL, nspec=2, 
-  names=c("DSi","BSi"))
+sol  <- steady.1D (Conc, func = SiDIAmodel, parms = NULL, nspec = 2, 
+                   names = c("DSi", "BSi"))
 
 BSidepo  <- 2*100          # nmol/cm2/day
-sol2 <- steady.1D (Conc, func=SiDIAmodel, parms=NULL, nspec=2, 
-  names=c("DSi","BSi"))
+sol2 <- steady.1D (Conc, func = SiDIAmodel, parms = NULL, nspec = 2, 
+                   names = c("DSi", "BSi"))
 
 BSidepo  <- 3*100          # nmol/cm2/day
-sol3 <- steady.1D (Conc, func=SiDIAmodel, parms=NULL, nspec=2, 
-  names=c("DSi","BSi"))
+sol3 <- steady.1D (Conc, func = SiDIAmodel, parms = NULL, nspec = 2, 
+                   names = c("DSi", "BSi"))
 
 #====================#
 # plotting output    #
