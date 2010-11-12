@@ -118,7 +118,9 @@ convert2wide <- function(Data) {
 
     for ( ivar in cnames[-1]) {
       sel <- Data[Data[,1] == ivar, 2:3]
-      nt  <- cbind(sel[,1],matrix(nrow = nrow(sel), ncol = ncol(MAT)-1, data = NA),sel[,2])
+      nt  <- cbind(sel[,1],
+                   matrix(nrow = nrow(sel), ncol = ncol(MAT)-1, data = NA),
+                   sel[,2])
       MAT <- cbind(MAT, NA)
       colnames(nt) <- colnames(MAT)
       MAT <- rbind(MAT, nt)
@@ -190,17 +192,18 @@ plot.steady1D <- function (x, ..., which = NULL, grid = NULL,
     if (! is.null(grid))
       if (! is.vector(grid))
         stop("'grid' should be a vector")
-  preparex <- function(Which, xother, x, xx) {
-    ii <- which (xother %in% Which) 
-    if (length (ii) == length(Which))
-      xx <- NULL
-    if (length(ii) > 0)  {
-      xnew <-  matrix(ncol = length(ii), data = x[[ii+ 1]])
-      colnames(xnew) <- xother[ii]
-      xx <- cbind (xx, xnew)
-    }  
-    return(xx)
-  }
+    
+    preparex <- function(Which, xother, x, xx) {
+      ii <- which (xother %in% Which) 
+      if (length (ii) == length(Which))
+        xx <- NULL
+      if (length(ii) > 0)  {
+        xnew <-  matrix(ncol = length(ii), data = x[[ii+ 1]])
+        colnames(xnew) <- xother[ii]
+        xx <- cbind (xx, xnew)
+      }  
+     return(xx)
+    }
 
     xx <- checkX (x)
 
@@ -240,15 +243,15 @@ plot.steady1D <- function (x, ..., which = NULL, grid = NULL,
     varnames <- c(colnames(xx),names(x)[-1])
     if(is.null(varnames)) varnames <- 1:ncol(xx)
 
-    xother <- names(x)[-1]                    # other names
+    xother <- names(x)[-1]              # other names
 
     Which <- which 
     
-    if (is.null(Which) & is.null(obs))        # All variables plotted
+    if (is.null(Which) & is.null(obs))  # All variables plotted
       Which <- 1:ncol(xx)
-    else if (is.null(Which)) {                # All common variables in xx and obs plotted
+    else if (is.null(Which)) {          # All common variables in xx and obs plotted
      Which <- which(c(varnames, xother) %in% obsname)
-     Which <- varnames[Which]                 # names rather than 
+     Which <- varnames[Which]           # names rather than numbers
      if (length (Which) == 0)
        stop ("observed data and model output have no variables in common")
     } 
