@@ -29,7 +29,8 @@ runsteady(y, times = c(0, Inf), func, parms,
           hini = 0, ynames = TRUE, maxord = NULL, bandup = NULL, 
           banddown = NULL, maxsteps = 100000, dllname = NULL, 
           initfunc = dllname, initpar = parms, rpar = NULL, 
-          ipar = NULL, nout = 0, outnames = NULL, ...)
+          ipar = NULL, nout = 0, outnames = NULL, 
+          forcings = NULL, initforc = NULL, fcontrol = NULL, ...)
 }
 
 \arguments{
@@ -174,6 +175,24 @@ runsteady(y, times = c(0, Inf), func, parms,
   \item{outnames }{only used if \file{dllname} is specified and
     \code{nout} > 0: the names of output variables calculated in the
     compiled function \code{func}, present in the shared library.
+  }
+  \item{forcings }{only used if \file{dllname} is specified: a vector with the 
+    forcing function values, or a list with the forcing function data sets, 
+    each present as a two-columned matrix, with (time,value); interpolation 
+    outside the interval [min(\code{times}), max(\code{times})] is done by 
+    taking the value at the closest data extreme.
+
+    This feature is here for compatibility with models defined in compiled code
+    from package deSolve; see deSolve's package vignette \code{"compiledCode"}.
+  }
+  \item{initforc }{if not \code{NULL}, the name of the forcing function
+    initialisation function, as provided in
+    \file{dllname}. It MUST be present if \code{forcings} has been given a
+    value.
+    See deSolve's package vignette \code{"compiledCode"}.
+  }
+  \item{fcontrol }{A list of control parameters for the forcing functions.
+    See deSolve's package vignette \code{"compiledCode"}.
   }
   \item{... }{additional arguments passed to \code{func} and \code{jacfunc}
     allowing this to be a generic function.

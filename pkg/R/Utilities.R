@@ -198,7 +198,7 @@ plot.steady1D <- function (x, ..., which = NULL, grid = NULL,
       if (length (ii) == length(Which))
         xx <- NULL
       if (length(ii) > 0)  {
-        xnew <-  matrix(ncol = length(ii), data = x[[ii+ 1]])
+        xnew <-  matrix(ncol = length(ii), data = unlist(x[ii+ 1]))
         colnames(xnew) <- xother[ii]
         xx <- cbind (xx, xnew)
       }  
@@ -250,7 +250,7 @@ plot.steady1D <- function (x, ..., which = NULL, grid = NULL,
     if (is.null(Which) & is.null(obs))  # All variables plotted
       Which <- 1:ncol(xx)
     else if (is.null(Which)) {          # All common variables in xx and obs plotted
-     Which <- which(c(varnames, xother) %in% obsname)
+     Which <- which(varnames %in% obsname)
      Which <- varnames[Which]           # names rather than numbers
      if (length (Which) == 0)
        stop ("observed data and model output have no variables in common")
@@ -292,10 +292,18 @@ plot.steady1D <- function (x, ..., which = NULL, grid = NULL,
     nother <- 0                          # number of other steady1D instances
     
     if (length(ldots) > 0) 
-     for ( i in 1:length(ldots))
-      if ("steady1D" %in% class(ldots[[i]])){
+     for ( i in 1:length(ldots))    
+      # an element of type steady1D
+      if ("steady1D" %in% class(ldots[[i]]))  {    
         x2[[nother <- nother+1]] <- ldots[[i]]  
-        names(x2)[nother] <- ndots[i]
+        names(x2)[nother] <- ndots[i]       
+      # a list of types steady1D
+      } else if (is.list(ldots[[i]]) & "steady1D" %in% class(ldots[[i]][[1]])) {   
+        for (j in 1:length(ldots[[i]])) {
+          x2[[nother <- nother+1]] <- ldots[[i]][[j]]  
+          names(x2)[nother] <- names(ldots[[i]])[[j]]
+        }
+      # a graphical parameter  
       } else if (! is.null(ldots[[i]])) {
         dots[[nd <- nd+1]] <- ldots[[i]]
         names(dots)[nd] <- ndots[i]
