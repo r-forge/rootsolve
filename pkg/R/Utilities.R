@@ -184,7 +184,7 @@ plot.steady1D <- function (x, ..., which = NULL, grid = NULL,
         nspec <- attributes(x)$nspec
         if (length(X)%%nspec != 0) 
           stop("length of 'x' should be a multiple of 'nspec' if x is a vector")
-        x <- matrix(nc = nspec, data = X)
+        x <- matrix(ncol = nspec, data = X)
       } else x <- X   # only state variables
       if (is.null(colnames(x))) colnames(x) <- 1:ncol(x)
       x
@@ -531,11 +531,11 @@ image.steady2D <- function (x, which = NULL,
     if (is.vector(X)) {
       if (length(X) - nspec*prod(dimens) != 0) 
         stop("length of 'x' should be = 'nspec' * prod(dimens) if x is a vector")
-      x <- matrix(nc = nspec, data = X)
+      x <- matrix(ncol = nspec, data = X)
       
       for ( i in 1:nspec){
         istart <- (i-1)*prod(dimens) 
-        out[[i]] <- matrix(nr=dimens[1], nc=dimens[2], data =
+        out[[i]] <- matrix(nrow=dimens[1], ncol=dimens[2], data =
           X[(istart+1):(istart+prod(dimens))])
       }
     } else 
@@ -661,7 +661,7 @@ image.steady3D <- function (x, which = NULL,
     if (is.vector(X)) {
       if (length(X) - nspec*prod(dimens) != 0) 
         stop("length of 'x' should be = 'nspec' * prod(dimens) if x is a vector")
-      x <- matrix(nc = nspec, data = X)
+      x <- matrix(ncol = nspec, data = X)
       
       for ( i in 1:nspec){
         istart <- (i-1)*prod(dimens) 
