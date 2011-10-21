@@ -31,7 +31,7 @@ c**********************************************************************
      &                   a,ewt,rsp,ian,jan,igp,jgp,maxg,r,c,ic,isp,            &
      &                   maxiter,TolChange,atol,rtol,itol,Positivity,          &
      &                   Pos,ipos,SteadyStateReached,Precis,niter,             &
-     &                   dims, out,nout ,Type)
+     &                   dims, out,nout ,Type, pres)
 
 c------------------------------------------------------------------------------*
 c Solves a system of nonlinear equations using the Newton-Raphson method       *
@@ -64,7 +64,7 @@ c positivity either enforced at once (positivity=TRUE) or as a vector of element
       INTEGER  Ipos, Pos(Ipos)
 
 c tolerances, precision
-      INTEGER          itol, Type
+      INTEGER          itol, Type, pres(*)
       DOUBLE PRECISION rtol(*), atol(*),tolChange
       DOUBLE PRECISION ewt(*), precis(maxIter),maxewt,RelativeChange
          
@@ -86,11 +86,11 @@ c-------------------------------------------------------------------------------
       CALL errSET (N, ITOL, RTOL, ATOL, SVAR, EWT)
 
 c determine sparse structure: if Type == 2, 3, 4 :
-c a 1-D or 2-D or 3-D PDE model;
+c a 1-D or 2-D or 3-D PDE model; if type = 30: 2-D model, with mapping
 c in this case the number of components, dimensions and cyclic bnd are in dims
       CALL xSparseStruct(N, nnz, ian, jan, igp, jgp, maxg, ngp,                &
      &    Svar, ewt, dSvar, beta, xmodel, time, out, nout, nonzero,            &
-     &    Type, dims)
+     &    Type, dims, pres)
 c find a minimum degree ordering of the rows and columns  
       CALL odrv(N,ian,jan,a,r,ic,nsp,isp,1,flag)
       IF (flag .NE. 0) CALL warnflag(flag,N)
@@ -278,7 +278,7 @@ c********************************************************************
 
       SUBROUTINE xSparseStruct(N, nnz, ian, jan, igp, jgp, maxg, ngp,          &
      &       Svar, ewt, dSvar, beta, xmodel, time, out, nout, nonzero,         &
-     &       Type, dims)
+     &       Type, dims, pres)
 c-------------------------------------------------------------------*
 c two arrays describe the sparsity structure of the jacobian:       *
 c                                                                   *
@@ -302,7 +302,7 @@ c-------------------------------------------------------------------*
 
        INTEGER           N, nnz,nonzero   
        INTEGER           IAN (N+1), JAN(nnz)
-       INTEGER           nout(*), Type, dims(*)
+       INTEGER           nout(*), Type, dims(*), pres(*)
 
        DOUBLE PRECISION  Svar (N), ewt(N)
        DOUBLE PRECISION  time, out(*), tiny
@@ -388,6 +388,14 @@ c 1-D problem
          cyclic(2) = dims(5)
          CALL sparse2d(N, Nspec, dimens, cyclic, nnz, ian, jan)
          nonzero = nnz
+       ELSE IF (Type == 30) THEN
+         Nspec = dims(1)
+         dimens(1) = dims(2)
+         dimens(2) = dims(3)
+         cyclic(1) = dims(4)
+         cyclic(2) = dims(5)
+         CALL sparse2dmap(N, Nspec, dimens, cyclic, nnz, ian, jan, pres)
+         nonzero = nnz
        ELSE IF (Type == 4) THEN
          Nspec = dims(1)
          dimens(1) = dims(2)
@@ -397,6 +405,16 @@ c 1-D problem
          cyclic(2) = dims(6)
          cyclic(3) = dims(7)
          CALL sparse3d(N, Nspec, dimens, cyclic, nnz, ian, jan)
+         nonzero = nnz
+       ELSE IF (Type == 40) THEN
+         Nspec = dims(1)
+         dimens(1) = dims(2)
+         dimens(2) = dims(3)
+         dimens(3) = dims(4)
+         cyclic(1) = dims(5)
+         cyclic(2) = dims(6)
+         cyclic(3) = dims(7)
+         CALL sparse3dmap(N, Nspec, dimens, cyclic, nnz, ian, jan, pres)
          nonzero = nnz
        ENDIF
        

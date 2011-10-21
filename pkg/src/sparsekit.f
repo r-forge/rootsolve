@@ -23,7 +23,7 @@ c**********************************************************************
      &                   maxiter,TolChange,atol,rtol,itol,Positivity,          &
      &                   Pos,ipos,SteadyStateReached,Precis,niter,             &
      &                   dims,out,nout,Type,droptol,permtol,imethod,           &
-     &                   lfill,lenplumx,plu,rwork)
+     &                   lfill,lenplumx,plu,rwork,pres)
 
 c------------------------------------------------------------------------------*
 c Solves a system of nonlinear equations using the Newton-Raphson method       *
@@ -39,7 +39,7 @@ c actual number of nonzeros, max and actual iterations
       INTEGER  nonzero, maxiter, niter, dims(*)
 
 c indices to nonzero elements and to groups of independent state variables 
-      INTEGER ian(*), jan(*), igp(*),jgp(*)
+      INTEGER ian(*), jan(*), igp(*),jgp(*), pres(*)
 c locals....      
       integer iao(N+1), jao(nnz)
       double precision ao(nnz)
@@ -97,7 +97,7 @@ c in this case the number of components, dimensions and cyclic bnd are in dims
 
       CALL xSparseStruct(N, nnz, ian, jan, igp, jgp, maxg, ngp,                &
      &    Svar, ewt, dSvar, beta, xmodel, time, out, nout, nonzero,            &
-     &    Type, dims)
+     &    Type, dims, pres)
 
 c initial guess for x
       DO j=1, N
@@ -225,15 +225,18 @@ c-------------------------------------------------------------------------------
       ELSE IF (IERR .EQ. -1) THEN
         call rwarn("input matrix may be wrong; elimination process ")
         call rwarn("generated a row in L or U ")
-        call rexit("with length exceeding N")
+        call rwarn("with length exceeding N")
+        call rexit("stopped")
       ELSE IF (IERR .EQ. -2) THEN
         call rwarn("matrix L overflows")
-        call rwarn("increase value of lenplufac or decrease value")
-        call rexit("lfill if lenplufac cannot be increased")
+        call rwarn("increase value of lenplufac or decrease value of")
+        call rwarn("lfill if lenplufac cannot be increased")
+        call rexit("stopped")
       ELSE IF (IERR .EQ. -3) THEN
         call rwarn("matrix U overflows")
         call rwarn("increase value of lenplufac or decrease value")
-        call rexit("lfill if lenplufac cannot be increased")
+        call rwarn("lfill if lenplufac cannot be increased")
+        call rexit("stopped")
       ELSE IF (IERR .EQ. -4) THEN
         call rexit("illegal value for lfill")
       ELSE IF (IERR .EQ. -5) THEN

@@ -545,7 +545,7 @@ image.steady2D <- function (x, which = NULL,
     X <- x$y
     out <- list()
     nspec <- attributes(x)$nspec
-    dimens <- attributes(x)$dimens
+    dimens <- attributes(x)$dimens  
     if (is.vector(X)) {
       if (length(X) - nspec*prod(dimens) != 0) 
         stop("length of 'x' should be = 'nspec' * prod(dimens) if x is a vector")
@@ -559,6 +559,8 @@ image.steady2D <- function (x, which = NULL,
     } else 
         out <- X   # only one state variable
 
+    map <- any(is.na(X))    # if mapping applied: some elements will be NA.
+     
     varnames <- attributes(x)$ynames
     if (is.null(varnames)) varnames <- 1:nspec
 
@@ -633,12 +635,14 @@ image.steady2D <- function (x, which = NULL,
           dots$zlim <- zzlim[[i]]
         else
           dots$zlim <- range(out[[ii]], na.rm=TRUE)
-        
+          
         List <- alist(z=out[[ii]])
         if (! is.null(grid)) {
           List$x <- grid[[1]]
           List$y <- grid[[2]]
         }
+
+        
         if (method=="persp") {
           if (is.null(dots$zlim))  # this to prevent error when range = 0
             if (diff(range(out[[i]], na.rm=TRUE)) == 0) 
@@ -653,10 +657,18 @@ image.steady2D <- function (x, which = NULL,
           dots$color.palette <- dotscolorpalette
         else 
           dots$col <- dotscol 
+
+        if (! is.null(map)) {
+          if (is.null(dots$zlim))
+            dots$zlim <- range(out[[i]], na.rm=TRUE)
+          dots$col <- c("black", dots$col)
+          out[[i]][is.na(out[[i]])] <- dots$zlim[1] - 0.01*diff(dots$zlim)
+          dots$zlim [1] <- dots$zlim[1] - 0.01*diff(dots$zlim)
+        }
         
         do.call(method, c(List, dots)) 
         if (Addcontour[i]) do.call("contour", c(List, add=TRUE))
-          
+        box(lwd = 2)  # Karline: added that          
       if (legend) {
         if (method == "persp") 
            if (is.null(dotscol))
