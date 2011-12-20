@@ -282,21 +282,19 @@ plot(ss$y[1:N], dist, ylim = rev(range(dist)), type = "l", lwd = 2,
       In this case, \code{inz} need not be specified. 
     \item \code{sparsetype} = \code{"sparseusr"}. The sparsity is determined by
       the user.
-      In this case, \code{inz} should be a matrix, containing indices 
+      In this case, \code{inz} should be a \code{matrix}, containing indices 
       (row, column) to the  nonzero elements in the Jacobian matrix.
-      In this case, \code{nnz} will be set equal to the number of rows
+      The number of nonzeros \code{nnz} will be set equal to the number of rows
       in \code{inz}.
-    \item \code{sparsetype} = \code{"sparsejan"}. The sparsity is determined by
+    \item \code{sparsetype} = \code{"sparsejan"}. The sparsity is also determined by
       the user.
-      In this case, \code{inz} should be a vector, containting the \code{ian} and 
+      In this case, \code{inz} should be a \code{vector}, containting the \code{ian} and 
       \code{jan} elements of the sparse storage format, as used in the sparse solver.
-      \code{ian} should be the first \code{n+1} elements of this vector, and 
+      Elements of \code{ian} should be the first \code{n+1} elements of this vector, and 
       contain the starting locations in \code{jan} of columns 1.. n. 
       \code{jan} contains the row indices of the nonzero locations of           
-      the jacobian, reading in columnwise order
-      elements containing indices (row, column) to the
-      nonzero elements in the Jacobian matrix.
-      In this case, \code{nnz} will be set equal to the length of \code{inz} - (n+1).
+      the jacobian, reading in columnwise order.
+      The number of nonzeros \code{nnz} will be set equal to the length of \code{inz} - (n+1).
     \item \code{sparsetype} = \code{"1D"}, \code{"2D"}, \code{"3D"}. 
       The sparsity is estimated by the solver, based on numerical differences.
       Assumes finite differences in a 1D, 2D or 3D regular grid - used by 

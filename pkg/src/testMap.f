@@ -120,7 +120,7 @@ c
 
 
 
-      SUBROUTINE sparse3dmap (Ntot, Nspec, dimens, cyclic,                &
+      SUBROUTINE sparse3dmap (Ntot, Nspec, dimens, cyclic,                     &
      &      nnz, ian, jan, pres)
 
 c--------------------------------------------------------------------*
@@ -131,15 +131,15 @@ C IAN  and JAN: see comments in sparse1D                             *
 C                                                                    *
 C A(I,J,K) in vector: (I-1)*dim(2)*dim(3) + (J-1)*dim(3) + K         *  
 c--------------------------------------------------------------------*
-
+       IMPLICIT NONE
 c total number of state variables, number of different species
 c dimensions of the problem and whether cyclic boundaries or not
-       INTEGER Ntot, Nspec, dimens(*), cyclic(*)
+       INTEGER Ntot, Nspec, dimens(*), cyclic(*), pres(*)
 
 c maximal number of indices, sparsity arrays
        INTEGER nnz, ian(*), jan(*)
 c
-       INTEGER N, I, J, ij, K, L, M, isp, im
+       INTEGER N, I, J, ij, K, L, M, ll, isp, im, Mnew
  	     character *80 msg
 
 c check input
@@ -161,71 +161,74 @@ c number of boxes
            DO k = 1, dimens(2)
              DO ll = 1, dimens(3)
                M = isp +(j-1)*dimens(2)*dimens(3)+(k-1)*dimens(3)+ll
+               Mnew = pres(M)
+               IF (Mnew > 0) THEN
 
 c interactions with current, upstream and downstream boxes (ival = M, M+1, M-1)
-               CALL updatejan(ij, M, nnz, jan, pres) 
+                 CALL updatejan(ij, M, nnz, jan, pres) 
 
-               IF (ll<dimens(3)) THEN
-                 CALL updatejan(ij, M+1, nnz, jan, pres) 
+                 IF (ll < dimens(3)) THEN
+                   CALL updatejan(ij, M+1, nnz, jan, pres) 
 
-               ELSE IF (cyclic(3) == 1 .AND. dimens(3) > 2) THEN
+                 ELSE IF (cyclic(3) == 1 .AND. dimens(3) > 2) THEN
 	           im = isp + (j-1)*dimens(2)*dimens(3)+(k-1)*dimens(3)+1   
-                 CALL updatejan(ij, im, nnz, jan, pres) 
-               ENDIF
+                   CALL updatejan(ij, im, nnz, jan, pres) 
+                 ENDIF
               
-			 IF (ll >1) THEN
-                 CALL updatejan(ij, M-1, nnz, jan, pres) 
-               ELSE IF (cyclic(3) == 1 .AND. dimens(3) > 2) THEN
-                 im = isp + (j-1)*dimens(2)*dimens(3)+k*dimens(3) 
-                 CALL updatejan(ij, im, nnz, jan, pres) 
-               ENDIF
+			           IF (ll > 1) THEN
+                   CALL updatejan(ij, M-1, nnz, jan, pres) 
+                 ELSE IF (cyclic(3) == 1 .AND. dimens(3) > 2) THEN
+                   im = isp + (j-1)*dimens(2)*dimens(3)+k*dimens(3) 
+                   CALL updatejan(ij, im, nnz, jan, pres) 
+                 ENDIF
  
-               IF (k<dimens(2)) THEN
-                 CALL updatejan(ij, M+dimens(3), nnz, jan, pres) 
-               ELSE IF (cyclic(2) == 1 .AND. dimens(2) > 2) THEN
-                 im = isp + (j-1)*dimens(2)*dimens(3)+ll 
-                 CALL updatejan(ij, im, nnz, jan, pres) 
-               ENDIF
+                 IF (k < dimens(2)) THEN
+                   CALL updatejan(ij, M+dimens(3), nnz, jan, pres) 
+                 ELSE IF (cyclic(2) == 1 .AND. dimens(2) > 2) THEN
+                   im = isp + (j-1)*dimens(2)*dimens(3)+ll 
+                   CALL updatejan(ij, im, nnz, jan, pres) 
+                 ENDIF
             
-               IF (k >1) THEN
-                 CALL updatejan(ij, M -dimens(3), nnz, jan, pres)
-               ELSE IF (cyclic(2) == 1 .AND. dimens(2) > 2) THEN
-                 im = isp +j*dimens(2)*dimens(3) -dimens(3)+ll
-                 CALL updatejan(ij, im, nnz, jan, pres) 
-               ENDIF
+                 IF (k > 1) THEN
+                   CALL updatejan(ij, M-dimens(3), nnz, jan, pres)
+                 ELSE IF (cyclic(2) == 1 .AND. dimens(2) > 2) THEN
+                   im = isp +j*dimens(2)*dimens(3) -dimens(3)+ll
+                   CALL updatejan(ij, im, nnz, jan, pres) 
+                 ENDIF
 
-               IF (j<dimens(1)) THEN
-                 im = M+dimens(2)*dimens(3)
-                 CALL updatejan(ij, im, nnz, jan, pres) 
-               ELSE IF (cyclic(1) == 1 .AND. dimens(1) > 2) THEN
-                 im = isp +(k-1)*dimens(3)+ll
-                 CALL updatejan(ij, im, nnz, jan, pres) 
-               ENDIF
+                 IF (j < dimens(1)) THEN
+                   im = M+dimens(2)*dimens(3)
+                   CALL updatejan(ij, im, nnz, jan, pres) 
+                 ELSE IF (cyclic(1) == 1 .AND. dimens(1) > 2) THEN
+                   im = isp +(k-1)*dimens(3)+ll
+                   CALL updatejan(ij, im, nnz, jan, pres) 
+                 ENDIF
 
-               IF (j >1) THEN
-                 im = M-dimens(2)*dimens(3)
-                 CALL updatejan(ij, im, nnz, jan, pres) 
-               ELSE IF (cyclic(1) == 1 .AND. dimens(1) > 2) THEN
+                 IF (j > 1) THEN
+                   im = M-dimens(2)*dimens(3)
+                   CALL updatejan(ij, im, nnz, jan, pres) 
+                 ELSE IF (cyclic(1) == 1 .AND. dimens(1) > 2) THEN
 	           im = isp +(dimens(1)-1)*dimens(2)*dimens(3)+                      &
      &		            (k-1)*dimens(3)+ll
-                 CALL updatejan(ij, im, nnz, jan, pres) 
-               ENDIF
-
+                   CALL updatejan(ij, im, nnz, jan, pres) 
+                 ENDIF
 
 c interactions with other species in the same box
-               DO L = 1, Nspec
-                 IF (L == i) cycle
-                 im=(L-1)*N+(j-1)*dimens(2)*dimens(3)+                           &
-     &                      (k-1)*dimens(3)+ll
-                 CALL updatejan(ij, im, nnz, jan, pres) 
-               ENDDO
+                 DO L = 1, Nspec
+                   IF (L == i) cycle
+                   im=(L-1)*N+(j-1)*dimens(2)*dimens(3)+                        &
+     &                        (k-1)*dimens(3)+ll
+                   CALL updatejan(ij, im, nnz, jan, pres) 
+                 ENDDO
 
-               ian(M+1) = ij
+                 ian(MNew+1) = ij
+               ENDIF
              ENDDO
-	     ENDDO
+	         ENDDO
          ENDDO
       ENDDO
       nnz = ij -1
 
 c
       END SUBROUTINE sparse3dmap
+      
