@@ -199,7 +199,7 @@ stodes(y, time = 0, func, parms = NULL, rtol = 1e-6, atol = 1e-8,
   rate of change (sum(abs(dy))/n).
 }
 \author{
-  Karline Soetaert <k.soetaert@nioo.knaw.nl>
+  Karline Soetaert <karline.soetaert@nioz.nl>
 }
 \examples{
 

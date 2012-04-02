@@ -85,7 +85,6 @@ c model and jacobian function
       DOUBLE PRECISION time
 c
       INTEGER i, j, k, esp, ierr
-      character (len=80) msg
 c-------------------------------------------------------------------------------
       SteadyStateReached = .FALSE.
 
@@ -216,12 +215,12 @@ c**********************************************************************
 
       SUBROUTINE warnflagkit(ierr)
       INTEGER Ierr
-      CHARACTER (len = 80) msg
 c-------------------------------------------------------------------------------
 
       IF (IERR .GT. 0) THEN 
-        write(msg,'(A35,I10)')"zero pivot encountered at step nr ",IERR
-        call rwarn(msg)
+        call intpr("zero pivot encountered at step nr ",35, IERR, 1)
+C        write(msg,'(A35,I10)')"zero pivot encountered at step nr ",IERR
+C        call rwarn(msg)
       ELSE IF (IERR .EQ. -1) THEN
         call rwarn("input matrix may be wrong; elimination process ")
         call rwarn("generated a row in L or U ")

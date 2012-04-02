@@ -10,15 +10,13 @@ c--------------------------------------------------------------------*
        INTEGER ii, ij, nnz, jan(*), pres(*)
 c
        INTEGER I
-        character *80 msg
           
        IF (pres(II) > 0) THEN
            jan(ij) = pres(II)
            ij      = ij +1
            IF (ij .GT. nnz) THEN
-             WRITE (msg,*)
+            CALL rexit
      &("cannot generate sparse jacobian - not enough room for nonzeros")
-            CALL rexit(msg)
            ENDIF
        ENDIF
 
@@ -48,13 +46,11 @@ c pres has the new numbers of those present, -1 or 0 if absent
        INTEGER pres(*)
 c
        INTEGER N, I, J, ij, K, L, M , isp, NN
-       character *80 msg
 
 c check input
        IF (INT(Ntot/Nspec)*Nspec .NE. Ntot) THEN
-         write(msg,*)
+         call rexit
      &("cannot generate sparse jacobian - N and nspec not compatible")
-         call rexit(msg)
        ENDIF
 
 c number of boxes
@@ -140,13 +136,11 @@ c maximal number of indices, sparsity arrays
        INTEGER nnz, ian(*), jan(*)
 c
        INTEGER N, I, J, ij, K, L, M, ll, isp, im, Mnew
- 	     character *80 msg
 
 c check input
        IF (INT(Ntot/Nspec)*Nspec .NE. Ntot) THEN
-         write(msg,*)
+         call rexit
      &("cannot generate sparse jacobian - N and nspec not compatible")
-         call rexit(msg)
        ENDIF
 
 c number of boxes

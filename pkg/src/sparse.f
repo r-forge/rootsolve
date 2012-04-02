@@ -79,7 +79,6 @@ c model and jacobian function
       DOUBLE PRECISION time
 c
       INTEGER i, j, k, esp, im, jm
-      character (len=80) msg
 c-------------------------------------------------------------------------------
       SteadyStateReached = .FALSE.
 
@@ -195,43 +194,41 @@ c**********************************************************************
 	 SUBROUTINE warnflag(flag,N)
 	 INTEGER flag, iflag,N
 	 
- 	 character *80 msg
-
 	 iflag = INT(flag/N)
 	 IF (iflag .EQ. 1) THEN
-         write(msg,'(A10,I10)') "  row nr: ", flag-iflag
-	   call rwarn("sparse solver: null row in a")
-         call rexit(msg)
+	       call intpr ("sparse solver: null row in a", -1, 0, 0)
+         call intpr ("  row nr: ", 10, flag-iflag, 1)
+         call rexit("stopped")
        ELSE if (iflag .EQ. 2) THEN
-         write(msg,'(A10,I10)') "  row nr: ", flag-iflag
-	   call rwarn("sparse solver: duplicate entry in a")
-         call rexit(msg)
+    	   call intpr("sparse solver: duplicate entry in a", -1, 0, 0)
+         call intpr ("  row nr: ", 10, flag-iflag, 1)
+         call rexit("stopped")
        ELSE if (iflag .EQ. 3) THEN
-         write(msg,'(A10,I10)') "  row nr: ", flag-iflag
-	   call rwarn("insufficient storage in nsfc")
-         call rexit(msg)
+	       call intpr ("insufficient storage in nsfc", -1, 0, 0)
+         call intpr ("  row nr: ", 10, flag-iflag, 1)
+         call rexit("stopped")
        ELSE if (iflag .EQ. 4) THEN
-	   call rwarn("insufficient storage in nnfc")
+	       call rwarn("insufficient storage in nnfc")
        ELSE if (iflag .EQ. 5) THEN
-         write(msg,'(A10,I10)') "  row nr: ", flag-iflag
-	   call rwarn("sparse solver: null pivot")
-         call rexit(msg)
+         call rwarn("sparse solver: null pivot")
+         call intpr ("  row nr: ", 10, flag-iflag, 1)
+         call rexit("stopped")
        ELSE if (iflag .EQ. 6) THEN
-         write(msg,'(A10,I10)') "  row nr: ", flag-iflag
-  	   call rwarn("insufficient storage in nsfc")
-         call rexit(msg)
+         call intpr ("insufficient storage in nsfc", -1, 0, 0)
+         call intpr ("  row nr: ", 10, flag-iflag, 1)
+         call rexit("stopped")
        ELSE if (iflag .EQ. 7) THEN
-	   call rwarn("insufficient storage in nnfc")
+	       call rwarn("insufficient storage in nnfc")
        ELSE if (iflag .EQ. 8) THEN
-         write(msg,'(A10,I10)') "  row nr: ", flag-iflag
-         call rwarn("sparse solver: zero pivot")
-         call rexit(msg)
+         call intpr ("sparse solver: zero pivot", -1, 0, 0)
+         call intpr ("  row nr: ", 10, flag-iflag, 1)
+         call rexit("stopped")
        ELSE if (iflag .EQ. 9) THEN
-	   call rexit("insufficient storage in md")
+	       call rexit("insufficient storage in md")
        ELSE if (iflag .EQ. 10) THEN
-	   call rexit("insufficient storage in cdrv/odrv")
+	       call rexit("insufficient storage in cdrv/odrv")
        ELSE if (iflag .EQ. 11) THEN
-	   call rexit("illegal path specifications")
+	       call rexit("illegal path specifications")
        ENDIF
        RETURN
 	     END SUBROUTINE warnflag
@@ -315,7 +312,6 @@ c-------------------------------------------------------------------*
        INTEGER           igp(*),jgp(N),NGP,incl(N),jdone(N)
        INTEGER           maxg,ier
        DOUBLE PRECISION  perturb
-       CHARACTER (LEN=80) msg
      
 c--------------------------------------------------------------------
        
@@ -369,8 +365,8 @@ c check memory allocation: enough?
          ENDDO
 
          IF (.not. enough) THEN
-           write (msg,'(A30,I10)')"nnz should be at least",ij
-           call rexit(msg)
+           call intpr("nnz should be at least", -1, ij, 1)
+           call rexit("stopped")
          ENDIF
          nonzero = ij
 c 1-D problem       
@@ -509,7 +505,6 @@ c********************************************************************
       implicit none
       INTEGER N, IA, JA, MAXG, NGRP, IGP, JGP, INCL, JDONE, IER
       DIMENSION IA(*), JA(*), IGP(*), JGP(*), INCL(*), JDONE(*)
-      CHARACTER (LEN=80) msg
 
 C-----------------------------------------------------------------------
 C This subroutine constructs groupings of the column indices of
@@ -574,10 +569,10 @@ C Error return if not all columns were chosen (MAXG too small).---------
       NG = MAXG
  70   NGRP = NG - 1
       IF (Toomuch) THEN
-        CALL rwarn("error during grouping: NGP too small")
-        WRITE (msg,'(A30,I10,A10,I10)')"Should be at least",NGRP,              &
-     &   "is",maxG
-        CALL rexit(msg)
+        CALL intpr("error during grouping: NGP too small",-1,0,0)
+        CALL intpr("Should be at least: ",-1, NGRP,1)
+        CALL intpr("while it is ", -1, maxG, 1)
+        CALL rexit("stopped")
       ENDIF
       RETURN
  80   IER = 1

@@ -848,3 +848,51 @@ image.steady3D <- function (x, which = NULL, dimselect = NULL,
      }   
 }
 
+
+
+
+
+
+
+### ============================================================================
+
+subset.steady2D <- function (x, which = NULL, ... ) {
+
+# if x is vector, check if there is more than one species...  
+    X <- x$y
+    out <- list()
+    nspec <- attributes(x)$nspec
+    dimens <- attributes(x)$dimens  
+    if (is.vector(X)) {
+      if (length(X) - nspec*prod(dimens) != 0) 
+        stop("length of 'x' should be = 'nspec' * prod(dimens) if x is a vector")
+      # x <- matrix(ncol = nspec, data = X)
+      
+      for ( i in 1:nspec){
+        istart <- (i-1)*prod(dimens) 
+        out[[i]] <- matrix(nrow=dimens[1], ncol=dimens[2], data =
+          X[(istart+1):(istart+prod(dimens))])
+      }
+    } else 
+        out <- X   # only one state variable
+
+    map <- any(is.na(X))    # if mapping applied: some elements will be NA.
+     
+    varnames <- attributes(x)$ynames
+    if (is.null(varnames)) varnames <- 1:nspec
+
+    if (length(x) > 1) {
+       for ( ii in 2:length(x)) {
+        out[[i+ii-1]] <- x[[ii]]
+        varnames <- c(varnames,names(x)[ii])
+       }
+      }          
+
+# ADD NON-STATE VARIABLES...      
+    if (is.null(which)) which <- 1:nspec
+    which <- selectstvar(which,varnames)
+
+    if (length(which) > 1)
+      stop("Can only select one variable")
+    out[[which]] 
+}
