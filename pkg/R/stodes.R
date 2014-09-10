@@ -15,10 +15,13 @@ stodes <- function(y, time = 0, func, parms = NULL,
   if (is.list(func)) {            
       if (!is.null(initfunc) & "initfunc" %in% names(func))
          stop("If 'func' is a list that contains initfunc, argument 'initfunc' should be NULL")
+      if (!is.null(dllname) & "dllname" %in% names(func))
+         stop("If 'func' is a list that contains dllname, argument 'dllname' should be NULL")
       if (!is.null(initforc) & "initforc" %in% names(func))
          stop("If 'func' is a list that contains initforc, argument 'initforc' should be NULL")
-     initfunc <- func$initfunc
-     initforc <- func$initforc
+     if (! is.null(func$initfunc)) initfunc <- func$initfunc
+     if (! is.null(func$dllname )) dllname <- func$dllname
+     if (! is.null(func$initforc)) initforc <- func$initforc
      func <- func$func
   }
 

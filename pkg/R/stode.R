@@ -35,11 +35,14 @@ stode         <- function(y, time=0, func, parms=NULL,
          stop("If 'func' is a list that contains jacfunc, argument 'jacfunc' should be NULL")
       if (!is.null(initfunc) & "initfunc" %in% names(func))
          stop("If 'func' is a list that contains initfunc, argument 'initfunc' should be NULL")
+      if (!is.null(dllname) & "dllname" %in% names(func))
+         stop("If 'func' is a list that contains dllname, argument 'dllname' should be NULL")
       if (!is.null(initforc) & "initforc" %in% names(func))
          stop("If 'func' is a list that contains initforc, argument 'initforc' should be NULL")
-     jacfunc <- func$jacfunc
-     initfunc <- func$initfunc
-     initforc <- func$initforc
+     if (! is.null(func$jacfunc))  jacfunc <- func$jacfunc
+     if (! is.null(func$initfunc)) initfunc <- func$initfunc
+     if (! is.null(func$dllname))  dllname <- func$dllname
+     if (! is.null(func$initforc)) initforc <- func$initforc
      func <- func$func
   }
 
