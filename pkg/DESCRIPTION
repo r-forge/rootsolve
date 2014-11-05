@@ -1,7 +1,7 @@
 Package: rootSolve
 Version: 1.6.5.1
 Title: Nonlinear root finding, equilibrium and steady-state analysis of ordinary differential equations
-Author: Karline Soetaert [aut],  
+Author: Karline Soetaert [aut, cre],  
         yale sparse matrix package authors [cph]
 Authors@R: c(person("Karline","Soetaert", role = c("aut", "cre"), 
                      email = "karline.soetaert@nioz.nl"),

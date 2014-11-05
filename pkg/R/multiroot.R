@@ -32,18 +32,20 @@ multiroot.1D <- function (f, start, maxiter = 100,
      initfunc <- f$initfunc
      f <- f$func
   }
-  
-  if (! is.compiled(f) & is.null(parms))
-    Fun <- function (time = 0, x, parms = NULL)
+  # Fun <- ... to avoid 'note' that Fun is declared multiple times with different arguments
+  if (! is.compiled(f) & is.null(parms)) {
+    Fun1 <- function (time = 0, x, parms = NULL)
       list(f(x,...))
-  else if (! is.compiled(f))
-    Fun <- function (time = 0, x, parms = parms)
+    Fun <- Fun1
+  } else if (! is.compiled(f)) {
+    Fun2 <- function (time = 0, x, parms = parms)
       list(f(x, parms, ...))
-  else {
-    Fun <- f   
+    Fun <- Fun2
+  } else {
+    Fun3 <- f   
       f <- function (x, ...)  #n, t, x, f, rpar, ipar
-        Fun(n = length(start), t = 0, x, f = rep(0, length(start)), 1, 1)$f
-
+        Fun3(n = length(start), t = 0, x, f = rep(0, length(start)), 1, 1)$f
+    Fun <- Fun3
   }
     x <- steady.1D(y = start, time = 0, func = Fun, 
                    parms = parms, atol = atol,
@@ -105,18 +107,21 @@ multiroot <- function(f, start, maxiter = 100, rtol = 1e-6, atol = 1e-8, ctol = 
   if (length(ctol) > 1)
     stop("`ctol' must be a scalar")
 
+  # Fun <- ... to avoid 'note' that Fun is declared multiple times with different arguments
+
   if (useFortran) {
-    if (! is.compiled(f) & is.null(parms))
-      Fun <- function (time = 0, x, parms = NULL)
+    if (! is.compiled(f) & is.null(parms)) {
+      Fun1 <- function (time = 0, x, parms = NULL)
         list(f(x,...))
-    else if (! is.compiled(f))
-      Fun <- function (time = 0, x, parms)
+      Fun <- Fun1  
+    } else if (! is.compiled(f)) {
+      Fun2 <- function (time = 0, x, parms)
         list(f(x, parms, ...))
-        
-    else  {
+      Fun <- Fun2  
+    } else  {
       Fun <- f
       f <- function (x, ...)  #n, t, x, f, rpar, ipar
-        Fun(n = length(start), t = 0, x, f = rep(0, length(start)), 1, 1)$f
+        Fun(n = length(start), t = 0, x, f = rep(0, length(start)), 1, 1)$f  
     }  
     JacFunc <- jacfunc
     if (!is.null (jacfunc))
