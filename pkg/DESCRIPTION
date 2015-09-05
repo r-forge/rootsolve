@@ -1,6 +1,6 @@
 Package: rootSolve
 Version: 1.6.5.2
-Title: Nonlinear root finding, equilibrium and steady-state analysis of ordinary differential equations
+Title: Nonlinear Root Finding, Equilibrium and Steady-State Analysis of Ordinary Differential Equations
 Author: Karline Soetaert [aut, cre],  
         yale sparse matrix package authors [cph]
 Authors@R: c(person("Karline","Soetaert", role = c("aut", "cre"), 
@@ -8,6 +8,7 @@ Authors@R: c(person("Karline","Soetaert", role = c("aut", "cre"),
              person("yale sparse matrix package authors", role = "cph"))
 Maintainer: Karline Soetaert <karline.soetaert@nioz.nl>
 Depends: R (>= 2.01)
+Imports: stats, graphics, grDevices
 Description: Routines to find the root of nonlinear functions, and to perform steady-state and equilibrium analysis of ordinary differential equations (ODE). 
   Includes routines that: (1) generate gradient and Jacobian matrices (full and banded),
   (2) find roots of non-linear equations by the Newton-Raphson method, 
