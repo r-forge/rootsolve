@@ -191,24 +191,24 @@ c**********************************************************************
 c       WRITE ERROR/WARNINGS OF SPARSE SOLVER                         *
 c**********************************************************************
 
-	 SUBROUTINE warnflag(flag,N)
-	 INTEGER flag, iflag,N
-	 
-	 iflag = INT(flag/N)
-	 IF (iflag .EQ. 1) THEN
-	       call intpr ("sparse solver: null row in a", -1, 0, 0)
+      SUBROUTINE warnflag(flag,N)
+      INTEGER flag, iflag,N
+     
+      iflag = INT(flag/N)
+      IF (iflag .EQ. 1) THEN
+         call intpr ("sparse solver: null row in a", -1, 0, 0)
          call intpr ("  row nr: ", 10, flag-iflag, 1)
          call rexit("stopped")
        ELSE if (iflag .EQ. 2) THEN
-    	   call intpr("sparse solver: duplicate entry in a", -1, 0, 0)
+         call intpr("sparse solver: duplicate entry in a", -1, 0, 0)
          call intpr ("  row nr: ", 10, flag-iflag, 1)
          call rexit("stopped")
        ELSE if (iflag .EQ. 3) THEN
-	       call intpr ("insufficient storage in nsfc", -1, 0, 0)
+         call intpr ("insufficient storage in nsfc", -1, 0, 0)
          call intpr ("  row nr: ", 10, flag-iflag, 1)
          call rexit("stopped - increase argument lrw")
        ELSE if (iflag .EQ. 4) THEN
-	       call rwarn("insufficient storage in nnfc - increase lrw")
+         call rwarn("insufficient storage in nnfc - increase lrw")
        ELSE if (iflag .EQ. 5) THEN
          call rwarn("sparse solver: null pivot")
          call intpr ("  row nr: ", 10, flag-iflag, 1)
@@ -218,20 +218,20 @@ c**********************************************************************
          call intpr ("  row nr: ", 10, flag-iflag, 1)
          call rexit("stopped - increase argument lrw")
        ELSE if (iflag .EQ. 7) THEN
-	       call rwarn("insufficient storage in nnfc - increase lrw")
+         call rwarn("insufficient storage in nnfc - increase lrw")
        ELSE if (iflag .EQ. 8) THEN
          call intpr ("sparse solver: zero pivot", -1, 0, 0)
          call intpr ("  row nr: ", 10, flag-iflag, 1)
          call rexit("stopped")
        ELSE if (iflag .EQ. 9) THEN
-	       call rexit("insufficient storage in md - increase lrw")
+         call rexit("insufficient storage in md - increase lrw")
        ELSE if (iflag .EQ. 10) THEN
-	     call rexit("insufficient storage in cdrv/odrv-increase lrw")
+         call rexit("insufficient storage in cdrv/odrv-increase lrw")
        ELSE if (iflag .EQ. 11) THEN
-	       call rexit("illegal path specifications")
+         call rexit("illegal path specifications")
        ENDIF
        RETURN
-	     END SUBROUTINE warnflag
+       END SUBROUTINE warnflag
 
 c****************************************************************
 c error weights 
