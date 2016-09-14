@@ -1381,15 +1381,15 @@ C-----------------------------------------------------------------------
  200  NSLAST = NST
 
       IF (ITASK .EQ. 1) THEN
-        GOTO 210	  
+        GOTO 210      
       ELSE IF (ITASK .EQ. 2) THEN
-        GOTO 250		
+        GOTO 250        
       ELSE IF (ITASK .EQ. 3) THEN
-        GOTO 220		
+        GOTO 220        
       ELSE IF (ITASK .EQ. 4) THEN
-        GOTO 230		
+        GOTO 230        
       ELSE IF (ITASK .EQ. 5) THEN
-        GOTO 240		
+        GOTO 240        
       ENDIF
 
  210  IF ((TN - TOUT)*H .LT. 0.0D0) GO TO 250
@@ -1466,10 +1466,10 @@ C-----------------------------------------------------------------------
       IF (KGO .EQ. 1) THEN
         GOTO 300
       ELSE IF (KGO .EQ. 2) THEN
-        GOTO 530		
+        GOTO 530        
       ELSE IF (KGO .EQ. 3) THEN
         GOTO 540
-      ENDIF 		
+      ENDIF         
 
 C-----------------------------------------------------------------------
 C Block F.
@@ -1480,14 +1480,14 @@ C-----------------------------------------------------------------------
       IF (ITASK .EQ. 1) THEN
         GOTO 310
       ELSE IF (ITASK .EQ. 2) THEN
-        GOTO 400		
+        GOTO 400        
       ELSE IF (ITASK .EQ. 3) THEN
-        GOTO 330	
+        GOTO 330    
       ELSE IF (ITASK .EQ. 4) THEN
-        GOTO 340		
+        GOTO 340        
       ELSE IF (ITASK .EQ. 5) THEN
-        GOTO 350		
-      ENDIF		
+        GOTO 350        
+      ENDIF     
 C ITASK = 1.  If TOUT has been reached, interpolate. -------------------
  310  IF ((TN - TOUT)*H .LT. 0.0D0) GO TO 250
       CALL DINTDY (TOUT, 0, RWORK(LYH), NYH, Y, IFLAG)
@@ -1915,15 +1915,15 @@ C***FIRST EXECUTABLE STATEMENT  DPREPJ
       IF (MITER .EQ. 1) THEN 
         GOTO 100
       ELSE IF (MITER .EQ. 2) THEN 
-        GOTO 200 		
+        GOTO 200        
       ELSE IF (MITER .EQ. 3) THEN 
-        GOTO 300 		
+        GOTO 300        
       ELSE IF (MITER .EQ. 4) THEN 
-        GOTO 400 		
+        GOTO 400        
       ELSE IF (MITER .EQ. 5) THEN 
-        GOTO 500 		
+        GOTO 500        
       ENDIF
-	  
+      
 C If MITER = 1, call JAC and multiply by scalar. -----------------------
  100  LENP = N*N
       DO 110 I = 1,LENP
@@ -2120,7 +2120,7 @@ C***FIRST EXECUTABLE STATEMENT  DSOLSY
         GOTO 300
       ELSE IF (MITER .EQ. 4 .OR. MITER .EQ. 5) THEN
         GOTO 400
-      ENDIF		
+      ENDIF     
 
  100  CALL DGESL (WM(3), N, N, IWM(21), X, 0)
       RETURN
@@ -2365,8 +2365,8 @@ C-----------------------------------------------------------------------
         GO TO  170
       ELSE IF (IRET .EQ. 3) THEN
         GO TO  200
-      END IF		
-C       GO TO (160, 170, 200), IRET	  
+      END IF        
+C       GO TO (160, 170, 200), IRET   
 C-----------------------------------------------------------------------
 C If H is being changed, the H ratio RH is checked against
 C RMAX, HMIN, and HMXI, and the YH array rescaled.  IALTH is set to
@@ -2382,11 +2382,12 @@ C-----------------------------------------------------------------------
  175  RH = MIN(RH,RMAX)
       RH = RH/MAX(1.0D0,ABS(H)*HMXI*RH)
       R = 1.0D0
-      DO 180 J = 2,L
+      DO 190 J = 2,L
         R = R*RH
         DO 180 I = 1,N
           YH(I,J) = YH(I,J)*R
  180    CONTINUE
+ 190  CONTINUE
       H = H*RH
       RC = RC*RH
       IALTH = L
@@ -2541,10 +2542,11 @@ C-----------------------------------------------------------------------
       NST = NST + 1
       HU = H
       NQU = NQ
-      DO 470 J = 1,L
+      DO 480 J = 1,L
         DO 470 I = 1,N
          YH(I,J) = YH(I,J) + EL(J)*ACOR(I)
  470    CONTINUE
+ 480  CONTINUE
       IALTH = IALTH - 1
       IF (IALTH .EQ. 0) GO TO 520
       IF (IALTH .GT. 1) GO TO 700
@@ -2719,7 +2721,7 @@ C***FIRST EXECUTABLE STATEMENT  DEWSET
         GO TO 30
       ELSE IF (ITOL .EQ. 4) THEN
         GO TO 40
-      ENDIF	
+      ENDIF 
 C       GO TO (10, 20, 30, 40), ITOL        
  10   CONTINUE
       DO 15 I = 1,N
@@ -2879,11 +2881,11 @@ C**End
 C
 C***FIRST EXECUTABLE STATEMENT  DCFODE
       IF (METH .EQ. 1) THEN
-  	    GOTO 100
+        GOTO 100
       ELSE IF (METH .EQ. 2) THEN
-	      GOTO 200
-	    ENDIF
-       GO TO (100, 200), METH      
+          GOTO 200
+      ENDIF
+C     GO TO (100, 200), METH      
 C
  100  ELCO(1,1) = 1.0D0
       ELCO(2,1) = 1.0D0
@@ -2909,7 +2911,7 @@ C Form coefficients of p(x)*(x+nq-1). ----------------------------------
         DO 110 IB = 1,NQM1
           I = NQP1 - IB
           PC(I) = PC(I-1) + FNQM1*PC(I)
- 110    CONTINUE		  
+ 110    CONTINUE          
         PC(1) = FNQM1*PC(1)
 C Compute integral, -1 to 0, of p(x) and x*p(x). -----------------------
         PINT = PC(1)
@@ -4499,11 +4501,13 @@ C Move YH.  Move right if LYHD < 0; move left if LYHD > 0. -------------
       IF (LYHD .LT. 0) THEN
         DO 72 I = LYHN,IMAX
           J = IMAX + LYHN - I
- 72       RWORK(J) = RWORK(J+LYHD)
+          RWORK(J) = RWORK(J+LYHD)
+ 72     CONTINUE
       ENDIF
       IF (LYHD .GT. 0) THEN
         DO 76 I = LYHN,IMAX
- 76       RWORK(I) = RWORK(I+LYHD)
+        RWORK(I) = RWORK(I+LYHD)
+ 76   CONTINUE
       ENDIF
  80   LYH = LYHN
       IWORK(22) = LYH
@@ -4513,7 +4517,8 @@ C Temporarily load EWT if MITER = 1 or 2 and MOSS = 2. -----------------
       CALL DEWSET (N, ITOL, RTOL, ATOL, RWORK(LYH), RWORK(LEWT))
       DO 82 I = 1,N
         IF (RWORK(I+LEWT-1) .LE. 0.0D0) GO TO 621
- 82     RWORK(I+LEWT-1) = 1.0D0/RWORK(I+LEWT-1)
+        RWORK(I+LEWT-1) = 1.0D0/RWORK(I+LEWT-1)
+ 82   CONTINUE
  85   CONTINUE
 C DIPREP and DPREP do sparse matrix preprocessing if MITER = 1 or 2. ---
       LSAVF = MIN(LSAVF,LRW)
@@ -4554,7 +4559,8 @@ C NEQ was reduced.  Zero part of YH to avoid undefined references. -----
       I2 = LYH + (MAXORD + 1)*NYH - 1
       IF (I1 .GT. I2) GO TO 200
       DO 95 I = I1,I2
- 95     RWORK(I) = 0.0D0
+        RWORK(I) = 0.0D0
+ 95   CONTINUE
       GO TO 200
 C-----------------------------------------------------------------------
 C Block C.
@@ -4576,7 +4582,8 @@ C-----------------------------------------------------------------------
       NZU = 0
 C Load the initial value vector in YH. ---------------------------------
       DO 105 I = 1,N
- 105    RWORK(I+LYH-1) = Y(I)
+        RWORK(I+LYH-1) = Y(I)
+ 105  CONTINUE
 C Initial call to F.  (LF0 points to YH(*,2).) -------------------------
       LF0 = LYH + NYH
       CALL F (NEQ, T, Y, RWORK(LF0), rpar, ipar)
@@ -4585,7 +4592,8 @@ C Load and invert the EWT array.  (H is temporarily set to 1.0.) -------
       CALL DEWSET (N, ITOL, RTOL, ATOL, RWORK(LYH), RWORK(LEWT))
       DO 110 I = 1,N
         IF (RWORK(I+LEWT-1) .LE. 0.0D0) GO TO 621
- 110    RWORK(I+LEWT-1) = 1.0D0/RWORK(I+LEWT-1)
+        RWORK(I+LEWT-1) = 1.0D0/RWORK(I+LEWT-1)
+ 110  CONTINUE
       IF (MITER .EQ. 0 .OR. MITER .EQ. 3) GO TO 120
 C DIPREP and DPREP do sparse matrix preprocessing if MITER = 1 or 2. ---
       LACOR = MIN(LACOR,LRW)
@@ -4687,7 +4695,8 @@ C Adjust H0 if necessary to meet HMAX bound. ---------------------------
 C Load H with H0 and scale YH(*,2) by H0. ------------------------------
       H = H0
       DO 190 I = 1,N
- 190    RWORK(I+LF0-1) = H0*RWORK(I+LF0-1)
+        RWORK(I+LF0-1) = H0*RWORK(I+LF0-1)
+ 190  CONTINUE
       GO TO 270
 C-----------------------------------------------------------------------
 C Block D.
@@ -4750,7 +4759,8 @@ C-----------------------------------------------------------------------
       CALL DEWSET (N, ITOL, RTOL, ATOL, RWORK(LYH), RWORK(LEWT))
       DO 260 I = 1,N
         IF (RWORK(I+LEWT-1) .LE. 0.0D0) GO TO 510
- 260    RWORK(I+LEWT-1) = 1.0D0/RWORK(I+LEWT-1)
+        RWORK(I+LEWT-1) = 1.0D0/RWORK(I+LEWT-1)
+ 260  CONTINUE
  270  TOLSF = UROUND*DVNORM (N, RWORK(LYH), RWORK(LEWT))
       IF (TOLSF .LE. 1.0D0) GO TO 280
       TOLSF = TOLSF*2.0D0
@@ -4840,7 +4850,8 @@ C ISTATE is set to 2, and the optional outputs are loaded into the
 C work arrays before returning.
 C-----------------------------------------------------------------------
  400  DO 410 I = 1,N
- 410    Y(I) = RWORK(I+LYH-1)
+        Y(I) = RWORK(I+LYH-1)
+ 410  CONTINUE
       T = TN
       IF (ITASK .NE. 4 .AND. ITASK .NE. 5) GO TO 420
       IF (IHIT) T = TCRIT
@@ -4925,7 +4936,8 @@ C Compute IMXER if relevant. -------------------------------------------
       IWORK(16) = IMXER
 C Set Y vector, T, and optional outputs. -------------------------------
  580  DO 590 I = 1,N
- 590    Y(I) = RWORK(I+LYH-1)
+        Y(I) = RWORK(I+LYH-1)
+ 590  CONTINUE 
       T = TN
       RWORK(11) = HU
       RWORK(12) = H
@@ -5149,7 +5161,8 @@ C If DPREP was successful, move YH to end of required space for WM. ----
       IF (LYHD .EQ. 0) GO TO 20
       IMAX = LYHN - 1 + LENYHM
       DO 10 I = LYHN,IMAX
- 10     RWORK(I) = RWORK(I+LYHD)
+        RWORK(I) = RWORK(I+LYHD)
+ 10   CONTINUE
       LYH = LYHN
 C Reset pointers for SAVF, EWT, and ACOR. ------------------------------
  20   LSAVF = LYH + LENYH
@@ -5159,7 +5172,8 @@ C Reset pointers for SAVF, EWT, and ACOR. ------------------------------
 C If ISTATE = 1, move EWT (left) to its new position. ------------------
       IF (LEWTN .GT. LEWT) RETURN
       DO 30 I = 1,N
- 30     RWORK(I+LEWTN-1) = RWORK(I+LEWT-1)
+        RWORK(I+LEWTN-1) = RWORK(I+LEWT-1)
+ 30   CONTINUE
  40   LEWT = LEWTN
       RETURN
 C----------------------- End of Subroutine DIPREP ----------------------
@@ -5262,7 +5276,8 @@ C
  20   CONTINUE
 C ISTATE = 3 and MOSS .ne. 0.  Load Y from YH(*,1). --------------------
       DO 25 I = 1,N
- 25     Y(I) = YH(I)
+        Y(I) = YH(I)
+ 25   CONTINUE
       IF (MOSS .EQ. 1) THEN
         GOTO 70
       ELSE IF (MOSS .EQ. 2) THEN
@@ -5307,7 +5322,8 @@ CKS
         IWK(K) = J
         K = K + 1
         DO 75 I = 1,N
- 75       SAVF(I) = 0.0D0
+          SAVF(I) = 0.0D0
+ 75     CONTINUE
 CKS
         CALL JAC (NEQ, TN, Y, J, IWK(IPIAN), IWK(IPJAN), SAVF,
      &      rpar,ipar)
@@ -5353,7 +5369,8 @@ C
       IF (MOSS .EQ. 0 .OR. ISTATC .NE. 1) GO TO 150
 C If ISTATE = 1 and MOSS .ne. 0, restore Y from YH. --------------------
       DO 145 I = 1,N
- 145    Y(I) = YH(I)
+        Y(I) = YH(I)
+ 145  CONTINUE
  150  NNZ = IWK(IPIAN+N) - 1
       LENIGP = 0
       IPIGP = IPJAN + NNZ
@@ -5383,7 +5400,8 @@ C Compute new ordering of rows/columns of Jacobian. --------------------
       IF (IESP .LT. 0) GO TO 230
       IBR = IPR - 1
       DO 170 I = 1,N
- 170    IWK(IBR+I) = I
+        IWK(IBR+I) = I
+ 170  CONTINUE
       NSP = LIWK + 1 - IPISP
       CALL ODRV (N, IWK(IPIAN), IWK(IPJAN), WK, IWK(IPR), IWK(IPIC),
      1   NSP, IWK(IPISP), 1, IYS)
@@ -5398,7 +5416,8 @@ C Reorder JAN and do symbolic LU factorization of matrix. --------------
       IF (LREQ .GT. LENWK) GO TO 250
       IBA = IPA - 1
       DO 180 I = 1,NNZ
- 180    WK(IBA+I) = 0.0D0
+        WK(IBA+I) = 0.0D0
+ 180  CONTINUE
       IPISP = LRAT*(IPRSP - 1) + 1
       CALL CDRV (N,IWK(IPR),IWK(IPC),IWK(IPIC),IWK(IPIAN),IWK(IPJAN),
      1   WK(IPA),WK(IPA),WK(IPA),NSP,IWK(IPISP),WK(IPRSP),IESP,5,IYS)
@@ -5577,7 +5596,8 @@ C If MITER = 1, call JAC, multiply by scalar, and add identity. --------
       DO 130 J = 1, N
         KMAX = IWK(IPIAN+J) - 1
         DO 110 I = 1,N
- 110      FTEM(I) = 0.0D0
+          FTEM(I) = 0.0D0
+ 110    CONTINUE 
         CALL JAC (NEQ, TN, Y, J, IWK(IPIAN), IWK(IPJAN), FTEM,
      &  rpar,ipar)
         DO 120 K = KMIN, KMAX
@@ -5601,7 +5621,8 @@ C If MITER = 2, make NGP calls to F to approximate J and P. ------------
         DO 210 J = JMIN,JMAX
           JJ = IWK(IBJGP+J)
           R = MAX(SRUR*ABS(Y(JJ)),R0/EWT(JJ))
- 210      Y(JJ) = Y(JJ) + R
+          Y(JJ) = Y(JJ) + R
+ 210    CONTINUE
 CKS
         CALL F (NEQ, TN, Y, FTEM, rpar, ipar)
         DO 230 J = JMIN,JMAX
@@ -5650,7 +5671,8 @@ C Do numerical factorization of P matrix. ------------------------------
       CON0 = CON
       IERPJ = 0
       DO 295 I = 1,N
- 295    FTEM(I) = 0.0D0
+        FTEM(I) = 0.0D0
+ 295  CONTINUE
       CALL CDRV (N,IWK(IPR),IWK(IPC),IWK(IPIC),IWK(IPIAN),IWK(IPJAN),
      1   WK(IPA),FTEM,FTEM,NSP,IWK(IPISP),WK(IPRSP),IESP,2,IYS)
       IF (IYS .EQ. 0) RETURN
@@ -5668,7 +5690,8 @@ C If MITER = 3, construct a diagonal approximation to J and P. ---------
       IERPJ = 0
       R = EL0*0.1D0
       DO 310 I = 1,N
- 310    Y(I) = Y(I) + R*(H*SAVF(I) - YH(I,2))
+        Y(I) = Y(I) + R*(H*SAVF(I) - YH(I,2))
+ 310  CONTINUE
 CKS
       CALL F (NEQ, TN, Y, WK(3), rpar, ipar)
       NFE = NFE + 1
@@ -5763,9 +5786,11 @@ C
       DO 320 I = 1,N
         DI = 1.0D0 - R*(1.0D0 - 1.0D0/WK(I+2))
         IF (ABS(DI) .EQ. 0.0D0) GO TO 390
- 320    WK(I+2) = 1.0D0/DI
+        WK(I+2) = 1.0D0/DI
+ 320  CONTINUE
  330  DO 340 I = 1,N
- 340    X(I) = WK(I+2)*X(I)
+        X(I) = WK(I+2)*X(I)
+ 340  CONTINUE  
       RETURN
  390  IERSL = 1
       RETURN
@@ -5804,12 +5829,14 @@ C-----------------------------------------------------------------------
 C
       IER = 0
       DO 10 J = 1,N
- 10     JDONE(J) = 0
+        JDONE(J) = 0
+ 10   CONTINUE
       NCOL = 1
       DO 60 NG = 1,MAXG
         IGP(NG) = NCOL
         DO 20 I = 1,N
- 20       INCL(I) = 0
+          INCL(I) = 0
+ 20     CONTINUE
         DO 50 J = 1,N
 C Reject column J if it is already in a group.--------------------------
           IF (JDONE(J) .EQ. 1) GO TO 50
@@ -5826,7 +5853,8 @@ C Accept column J into group NG.----------------------------------------
           JDONE(J) = 1
           DO 40 K = KMIN,KMAX
             I = JA(K)
- 40         INCL(I) = 1
+            INCL(I) = 1
+ 40       CONTINUE
  50       CONTINUE
 C Stop if this group is empty (grouping is complete).-------------------
         IF (NCOL .EQ. IGP(NG)) GO TO 70
@@ -5860,7 +5888,14 @@ C
         JMAX = IA(II+1) - 1
         IF (JMIN .GT. JMAX) GO TO 50
         DO 40 J = JMIN,JMAX
-          IF (JA(J) - II) 10, 40, 30
+          IF (JA(J) - II .LE. 0) THEN
+            GOTO 10
+          ELSE IF (JA(J) - II .EQ. 0) THEN
+            GOTO 40
+          ELSE 
+            GOTO 30
+          ENDIF 
+C          IF (JA(J) - II) 10, 40, 30
  10       JJ =JA(J)
           KMIN = IA(JJ)
           KMAX = IA(JJ+1) - 1

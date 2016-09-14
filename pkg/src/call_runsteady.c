@@ -1,6 +1,7 @@
 #include <time.h>
 #include <string.h>
 #include "steady.h"
+#include "externalptr.h"
 
 /* definition of the call  to the fortran functions - in file lsode.f*/
 /* bug fix as suggested by Alejandro Morales 4/04/2014*/
@@ -190,13 +191,13 @@ SEXP call_lsode(SEXP y, SEXP times, SEXP func, SEXP parms, SEXP forcs,
     { /* DLL address passed to fortran */
     if (rearrange == 0)
       {
-      derivs = (C_deriv_func_type *) R_ExternalPtrAddr(func);  
+      derivs = (C_deriv_func_type *) R_ExternalPtrAddrFn_(func);  
       /* no need to communicate with R - but output variables set here */
       } else {
        nspec=INTEGER(nSpec)[0];
        ndim =INTEGER(nDim)[0];
        derivs = (C_deriv_func_type *) C_ode_derivs2; 
-       derivb = (C_deriv_func_type *) R_ExternalPtrAddr(func);
+       derivb = (C_deriv_func_type *) R_ExternalPtrAddrFn_(func);
        y2 = (double *) R_alloc(neq, sizeof(double));
        dy2 = (double *) R_alloc(neq, sizeof(double));   
       }	  
@@ -213,7 +214,7 @@ SEXP call_lsode(SEXP y, SEXP times, SEXP func, SEXP parms, SEXP forcs,
     {
       if (isDll ==1)
 	    {
-	     jac = (C_jac_func_type *) R_ExternalPtrAddr(jacfunc);
+	     jac = (C_jac_func_type *) R_ExternalPtrAddrFn_(jacfunc);
 	    } else  {
 	     lsode_jac_func = jacfunc;
 	     jac = C_ode_jac;
