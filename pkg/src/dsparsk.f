@@ -748,7 +748,7 @@ c----------------------------------------------------------------------c
       logical values
 c----------------------------------------------------------------------- 
       tnext = 0.d0
-	  values = (job .eq. 1) 
+      values = (job .eq. 1) 
 c find pointer array for resulting matrix. 
       do 35 i=1,n+1
          iwk(i) = 0
@@ -860,7 +860,14 @@ c------------------------------------------------------------------------
          return
       endif
 c------------------------------------------------------------------------
-      goto (3,2,1) job
+      if (job .EQ. 1) then
+        goto 3
+      else if (job .EQ. 2) then
+        goto 2
+      else if (job .EQ. 3) then
+        goto 1
+      endif   
+C      goto (3,2,1) job
  1    do 10 k=1,nnz
          ao(k) = a(k)
  10   continue
