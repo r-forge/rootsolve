@@ -247,6 +247,18 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP forcs,
          alpha, ewt, rsp, ian, jan, igp, jgp, &ngp, R, C, IC, isp,
          &maxit,  &Chtol, Atol, Rtol, &Itol, &posit, pos, &ipos, &isSteady,
          precis, &niter, dims, out, ipar, &type, indDIM);
+  /* } else if (method == 10) {
+    F77_CALL(xSparseStruct)(&neq, &nnz, ian, jan, igp, jgp, &ngp, &numg,       &
+     &    svar, ewt, dsvar, beta, derivs, &tin, out, ipar, &nonzero,           &
+     &    &type, dims, indDIM)}    
+      for (j = 0; j < ny; j++)
+        REAL(yout)[j] = svar[j];
+      PROTECT(IWORK = allocVector(INTSXP, 4));incr_N_Protect();
+                          INTEGER(IWORK)[0]   = isSteady;
+    for (k = 0; k<3; k++) INTEGER(IWORK)[k+1] = dims[k];
+     
+     
+     */
   } else {
       F77_CALL(dsparsekit) (derivs, &neq, &nnz, &nsp, &tin, svar, dsvar, beta, x,
          alpha, ewt, ian, jan, igp, jgp, &ngp, jlu, ju, iwork, iperm,

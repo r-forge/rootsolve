@@ -1,5 +1,5 @@
 Package: rootSolve
-Version: 1.7
+Version: 1.8
 Title: Nonlinear Root Finding, Equilibrium and Steady-State Analysis of Ordinary Differential Equations
 Author: Karline Soetaert [aut, cre],  
         yale sparse matrix package authors [cph]
@@ -18,4 +18,3 @@ Description: Routines to find the root of nonlinear functions, and to perform st
   Includes fortran code.
 License: GPL (>= 2)
 LazyData: yes
-Packaged: Sat September 20 2008; karlines

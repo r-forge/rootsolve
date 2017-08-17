@@ -6,6 +6,7 @@ Similar to deSolve_utils.c from package deSolve*/
 #include "steady.h"
 #include "externalptr.h"
 
+                     
 /*==================================================
 some functions for keeping track of how many SEXPs
 are PROTECTed, and UNPROTECTing them in the
@@ -156,5 +157,3 @@ void initOut(int isDll, int neq, SEXP nOut, SEXP Rpar, SEXP Ipar) {
    }
 
 }
-
-
