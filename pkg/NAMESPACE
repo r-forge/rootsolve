@@ -1,4 +1,4 @@
-useDynLib(rootSolve .registration = TRUE)
+useDynLib(rootSolve, .registration = TRUE)
 
 import(stats, graphics, grDevices)
 
