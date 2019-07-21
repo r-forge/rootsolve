@@ -82,14 +82,17 @@ c
 c-------------------------------------------------------------------------------
       SteadyStateReached = .FALSE.
 
-      CALL errSET (N, ITOL, RTOL, ATOL, SVAR, EWT)
+      CALL errset (N, ITOL, RTOL, ATOL, SVAR, EWT)
 
-c determine sparse structure: if Type == 2, 3, 4 :
-c a 1-D or 2-D or 3-D PDE model; if type = 30: 2-D model, with mapping
+c determine sparse structure: if abs(Type) == 2, 3, 4 :
+c a 1-D or 2-D or 3-D PDE model; if type = 30, 40: 2-D or 3-D model, with mapping
 c in this case the number of components, dimensions and cyclic bnd are in dims
-      CALL xSparseStruct(N, nnz, ian, jan, igp, jgp, maxg, ngp,                &
+      CALL xsparsestruct(N, nnz, ian, jan, igp, jgp, maxg, ngp,                &
      &    Svar, ewt, dSvar, beta, xmodel, time, out, nout, nonzero,            &
      &    Type, dims, pres)
+
+      IF (Type < 0) RETURN
+      
 c find a minimum degree ordering of the rows and columns  
       CALL odrv(N,ian,jan,a,r,ic,nsp,isp,1,flag)
       IF (flag .NE. 0) CALL warnflag(flag,N)
@@ -173,7 +176,7 @@ c last precision reached
           EXIT
         ENDIF
 
-        CALL errSET (N, ITOL, RTOL, ATOL, SVAR, EWT)
+        CALL errset (N, ITOL, RTOL, ATOL, SVAR, EWT)
 
 
       ENDDO
@@ -237,7 +240,7 @@ c****************************************************************
 c error weights 
 c****************************************************************
       
-      SUBROUTINE errSET (N, ITOL, RTOL, ATOL, Y, EWT)
+      SUBROUTINE errset (N, ITOL, RTOL, ATOL, Y, EWT)
 c------------------------------------------------------------------------------
 C  This subroutine sets the error weight vector EWT according to
 C      EWT(i) = RTOL(i)*ABS(YCUR(i)) + ATOL(i),  i = 1,...,N,
@@ -273,7 +276,7 @@ c********************************************************************
 c Determines the sparsity structure of the jacobian.                * 
 c********************************************************************
 
-      SUBROUTINE xSparseStruct(N, nnz, ian, jan, igp, jgp, maxg, ngp,          &
+      SUBROUTINE xsparsestruct(N, nnz, ian, jan, igp, jgp, maxg, ngp,          &
      &       Svar, ewt, dSvar, beta, xmodel, time, out, nout, nonzero,         &
      &       Type, dims, pres)
 c-------------------------------------------------------------------*
@@ -320,16 +323,16 @@ c--------------------------------------------------------------------
 
 c Type of sparsity:
 c Type = 0: sparsity imposed; ian and jan are known
-c Type = 1: arbitrary sparsity, to be estimated
-c Type = 2: sparsity related to 1-D PDE model
-c Type = 3: sparsity related to 2-D PDE model
-c Type = 4: sparsity related to 3-D PDE model
+c Type = 1, -1: arbitrary sparsity, to be estimated; -1 = return early
+c Type = 2, -2: sparsity related to 1-D PDE model
+c Type = 3, -3: sparsity related to 2-D PDE model
+c Type = 4, -4: sparsity related to 3-D PDE model
 c
 c in the latter 3 cases the number of components (*nspec*),
 c the dimensions of the problem and the cyclic boundaries are in dims
 c 
  
-       IF (type == 1) THEN     
+       IF (abs(Type) == 1) THEN     
 c sparsity not known; numerically estimated by perturbation
 c call model-specific subroutines; input is Svar; output is Beta
          CALL XMODEL(N,time,Svar,Beta,out,nout)
@@ -370,13 +373,13 @@ c check memory allocation: enough?
          ENDIF
          nonzero = ij
 c 1-D problem       
-       ELSE IF (Type == 2) THEN
+       ELSE IF (abs(Type) == 2) THEN
          Nspec = dims(1)
          dimens(1) = dims(2)
          cyclic(1) = dims(3)
          CALL sparse1d(N, Nspec, dimens(1), cyclic(1), nnz, ian, jan)
          nonzero = nnz
-       ELSE IF (Type == 3) THEN
+       ELSE IF (abs(Type) == 3) THEN
          Nspec = dims(1)
          dimens(1) = dims(2)
          dimens(2) = dims(3)
@@ -384,7 +387,7 @@ c 1-D problem
          cyclic(2) = dims(5)
          CALL sparse2d(N, Nspec, dimens, cyclic, nnz, ian, jan)
          nonzero = nnz
-       ELSE IF (Type == 30) THEN
+       ELSE IF (abs(Type) == 30) THEN
          Nspec = dims(1)
          dimens(1) = dims(2)
          dimens(2) = dims(3)
@@ -392,7 +395,7 @@ c 1-D problem
          cyclic(2) = dims(5)
          CALL sparse2dmap(N, Nspec, dimens, cyclic, nnz, ian, jan, pres)
          nonzero = nnz
-       ELSE IF (Type == 4) THEN
+       ELSE IF (abs(Type) == 4) THEN
          Nspec = dims(1)
          dimens(1) = dims(2)
          dimens(2) = dims(3)
@@ -402,7 +405,7 @@ c 1-D problem
          cyclic(3) = dims(7)
          CALL sparse3d(N, Nspec, dimens, cyclic, nnz, ian, jan)
          nonzero = nnz
-       ELSE IF (Type == 40) THEN
+       ELSE IF (abs(Type) == 40) THEN
          Nspec = dims(1)
          dimens(1) = dims(2)
          dimens(2) = dims(3)
@@ -415,16 +418,19 @@ c 1-D problem
        ENDIF
        
 c this only if jacobian estimated by calls to F
-       CALL JGROUP (N, ian, jan, MAXG, NGP, IGP,                               &
-     1   JGP, incl,jdone, IER)
-       IF (IER .NE. 0) call rexit("not enough memory for JGROUP")
+       IF (Type >= 0 ) THEN
+         CALL JGROUP (N, ian, jan, MAXG, NGP, IGP,                              &
+     1     JGP, incl, jdone, IER)
+         IF (IER .NE. 0) call rexit("not enough memory for JGROUP")
+       ENDIF
+       IF (Type == 0) nonzero = nnz
 
        dims(1) = nonzero
        dims(2) = ngp
 
        RETURN
 
-       END SUBROUTINE xSparseStruct
+       END SUBROUTINE xsparsestruct
 
 c********************************************************************
 c Generates sparse Jacobian

@@ -57,18 +57,17 @@ static void C_stsparse_derivs (int *neq, double *t, double *y, double *ydot,
 
 }
 
-SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP forcs, 
-    SEXP chtol, 
+SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP forcs, SEXP chtol, 
         SEXP atol, SEXP rtol, SEXP itol, SEXP rho, SEXP initfunc, SEXP initforc,
-        SEXP verbose, SEXP NNZ, SEXP NSP, SEXP NGP, SEXP nIter, SEXP Posit,
+        SEXP verbose, SEXP NNZ, SEXP NSP, SEXP MAXG, SEXP nIter, SEXP Posit,
     SEXP Pos, SEXP nOut, SEXP Rpar, SEXP Ipar, SEXP Type, SEXP Ian, SEXP Jan,
     SEXP Met, SEXP Option)
 {
-  SEXP   yout, RWORK, IWORK;
+  SEXP   yout, RWORK, IWORK, IANX, JANX;
   int    j, k, ny, maxit, isSteady, method, lenplufac, lenplumx, lfill;
   double *svar, *dsvar, *beta, *alpha, tin, *Atol, *Rtol, Chtol;
   double *x, *precis, *ewt, droptol, permtol;
-  int    neq, nnz, nsp, ngp, niter, mflag, posit, TotN, ipos, Itol, type;
+  int    neq, nnz, nsp, maxg, niter, mflag, posit, TotN, ipos, Itol, type;
   int    *ian, *jan, *igp, *jgp, *dims, *pos;
   int    len, isDll, ilumethod;
 
@@ -81,7 +80,7 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP forcs,
 
   nnz   = INTEGER(NNZ)[0];
   nsp   = INTEGER(NSP)[0];  
-  ngp   = INTEGER(NGP)[0];  
+  maxg  = INTEGER(MAXG)[0];  
   ny    = LENGTH(y);
   Itol  = INTEGER(itol)[0];
   maxit = INTEGER(nIter)[0];  
@@ -100,18 +99,17 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP forcs,
      isDll = 1;
   else
      isDll = 0;
-   if (nout > 0) isOut = 1; 
+  if (nout > 0) isOut = 1; 
 
   /* initialise output ... */
   initOut(isDll, neq, nOut, Rpar, Ipar);
 
   /* initialise global variables... */
-            
   PROTECT(Time = NEW_NUMERIC(1))                   ;incr_N_Protect(); 
   PROTECT(Y = allocVector(REALSXP, neq))           ;incr_N_Protect();        
 
   /* copies of all variables that will be changed in the FORTRAN subroutine */
-  if (method == 1) {           /* yale sparse matrix solver */
+  if ( (method == 1) | (method == 10)) {       /* yale sparse matrix solver */
     R = (int *) R_alloc(neq, sizeof(int));
      for (j = 0; j < ny; j++) R[j] = 0;
  
@@ -126,7 +124,7 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP forcs,
 
     isp = (int *) R_alloc(2*nsp, sizeof(int));
      for (j = 0; j < 2*nsp; j++) isp[j] = 0;
-  } else {                    /* sparskit matrix solver */
+  } else {                                      /* sparskit matrix solver */
     /* get options */
     lenplufac = INTEGER(getListElement(Option, "lenplufac"))[0];
     lfill     = INTEGER(getListElement(Option, "fillin")   )[0];
@@ -177,13 +175,16 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP forcs,
     for (j = 0; j < ny; j++) ewt[j] = 0; 
 
   ian = (int *) R_alloc(neq+1, sizeof(int));
-   if (type == 0) {for (j = 0; j < neq; j++) ian[j] = INTEGER(Ian)[j];} 
-   else {for (j = 0; j < neq; j++) ian[j] = 0;}
+   if (type == 0) {
+     for (j = 0; j < neq+1; j++) ian[j] = INTEGER(Ian)[j];} 
+   else {
+     for (j = 0; j < neq+1; j++) ian[j] = 0;}
 
   jan = (int *) R_alloc(nnz, sizeof(int));
-   if (type == 0) 
-   {for (j = 0; j < nnz; j++) jan[j] = INTEGER(Jan)[j];} 
-   else {for (j = 0; j < nnz; j++) jan[j] = 0;}
+   if (type == 0){ 
+     for (j = 0; j < nnz; j++) jan[j] = INTEGER(Jan)[j];} 
+   else {
+     for (j = 0; j < nnz; j++) jan[j] = 0;}
    
   /* 1-D, 2-D, 3-D problem:  */
   if (type == 2)        /* 1=ncomp,2:dim(x), 3: cyclic(x)*/
@@ -204,8 +205,8 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP forcs,
     for (j = 0; j < TotN ; j++) indDIM[j] = INTEGER(NNZ)[j+9];
   }
 
-  igp = (int *) R_alloc(ngp+1, sizeof(int));
-    for (j = 0; j < ngp+1; j++) igp[j] = 0;
+  igp = (int *) R_alloc(maxg+1, sizeof(int));
+    for (j = 0; j < maxg+1; j++) igp[j] = 0;
   
   jgp = (int *) R_alloc(neq, sizeof(int));
     for (j = 0; j < neq; j++) jgp[j] = 0;
@@ -242,26 +243,14 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP forcs,
     
     tin = REAL(time)[0];
       
-  if (method == 1) {
-      F77_CALL(dsparse) (derivs, &neq, &nnz, &nsp, &tin, svar, dsvar, beta, x,
-         alpha, ewt, rsp, ian, jan, igp, jgp, &ngp, R, C, IC, isp,
+  if ((method == 1) |(method == 10)) {
+      F77_CALL(dsparse)(derivs, &neq, &nnz, &nsp, &tin, svar, dsvar, beta, x,
+         alpha, ewt, rsp, ian, jan, igp, jgp, &maxg, R, C, IC, isp,
          &maxit,  &Chtol, Atol, Rtol, &Itol, &posit, pos, &ipos, &isSteady,
          precis, &niter, dims, out, ipar, &type, indDIM);
-  /* } else if (method == 10) {
-    F77_CALL(xSparseStruct)(&neq, &nnz, ian, jan, igp, jgp, &ngp, &numg,       &
-     &    svar, ewt, dsvar, beta, derivs, &tin, out, ipar, &nonzero,           &
-     &    &type, dims, indDIM)}    
-      for (j = 0; j < ny; j++)
-        REAL(yout)[j] = svar[j];
-      PROTECT(IWORK = allocVector(INTSXP, 4));incr_N_Protect();
-                          INTEGER(IWORK)[0]   = isSteady;
-    for (k = 0; k<3; k++) INTEGER(IWORK)[k+1] = dims[k];
-     
-     
-     */
   } else {
       F77_CALL(dsparsekit) (derivs, &neq, &nnz, &nsp, &tin, svar, dsvar, beta, x,
-         alpha, ewt, ian, jan, igp, jgp, &ngp, jlu, ju, iwork, iperm,
+         alpha, ewt, ian, jan, igp, jgp, &maxg, jlu, ju, iwork, iperm,
          &maxit,  &Chtol, Atol, Rtol, &Itol, &posit, pos, &ipos, &isSteady,
          precis, &niter, dims, out, ipar, &type, &droptol, &permtol, &ilumethod,
          &lfill, &lenplumx, plu, rwork, indDIM);
@@ -275,19 +264,37 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP forcs,
           for (j = 0; j < nout; j++)
            REAL(yout)[j + ny] = out[j]; 
     }
- 
-  PROTECT(RWORK = allocVector(REALSXP, niter));incr_N_Protect();
-  for (k = 0;k<niter;k++) REAL(RWORK)[k] = precis[k];
-  if (mflag == 1) Rprintf("mean residual derivative %g\n",precis[niter-1]);
-
-  setAttrib(yout, install("precis"), RWORK);    
-
-  PROTECT(IWORK = allocVector(INTSXP, 4));incr_N_Protect();
-                          INTEGER(IWORK)[0]   = isSteady;
-    for (k = 0; k<3; k++) INTEGER(IWORK)[k+1] = dims[k];
   
-  setAttrib(yout, install("steady"), IWORK);    
+     if (method != 10) {      
+
+       PROTECT(RWORK = allocVector(REALSXP, niter));incr_N_Protect();
+       for (k = 0;k<niter;k++) REAL(RWORK)[k] = precis[k];
+       if (mflag == 1) Rprintf("mean residual derivative %g\n",precis[niter-1]);
+       setAttrib(yout, install("precis"), RWORK);    
+
+       PROTECT(IWORK = allocVector(INTSXP, 4));incr_N_Protect();
+                             INTEGER(IWORK)[0]   = isSteady;
+       for (k = 0; k<3; k++) INTEGER(IWORK)[k+1] = dims[k];
+       setAttrib(yout, install("steady"), IWORK);    
+     } else {                  /* returns the sparsity vectors ian and jan */
        
+       PROTECT(RWORK = allocVector(REALSXP, 1)); incr_N_Protect();
+       REAL(RWORK)[0] = 0.;
+       setAttrib(yout, install("precis"), RWORK);    
+
+       PROTECT(IWORK = allocVector(INTSXP, 4));incr_N_Protect();
+                             INTEGER(IWORK)[0]   = 0;
+       for (k = 0; k<3; k++) INTEGER(IWORK)[k+1] = dims[k];
+       setAttrib(yout, install("steady"), IWORK);    
+      
+       PROTECT(IANX = allocVector(INTSXP, neq+1));incr_N_Protect();
+       for (k = 0; k<neq+1; k++) INTEGER(IANX)[k] = ian[k];
+       setAttrib(yout, install("ian"), IANX);              
+     
+       PROTECT(JANX = allocVector(INTSXP, dims[0]));incr_N_Protect();
+       for (k = 0; k< dims[0]; k++) INTEGER(JANX)[k] = jan[k];
+       setAttrib(yout, install("jan"), JANX);                
+    } 
   unprotect_all();
   return(yout);
 }
