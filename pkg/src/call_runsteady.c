@@ -18,7 +18,7 @@ C_deriv_func_type *derivb;
 void F77_NAME(dlsodes)(void (*)(int *, double *, double *, double *, double *, int *),
              int *, double *, double *, double *,
              int *, double *, double *, int *, int *,
-             int *, double *, int *, int *, int *, double *,  /* extra 'double'; is integer in fortran */
+             int *, double *, int *, int *, int *,  int *,  /* extra 'double'; is integer in fortran, thpe: now u_work.iwk */
              void (*)(int *, double *, double *, int *,
                       int *, int *, double *, double *, int *),     /* jacvec */
              int *, double *, int *);
@@ -121,6 +121,12 @@ SEXP call_lsode(SEXP y, SEXP times, SEXP func, SEXP parms, SEXP forcs,
   C_jac_func_type   *jac=NULL;
   C_jac_vec_type    *jac_vec=NULL;
 
+  /* memory overlay, KS, TP 2019-07-03 */
+  union t_work {
+	double * rwk;
+    int * iwk;	
+  } u_work;
+
 /******************************************************************************/
 /******                         STATEMENTS                               ******/
 /******************************************************************************/
@@ -170,8 +176,13 @@ SEXP call_lsode(SEXP y, SEXP times, SEXP func, SEXP parms, SEXP forcs,
   maxit = iwork[5];
   
   lrw = INTEGER(lRw)[0];
-  rwork = (double *) R_alloc(lrw, sizeof(double));
-     for (j=0; j<length(rWork); j++) rwork[j] = REAL(rWork)[j];
+
+  // ks, tp 2019-07-03
+  //rwork = (double *) R_alloc(lrw, sizeof(double));
+  //for (j=0; j<length(rWork); j++) rwork[j] = REAL(rWork)[j];
+  u_work.rwk = (double *) R_alloc(lrw, sizeof(double));
+  for (j=0; j<length(rWork); j++) u_work.rwk [j] = REAL(rWork)[j];
+  rwork = u_work.rwk;
 
 /* initialise global R-variables... */
 
@@ -270,8 +281,8 @@ SEXP call_lsode(SEXP y, SEXP times, SEXP func, SEXP parms, SEXP forcs,
 			   &lrw, iwork, &liw, jac, &jt, out, ipar); 
     else
      F77_CALL(dlsodes) (derivs, &neq, xytmp, &tin, &tout,
-         &itol, Rtol, Atol, &itask, &istate, &iopt, rwork,
-         &lrw, iwork, &liw, rwork, jac_vec, &jt, out, ipar);    
+         &itol, Rtol, Atol, &itask, &istate, &iopt, u_work.rwk,
+         &lrw, iwork, &liw, u_work.iwk, jac_vec, &jt, out, ipar);    
      /* check steady-state */
     sumder = 0. ;
     derivs (&neq, &tin, xytmp, dy, out, ipar) ;

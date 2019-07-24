@@ -2994,9 +2994,9 @@ C
 C  Declare arguments.
 C
       DOUBLE PRECISION R1, R2, RVEC(2), Dummy
-      INTEGER I, NMES, NERR, LEVEL, NI, I1, I2, NR, Ivec(2)
+      INTEGER NMES, NERR, LEVEL, NI, I1, I2, NR, Ivec(2)
       CHARACTER(LEN=80) MSG
-      INTEGER LUNIT, IXSAV, MESFLG
+C      INTEGER LUNIT, IXSAV, MESFLG
       
       dummy = 0.d0
       call dblepr(MSG, NMES, dummy, 0)
@@ -3024,7 +3024,7 @@ C
 
 C  Abort the run if LEVEL = 2.
        if (level .eq. 2) call rexit ("fatal error")
- 100  RETURN
+      RETURN
 
       END
       
@@ -4509,7 +4509,7 @@ C Move YH.  Move right if LYHD < 0; move left if LYHD > 0. -------------
         RWORK(I) = RWORK(I+LYHD)
  76   CONTINUE
       ENDIF
- 80   LYH = LYHN
+      LYH = LYHN
       IWORK(22) = LYH
       IF (MITER .EQ. 0 .OR. MITER .EQ. 3) GO TO 92
       IF (MOSS .NE. 2) GO TO 85

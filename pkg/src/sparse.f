@@ -29,8 +29,8 @@ c**********************************************************************
      
        SUBROUTINE dsparse(xmodel,N,nnz,nsp,time,Svar,dSvar,beta,x,             &
      &                   a,ewt,rsp,ian,jan,igp,jgp,maxg,r,c,ic,isp,            &
-     &                   maxiter,TolChange,atol,rtol,itol,Positivity,          &
-     &                   Pos,ipos,SteadyStateReached,Precis,niter,             &
+     &                   maxiter,TolChange,atol,rtol,itol,PositivityInt,       &
+     &                   Pos,ipos,SteadyStateReachedInt,Precis,niter,          &
      &                   dims, out,nout ,Type, pres)
 
 c------------------------------------------------------------------------------*
@@ -61,6 +61,7 @@ c transpose of jacobian
 c false if failed - true if variables must be positive 
 c positivity either enforced at once (positivity=TRUE) or as a vector of elements
       LOGICAL SteadyStateReached, positivity
+      INTEGER SteadyStateReachedInt, positivityInt
       INTEGER  Ipos, Pos(Ipos)
 
 c tolerances, precision
@@ -81,7 +82,10 @@ c
       INTEGER i, j, k, esp
 c-------------------------------------------------------------------------------
       SteadyStateReached = .FALSE.
-
+      SteadyStateReachedInt = 0
+      Positivity = .FALSE.
+      IF (positivityInt > 0.1) Positivity = .TRUE.
+      
       CALL errset (N, ITOL, RTOL, ATOL, SVAR, EWT)
 
 c determine sparse structure: if abs(Type) == 2, 3, 4 :
@@ -124,6 +128,7 @@ c Check convergence
         precis(i) = precis(i)/N
         IF (maxewt .LE. 1) THEN
           SteadyStateReached = .TRUE.
+          SteadyStateReachedInt = 1
           EXIT
         ENDIF
 
@@ -173,6 +178,7 @@ c last precision reached
             niter = I+1
           ENDIF
           SteadyStateReached = .TRUE.
+          SteadyStateReachedInt = 1
           EXIT
         ENDIF
 
@@ -181,6 +187,10 @@ c last precision reached
 
       ENDDO
       dims(3) = nsp - esp
+
+      SteadyStateReachedInt = 0
+      IF (SteadyStateReached) SteadyStateReachedInt = 1
+
 
       END SUBROUTINE dsparse
 
