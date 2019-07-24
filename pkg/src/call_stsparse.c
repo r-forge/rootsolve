@@ -49,11 +49,11 @@ static void C_stsparse_derivs (int *neq, double *t, double *y, double *ydot,
   REAL(Time)[0] = *t;
   for (i = 0; i < *neq; i++)  REAL(Y)[i] = y[i];
 
-  PROTECT(R_fcall = lang3(stsparse_deriv_func,Time,Y)) ;incr_N_Protect();
-  PROTECT(ans = eval(R_fcall, stsparse_envir))         ;incr_N_Protect();
+  PROTECT(R_fcall = lang3(stsparse_deriv_func,Time,Y)) ;
+  PROTECT(ans = eval(R_fcall, stsparse_envir))         ;
 
   for (i = 0; i < *neq; i++)    ydot[i] = REAL(VECTOR_ELT(ans,0))[i];
-  my_unprotect(2);      
+  UNPROTECT(2);      
 
 }
 
@@ -76,7 +76,7 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP forcs, SEXP ch
   int    *isp= NULL, *iwork= NULL, *iperm= NULL, *jlu= NULL, *ju= NULL; 
 
   C_deriv_func_type *derivs;
-  init_N_Protect();
+  int nprot = 0;
 
   nnz   = INTEGER(NNZ)[0];
   nsp   = INTEGER(NSP)[0];  
@@ -105,8 +105,8 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP forcs, SEXP ch
   initOut(isDll, neq, nOut, Rpar, Ipar);
 
   /* initialise global variables... */
-  PROTECT(Time = NEW_NUMERIC(1))                   ;incr_N_Protect(); 
-  PROTECT(Y = allocVector(REALSXP, neq))           ;incr_N_Protect();        
+  PROTECT(Time = NEW_NUMERIC(1))                   ;    nprot++;
+  PROTECT(Y = allocVector(REALSXP, neq))           ;    nprot++;
 
   /* copies of all variables that will be changed in the FORTRAN subroutine */
   if ( (method == 1) | (method == 10)) {       /* yale sparse matrix solver */
@@ -224,11 +224,31 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP forcs, SEXP ch
   precis =(double *) R_alloc(maxit, sizeof(double));
     for (j = 0; j < maxit; j++) precis[j] = 0;
   
-  PROTECT(yout = allocVector(REALSXP,ntot))    ; incr_N_Protect();
+  PROTECT(yout = allocVector(REALSXP,ntot))    ;     nprot++;
 
  /* The initialisation routine */
-  initParms(initfunc, parms);
-  initForcs(initforc, forcs);
+  //initParms(initfunc, parms);
+  if (initfunc != NA_STRING) {
+    
+    if (inherits(initfunc, "NativeSymbol"))  {
+      C_init_func_type *initializer;
+      
+      PROTECT(st_gparms = parms);     nprot++;
+      initializer = (C_init_func_type *) R_ExternalPtrAddrFn_(initfunc);
+      initializer(Initstparms);
+    }
+  }
+  
+//  initForcs(initforc, forcs);
+  if (initforc != NA_STRING) {
+    if (inherits(initforc, "NativeSymbol"))  {
+      C_init_func_type *initializer;
+    
+      PROTECT(st_gforcs = forcs);     nprot++;
+      initializer = (C_init_func_type *) R_ExternalPtrAddrFn_(initforc);
+      initializer(Initstforcs);
+    }
+  }
 
  /* pointers to functions derivs and jac, passed to the FORTRAN subroutine */
 
@@ -237,8 +257,8 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP forcs, SEXP ch
       derivs = (C_deriv_func_type *) R_ExternalPtrAddrFn_(func);
 
     } else {  derivs = (C_deriv_func_type *) C_stsparse_derivs;  
-      PROTECT(stsparse_deriv_func = func); incr_N_Protect();
-      PROTECT(stsparse_envir = rho);incr_N_Protect();
+      PROTECT(stsparse_deriv_func = func);     nprot++;
+      PROTECT(stsparse_envir = rho);       nprot++;
     }
     
     tin = REAL(time)[0];
@@ -267,34 +287,34 @@ SEXP call_stsparse(SEXP y, SEXP time, SEXP func, SEXP parms, SEXP forcs, SEXP ch
   
      if (method != 10) {      
 
-       PROTECT(RWORK = allocVector(REALSXP, niter));incr_N_Protect();
+       PROTECT(RWORK = allocVector(REALSXP, niter));    nprot++;
        for (k = 0;k<niter;k++) REAL(RWORK)[k] = precis[k];
        if (mflag == 1) Rprintf("mean residual derivative %g\n",precis[niter-1]);
        setAttrib(yout, install("precis"), RWORK);    
 
-       PROTECT(IWORK = allocVector(INTSXP, 4));incr_N_Protect();
+       PROTECT(IWORK = allocVector(INTSXP, 4));    nprot++;
                              INTEGER(IWORK)[0]   = isSteady;
        for (k = 0; k<3; k++) INTEGER(IWORK)[k+1] = dims[k];
        setAttrib(yout, install("steady"), IWORK);    
      } else {                  /* returns the sparsity vectors ian and jan */
        
-       PROTECT(RWORK = allocVector(REALSXP, 1)); incr_N_Protect();
+       PROTECT(RWORK = allocVector(REALSXP, 1));     nprot++;
        REAL(RWORK)[0] = 0.;
        setAttrib(yout, install("precis"), RWORK);    
 
-       PROTECT(IWORK = allocVector(INTSXP, 4));incr_N_Protect();
+       PROTECT(IWORK = allocVector(INTSXP, 4));    nprot++;
                              INTEGER(IWORK)[0]   = 0;
        for (k = 0; k<3; k++) INTEGER(IWORK)[k+1] = dims[k];
        setAttrib(yout, install("steady"), IWORK);    
       
-       PROTECT(IANX = allocVector(INTSXP, neq+1));incr_N_Protect();
+       PROTECT(IANX = allocVector(INTSXP, neq+1));    nprot++;
        for (k = 0; k<neq+1; k++) INTEGER(IANX)[k] = ian[k];
        setAttrib(yout, install("ian"), IANX);              
      
-       PROTECT(JANX = allocVector(INTSXP, dims[0]));incr_N_Protect();
+       PROTECT(JANX = allocVector(INTSXP, dims[0]));    nprot++;
        for (k = 0; k< dims[0]; k++) INTEGER(JANX)[k] = jan[k];
        setAttrib(yout, install("jan"), JANX);                
     } 
-  unprotect_all();
+  UNPROTECT(nprot);
   return(yout);
 }

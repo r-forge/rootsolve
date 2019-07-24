@@ -4674,7 +4674,8 @@ C-----------------------------------------------------------------------
       TOL = RTOL(1)
       IF (ITOL .LE. 2) GO TO 140
       DO 130 I = 1,N
- 130    TOL = MAX(TOL,RTOL(I))
+       TOL = MAX(TOL,RTOL(I))
+ 130  CONTINUE
  140  IF (TOL .GT. 0.0D0) GO TO 160
       ATOLI = ATOL(1)
       DO 150 I = 1,N
