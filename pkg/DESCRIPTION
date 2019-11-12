@@ -1,11 +1,18 @@
 Package: rootSolve
-Version: 1.8
+Version: 1.8.1
 Title: Nonlinear Root Finding, Equilibrium and Steady-State Analysis of Ordinary Differential Equations
-Author: Karline Soetaert [aut, cre],  
-        yale sparse matrix package authors [cph]
 Authors@R: c(person("Karline","Soetaert", role = c("aut", "cre"), 
                      email = "karline.soetaert@nioz.nl"),
-             person("yale sparse matrix package authors", role = "cph"))
+             person("Alan C.","Hindmarsh", role = "ctb", 
+                     comment = "files lsodes.f, sparse.f"),
+             person("S.C.","Eisenstat", role = "ctb", 
+                     comment = "file sparse.f"),
+             person("Cleve","Moler", role = "ctb", 
+                     comment = "file dlinpk.f"),
+             person("Jack","Dongarra", role = "ctb", 
+                     comment = "file dlinpk.f"),
+             person("Youcef", "Saad", role = "ctb", 
+                     comment = "file dsparsk.f"))
 Maintainer: Karline Soetaert <karline.soetaert@nioz.nl>
 Depends: R (>= 2.01)
 Imports: stats, graphics, grDevices
