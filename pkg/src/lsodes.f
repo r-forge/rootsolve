@@ -2998,13 +2998,13 @@ C-----------------------------------------------------------------------
 C
 C  Declare arguments.
 C
-      DOUBLE PRECISION R1, R2, RVEC(2), Dummy
+      DOUBLE PRECISION R1, R2, RVEC(2), Dummy(1)
       INTEGER NMES, NERR, LEVEL, NI, I1, I2, NR, Ivec(2)
       CHARACTER(LEN=80) MSG
 C      INTEGER LUNIT, IXSAV, MESFLG
       
-      dummy = 0.d0
-      call dblepr(MSG, NMES, dummy, 0)
+      dummy(1) = 0.d0
+      call dblepr(MSG, NMES, dummy, 1)
 
 
       IF (NI .EQ. 1) THEN
