@@ -1,3 +1,6 @@
+#ifndef ROOTSOLVE_H
+#define ROOTSOLVE_H
+
 #include <R.h>
 #include <Rdefines.h>
 /* global variables */
@@ -40,3 +43,5 @@ double *out;
 
 typedef void C_deriv_func_type(int *, double *, double *,double *,double *, int *);
 typedef void C_init_func_type(void (*)(int *, double *));
+
+#endif
