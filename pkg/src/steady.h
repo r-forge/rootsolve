@@ -1,6 +1,6 @@
 #ifndef ROOTSOLVE_H
 #define ROOTSOLVE_H
-
+ 
 #include <R.h>
 #include <Rdefines.h>
 /* global variables */
