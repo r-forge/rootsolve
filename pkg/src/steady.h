@@ -1,15 +1,12 @@
-#ifndef ROOTSOLVE_H
-#define ROOTSOLVE_H
- 
 #include <R.h>
 #include <Rdefines.h>
 /* global variables */
-SEXP Time, Y ;
+extern SEXP Time, Y ;
 extern SEXP st_gparms;
 extern SEXP st_gforcs;
 
-int ndim, nspec;
-double *y2,*dy2;
+extern int ndim, nspec;
+extern double *y2,*dy2;
 
 /* steady_utils.c globals */
 extern SEXP Rst_deriv_func;
@@ -25,17 +22,14 @@ extern SEXP lsode_deriv_func;
 extern SEXP lsode_jac_func;
 extern SEXP lsode_envir;
 
-/* steady_utils.c functions removed.
-*/
-void Initstparms(int *, double *);
-void Initstforcs(int *, double *);
-void initOut(int isDll, int neq, SEXP nOut, SEXP Rpar, SEXP Ipar);
+
+extern void Initstparms(int *, double *);
+extern void Initstforcs(int *, double *);
+extern void initOut(int isDll, int neq, SEXP nOut, SEXP Rpar, SEXP Ipar);
 
 /* output in DLL globals */
-int nout, ntot, isOut, lrpar, lipar, *ipar;
-double *out;
+extern int nout, ntot, isOut, lrpar, lipar, *ipar;
+extern double *out;
 
 typedef void C_deriv_func_type(int *, double *, double *,double *,double *, int *);
 typedef void C_init_func_type(void (*)(int *, double *));
-
-#endif
