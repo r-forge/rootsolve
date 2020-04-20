@@ -1,5 +1,5 @@
 Package: rootSolve
-Version: 1.8.2
+Version: 1.8.2.1
 Title: Nonlinear Root Finding, Equilibrium and Steady-State Analysis of Ordinary Differential Equations
 Authors@R: c(person("Karline","Soetaert", role = c("aut", "cre"), 
                      email = "karline.soetaert@nioz.nl"),
