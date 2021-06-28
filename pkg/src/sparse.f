@@ -234,7 +234,8 @@ c**********************************************************************
          call intpr ("  row nr: ", 10, IDUM, 1)
          call rexit("stopped - increase argument lrw")
        ELSE if (iflag .EQ. 6) THEN
-         call intpr ("insufficient storage in nsfc", -1, 0, 0)
+         IDUM(1) = 0
+         call intpr ("insufficient storage in nsfc", -1, IDUM, 0)
          IDUM(1) = flag-iflag         
          call intpr ("  row nr: ", 10, IDUM, 1)
          call rexit("stopped - increase argument lrw")
