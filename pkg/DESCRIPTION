@@ -30,4 +30,3 @@ Description: Routines to find the root of nonlinear functions, and to perform st
     by numerical differencing (using the method-of-lines approach).
   Includes fortran code.
 License: GPL (>= 2)
-LazyData: yes
